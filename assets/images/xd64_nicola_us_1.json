@@ -1,0 +1,142 @@
+[
+  {
+    "backcolor": "#e6dfdf",
+    "name": "XD64_NICOLA_US_1",
+    "notes": "xd64 nicola scancode.",
+    "background": {
+      "name": "Black",
+      "style": "background-image: url('/bg/leather/black.jpg');"
+    },
+    "switchMount": "cherry",
+    "switchBrand": "gateron",
+    "switchType": "KS-3-White",
+    "plate": true,
+    "pcb": false
+  },
+  [
+    {
+      "fa": [
+        5
+      ]
+    },
+    "1\nEsc",
+    "2\n1\n\n!",
+    "3\n2\n\n@",
+    "4\n3\n\n#",
+    "5\n4\n\n$",
+    "6\n5\n\n%",
+    "7\n6\n\n^",
+    "8\n7\n\n&",
+    "9\n8\n\n*",
+    "10\n9\n\n(",
+    "11\n0\n\n)",
+    "12\n-\n\n_",
+    "13\n=\n\n+",
+    "14\n\\\n\n|",
+    "66\nBS"
+  ],
+  [
+    {
+      "w": 1.5
+    },
+    "15\nTab",
+    "16\nQ",
+    "17\nW",
+    "18\nE",
+    "19\nR",
+    "20\nT",
+    "21\nY",
+    "22\nU",
+    "23\nI",
+    "24\nO",
+    "25\nP",
+    "26\n[\n\n{",
+    "27\n]\n\n}",
+    {
+      "x": 0.25,
+      "w": 1.25,
+      "h": 2,
+      "w2": 1.5,
+      "h2": 1,
+      "x2": -0.25
+    },
+    "42\n\n\n\n\n\nEnter"
+  ],
+  [
+    {
+      "w": 1.75
+    },
+    "29\nImeOff",
+    "30\nA",
+    "31\nS",
+    "32\nD",
+    "33\nF",
+    "34\nG",
+    "35\nH",
+    "36\nJ",
+    "37\nK",
+    "38\nL",
+    "39\n;\n\n:",
+    "40\n'\n\n\"",
+    "41\n￥\n\n|"
+  ],
+  [
+    {
+      "w": 2
+    },
+    "43\nShift",
+    "45\nZ",
+    "46\nX",
+    "47\nC",
+    "48\nV",
+    "49\nB",
+    "50\nN",
+    "51\nM",
+    "52\n,\n\n<",
+    "53\n.\n\n>",
+    "54\n/\n\n?",
+    "64\n`\n\n~",
+    "56\n\n\n\n\n\n\n\n\n↑",
+    "55\nDelete"
+  ],
+  [
+    {
+      "w": 1.25
+    },
+    "57\nCtrl",
+    {
+      "w": 1.25
+    },
+    "58\nGUI",
+    {
+      "w": 1.5
+    },
+    "59\nAlt",
+    {
+      "x": 0.25,
+      "w": 2.25
+    },
+    "63\nF14",
+    {
+      "w": 2.25
+    },
+    "62\n空白",
+    {
+      "x": 0.25
+    },
+    "61\nImeOn",
+    "67\nCtrl",
+    {
+      "a": 7
+    },
+    "",
+    {
+      "x": -1,
+      "a": 4
+    },
+    "68\nFn",
+    "65\n\n\n\n\n\n\n\n\n←",
+    "69\n\n\n\n\n\n\n\n\n↓",
+    "70\n\n\n\n\n\n\n\n\n→"
+  ]
+]

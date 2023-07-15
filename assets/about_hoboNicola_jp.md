@@ -11,7 +11,7 @@ hoboNicolaアダプターはPCなどのホスト側に接続したときふつ�
 ## 配列について
 hoboNicolaアダプターやキーボードの、NICOLAモードでの文字記号配列は以下のようにしています(バージョン1.7.0以降)。
 
-![](./hoboNicola_basic_layout_170s.png)
+![](./images/hoboNicola_basic_layout_170s.png)
 
 NICOLA規格での配列規定とは若干ことなっているので、「ほぼ」NICOLAと称してます。
 
