@@ -140,7 +140,7 @@ static const uint8_t scan_to_hid_table[2][SW_COUNT] = {
 		HID_PGDOWN,   HID_CAPS,    HID_A,     HID_S,       HID_D,        HID_F,       HID_G,        HID_H,        HID_J,        HID_K, 
 		HID_L,        HID_SEMICOL, HID_QUOTE, HID_UNDEF,   HID_ENTER,    HID_BACKSP,  HID_UNDEF,    HID_UNDEF,    HID_L_SHIFT,  HID_UNDEF,
 		HID_Z,        HID_X,       HID_C,     HID_V,       HID_B,        HID_N,       FN_MEDIA_MUTE,FN_MEDIA_V_DN,FN_MEDIA_V_UP,HID_SLASH, 
-		HID_R_SHIFT,  HID_APP,     HID_UNDEF, HID_PGUP,    HID_UNDEF,    HID_L_CTRL,  HID_L_GUI,    HID_L_ALT,    HID_UNDEF,    HID_UNDEF,
+		HID_APP,      HID_R_SHIFT, HID_UNDEF, HID_PGUP,    HID_UNDEF,    HID_L_CTRL,  HID_L_GUI,    HID_L_ALT,    HID_UNDEF,    HID_UNDEF,
 		HID_SPACE,    HID_UNDEF,   HID_UNDEF, HID_HENKAN,  HID_UNDEF,    HID_IME_ON,  HID_R_ALT,    HID_X_FN1,    HID_R_CTRL,   HID_HOME,
 		HID_PGDOWN,   HID_END
   }
@@ -177,9 +177,9 @@ uint8_t xd87_get_key(bool& pressed, bool us_layout) {
 				case HID_HIRAGANA:
 					return HID_IME_ON;
 				case HID_MUHENKAN:
-					return HID_F22;
+					return HID_F14;
 				case HID_HENKAN:
-					return HID_F23;
+					return HID_F15;
 				default:
 					break;
 				}

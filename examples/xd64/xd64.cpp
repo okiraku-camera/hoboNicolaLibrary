@@ -109,22 +109,22 @@ static const uint8_t HID_TABLE_FN1 = 1;
 
 static const uint8_t scan_to_hid_table[2][SW_COUNT] = {
   {     
-	HID_ESCAPE,   HID_1,     HID_2,       HID_3,        HID_4,       HID_5,      HID_6,       HID_7,     HID_8,       HID_9, // sw1～10
-	HID_0,        HID_MINUS, HID_EQL,     HID_J_BSLASH, HID_TAB,     HID_Q,      HID_W,       HID_E,     HID_R,       HID_T,// sw11～20
-	HID_Y,        HID_U,     HID_I,       HID_O,        HID_P,       HID_J_AT,   HID_J_LBRACK,HID_UNDEF, HID_CAPS,    HID_A,  // sw21～30
-	HID_S,        HID_D,     HID_F,       HID_G,        HID_H,       HID_J,      HID_K,       HID_L,     HID_SEMICOL, HID_QUOTE,   // sw31～40
-	HID_J_RBR_32, HID_ENTER, HID_L_SHIFT, HID_UNDEF,    HID_Z,       HID_X,      HID_C,       HID_V,     HID_B,       HID_N,  // sw41～50
-	HID_M,        HID_COMMA, HID_PERIOD,  HID_SLASH,    HID_DELETE,  HID_U_ARROW,HID_L_CTRL,  HID_L_GUI, HID_L_ALT,   HID_UNDEF,   // sw51～60
-	HID_HIRAGANA, HID_SPACE, HID_MUHENKAN,HID_J_UL,     HID_L_ARROW, HID_BACKSP, HID_R_CTRL,  HID_X_FN1, HID_D_ARROW, HID_R_ARROW  // sw61～70
+	HID_ESCAPE,   HID_1,         HID_2,        HID_3,        HID_4,       HID_5,      HID_6,       HID_7,     HID_8,       HID_9, // sw1～10
+	HID_0,        HID_MINUS,     HID_EQL,      HID_J_BSLASH, HID_TAB,     HID_Q,      HID_W,       HID_E,     HID_R,       HID_T,// sw11～20
+	HID_Y,        HID_U,         HID_I,        HID_O,        HID_P,       HID_J_AT,   HID_J_LBRACK,HID_UNDEF, HID_CAPS,    HID_A,  // sw21～30
+	HID_S,        HID_D,         HID_F,        HID_G,        HID_H,       HID_J,      HID_K,       HID_L,     HID_SEMICOL, HID_QUOTE,   // sw31～40
+	HID_J_RBR_32, HID_ENTER,     HID_L_SHIFT,  HID_UNDEF,    HID_Z,       HID_X,      HID_C,       HID_V,     HID_B,       HID_N,  // sw41～50
+	HID_M,        HID_COMMA,     HID_PERIOD,   HID_SLASH,    HID_DELETE,  HID_U_ARROW,HID_L_CTRL,  HID_L_GUI, HID_L_ALT,   HID_UNDEF,   // sw51～60
+	HID_HIRAGANA, HID_SPACE,     HID_MUHENKAN, HID_J_UL,     HID_L_ARROW, HID_BACKSP, HID_R_CTRL,  HID_X_FN1, HID_D_ARROW, HID_R_ARROW  // sw61～70
 },
   {     
-	HID_ESCAPE,   HID_F1,        HID_F2,       HID_F3,    HID_F4,      HID_F5,     HID_F6,     HID_F7,    HID_F8,     HID_F9, // sw1～10
-	HID_F10,      HID_F11,       HID_F12,      HID_INSERT,HID_TAB,     HID_Q,      HID_W,      HID_E,     HID_R,      HID_T,// sw11～20
-	HID_Y,        HID_U,         HID_I,        HID_O,     HID_PRNTSCRN,HID_SCRLOCK,HID_PAUSE,  HID_UNDEF, HID_CAPS,   HID_A,// sw21～30
-	HID_S,        HID_D,         HID_F,        HID_G,     HID_H,       HID_J,      HID_K,      HID_L,     HID_SEMICOL,HID_QUOTE,   // sw31～40
-	HID_J_RBR_32, HID_ENTER,     HID_L_SHIFT,  HID_UNDEF, HID_ZENHAN,  HID_X,      HID_C,      HID_V,     HID_B,      HID_N,  // sw41～50
-	FN_MEDIA_MUTE,FN_MEDIA_V_DN, FN_MEDIA_V_UP,HID_SLASH, HID_DELETE,  HID_PGUP,   HID_L_CTRL, HID_L_GUI, HID_L_ALT,  HID_UNDEF,   // sw51～60
-	HID_APP,      HID_HENKAN,    HID_SPACE,    HID_J_UL,  HID_HOME,    HID_BACKSP, HID_R_CTRL, HID_X_FN1, HID_PGDOWN, HID_END  // sw61～70
+	HID_ESCAPE,   HID_F1,        HID_F2,       HID_F3,       HID_F4,      HID_F5,     HID_F6,      HID_F7,    HID_F8,      HID_F9, // sw1～10
+	HID_F10,      HID_F11,       HID_F12,      HID_INSERT,   HID_TAB,     HID_Q,      HID_W,       HID_E,     HID_R,       HID_T,// sw11～20
+	HID_Y,        HID_U,         HID_I,        HID_O,        HID_PRNTSCRN,HID_SCRLOCK,HID_PAUSE,   HID_UNDEF, HID_CAPS,    HID_A,// sw21～30
+	HID_S,        HID_D,         HID_F,        HID_G,        HID_H,       HID_J,      HID_K,       HID_L,     HID_SEMICOL, HID_QUOTE,   // sw31～40
+	HID_J_RBR_32, HID_ENTER,     HID_L_SHIFT,  HID_UNDEF,    HID_Z,       HID_X,      HID_C,       HID_V,     HID_B,       HID_N,  // sw41～50
+	FN_MEDIA_MUTE,FN_MEDIA_V_DN, FN_MEDIA_V_UP,HID_SLASH,    HID_DELETE,  HID_PGUP,   HID_L_CTRL,  HID_L_GUI, HID_L_ALT,   HID_UNDEF,   // sw51～60
+	HID_APP,      HID_HENKAN,    HID_SPACE,    HID_J_UL,     HID_HOME,    HID_BACKSP, HID_R_CTRL,  HID_X_FN1, HID_PGDOWN,  HID_END  // sw61～70
   }
 };
 
