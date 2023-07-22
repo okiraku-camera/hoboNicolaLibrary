@@ -23,7 +23,7 @@
 	static const uint32_t NUML_AS_NICOLA 				= 0x10000L;	// NumLockならNICOLA
 	static const uint32_t KANJI_TO_SHIFT_SPACE	= 0x20000L;	// 全半キーで Shift + Spaceを出す。
 	static const uint32_t SPC_TO_MUHENKAN				= 0x40000L;	// 一方通行 空白キーを無変換にする。
-	static const uint32_t IMEOFF_TO_NICOLA_OFF	= 0x80000L;	// IME OFFキーならばNICOLA OFF
+	//static const uint32_t IMEOFF_TO_NICOLA_OFF	= 0x80000L;	// IME OFFキーならばNICOLA OFF
 
 class _Settings  {
 	uint32_t settings;
@@ -89,7 +89,8 @@ public:
 	bool is_kanji_shift_space() const { return (bool)(settings & KANJI_TO_SHIFT_SPACE); }
 
 	bool is_spc_to_muhenkan() const { return (bool)(settings & SPC_TO_MUHENKAN); }	
-	bool is_imeoff_to_nicola_off() const { return (bool)(settings & IMEOFF_TO_NICOLA_OFF); }
+	// bool is_imeoff_to_nicola_off() const { return (bool)(settings & IMEOFF_TO_NICOLA_OFF); }
+	bool is_imeoff_to_nicola_off() const { return (bool)(settings & EISU_TO_NICOLA_OFF); }
 
 	bool is_use_msc_notify() const { 
 #if defined(USE_TINYUSB)

@@ -279,9 +279,11 @@ void HoboNicola::setup_options(uint8_t hid) {
 	case HID_S:
 		new_settings ^= SPC_TO_MUHENKAN;
 		break;
+#if 0		
 	case HID_I:
 		new_settings ^= IMEOFF_TO_NICOLA_OFF;
 		break;
+#endif
 	}
 	setup_mode = false;
 	Settings().save(new_settings);
