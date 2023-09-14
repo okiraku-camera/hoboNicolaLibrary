@@ -1,0 +1,198 @@
+[
+  {
+    "backcolor": "#e6dfdf",
+    "name": "hoboNicola basic layout (US)",
+    "notes": "hoboNicola basic Layout (US) Layout keyboard).\n",
+    "background": {
+      "name": "Aluminium brushed",
+      "style": "background-image: url('/bg/metal/aluminum_texture1642.jpg');"
+    },
+    "switchMount": "cherry",
+    "switchBrand": "gateron",
+    "switchType": "KS-3-White",
+    "plate": true,
+    "pcb": false
+  },
+  [
+    {
+      "c": "#a9a9a9"
+    },
+    "\n`\n\n\n\n\n\n\n\n\n~",
+    {
+      "c": "#008080",
+      "t": "#000000\n\n\n\n\n\n\n\n\n#dc143c"
+    },
+    "？\n1\n\n\n\n\n\n\n\n!",
+    "/\n2\n\n\n\n\n\n\n\n@",
+    "～\n3\n\n\n\n\n\n\n\n#",
+    "[\n4\n\n\n\n\n\n\n\n$",
+    "]\n5\n\n\n\n\n\n\n\n%",
+    "<\n6\n\n\n\n\n\n\n\n^",
+    ">\n7\n\n\n\n\n\n\n\n&",
+    "\n8\n\n\n\n\n\n\n\n*",
+    "(\n9\n\n\n\n\n\n\n\n(",
+    ")\n0\n\n\n\n\n\n\n\n)",
+    "-\n-\n\n\n\n\n\n\n\n_",
+    "=\n=\n\n\n\n\n\n\n\n+",
+    {
+      "c": "#a9a9a9",
+      "t": "#000000",
+      "w": 2
+    },
+    "\nBS"
+  ],
+  [
+    {
+      "w": 1.5
+    },
+    "\nTab",
+    {
+      "c": "#00bfff"
+    },
+    "ぁ\nQ\n\n。",
+    "え\nW\nが\nか",
+    "り\nE\nだ\nた",
+    "ゃ\nR\nご\nこ",
+    "れ\nT\nざ\nさ",
+    {
+      "c": "#3cb371"
+    },
+    "ぱ\nY\nよ\nら",
+    "ぢ\nU\nに\nち",
+    "ぐ\nI\nる\nく",
+    "づ\nO\nま\nつ",
+    "ぴ\nP\nぇ\n、",
+    {
+      "t": "#000000\n\n\n\n\n\n\n\n\n#dc143c"
+    },
+    "\n[\n\n、\n\n\n\n\n\n{",
+    "\n]\n\n\n\n\n\n\n\n}",
+    {
+      "w": 1.5
+    },
+    "|\n\\\n\n\n\n\n\n\n\n|"
+  ],
+  [
+    {
+      "c": "#a9a9a9",
+      "t": "#000000",
+      "w": 1.75
+    },
+    "\n英数\n\nCaps",
+    {
+      "c": "#00bfff"
+    },
+    "を\nA\nヴ\nう",
+    "あ\nS\nじ\nし",
+    "な\nD\nで\nて",
+    "ゅ\nF\nげ\nけ",
+    "も\nG\nぜ\nせ",
+    {
+      "c": "#3cb371",
+      "t": "#000000\n\n\n\n\n\n\n\n\n#dc143c",
+      "fa": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    "ば\nH\nみ\nは\n\n\n\n\n\nぱ",
+    {
+      "t": "#000000"
+    },
+    "ど\nJ\nお\nと",
+    "ぎ\nK\nの\nき",
+    "ぽ\nL\nょ\nい",
+    {
+      "t": "#000000\n\n\n\n\n\n\n\n\n#dc143c",
+      "f": 3
+    },
+    "\n;\nっ\nん\n\n\n\n\n\n：",
+    {
+      "c": "#d3d3d3",
+      "t": "#000000"
+    },
+    "\n'\n\nBS",
+    {
+      "x": 0.25,
+      "c": "#a9a9a9",
+      "a": 6,
+      "w": 2,
+      "x2": -0.25
+    },
+    "Enter"
+  ],
+  [
+    {
+      "c": "#dc143c",
+      "a": 4,
+      "w": 2.25
+    },
+    "\nShift",
+    {
+      "c": "#00bfff"
+    },
+    "ぅ\nZ\n\n。",
+    {
+      "t": "#000000\n\n\n\n\n\n\n\n\n#dc143c",
+      "f": 3
+    },
+    "ー\nX\nび\nひ\n\n\n\n\n\nぴ",
+    {
+      "t": "#000000"
+    },
+    "ろ\nC\nず\nす",
+    {
+      "t": "#000000\n\n\n\n\n\n\n\n\n#dc143c",
+      "f": 3
+    },
+    "や\nV\nぶ\nふ\n\n\n\n\n\nぷ",
+    {
+      "f": 3
+    },
+    "ぃ\nB\nべ\nへ\n\n\n\n\n\nぺ",
+    {
+      "c": "#3cb371",
+      "t": "#000000"
+    },
+    "ぷ\nN\nぬ\nめ",
+    "ぞ\nM\nゆ\nそ",
+    "ぺ\n,\nむ\nね",
+    {
+      "t": "#000000\n\n\n\n\n\n\n\n\n#dc143c",
+      "f": 3
+    },
+    "ぼ\n.\nわ\nほ\n\n\n\n\n\nぽ",
+    {
+      "f": 3
+    },
+    "\n/\nぉ\n/\n\n\n\n\n\n?",
+    {
+      "c": "#dc143c",
+      "t": "#000000",
+      "w": 2.75
+    },
+    "\nShift"
+  ],
+  [
+    {
+      "x": 4.25,
+      "c": "#00bfff",
+      "a": 5,
+      "w": 2.25
+    },
+    "(親指左)\n(Thumb Left)",
+    {
+      "c": "#3cb371",
+      "w": 2.25
+    },
+    "(親指右)\n(Thumb Right)"
+  ]
+]
