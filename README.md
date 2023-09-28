@@ -2,7 +2,7 @@
 
 hoboNicola keyboard and adapter library.  Copyright 2023 Takeshi Higasa, okiraku-camera.tokyo
 
-version 1.7.0
+version 1.7.1
 
 ## hoboNicolaについて 
 
@@ -11,6 +11,8 @@ hoboNicolaライブラリは、一般的なUSBキーボードをほぼNICOLAキ�
 hoboNicolaアダプターはPCなどのホスト側に接続したときふつうのUSBキーボードのように振る舞います。アダプターは物理的なキーボードからの受けたHID Usage ID(キーコード)を使って配列の変更や同時打鍵処理などを行った後、ホストにキーコードを送り出します。
 
 このライブラリは、日本語USBキーボードだけではなくPS/2インタフェースのキーボードや、USレイアウトのキーボード用のアダプターとしても使うことができます。また、キーボードPCBのマイコンに組み込むことで使い手の都合に合わせた親指シフトキーボードのファームウェアとすることも可能です。
+
+![hoboNicola](./assets/images/hoboNicola_adapter_keyboard.png)
 
 
 ## 配列について
