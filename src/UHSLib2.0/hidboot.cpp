@@ -15,7 +15,7 @@ Web      :  http://www.circuitsathome.com
 e-mail   :  support@circuitsathome.com
  */
 #include "hidboot.h"
-
+#if 0
 void MouseReportParser::Parse(USBHID *hid __attribute__((unused)), bool is_rpt_id __attribute__((unused)), uint8_t len __attribute__((unused)), uint8_t *buf) {
         MOUSEINFO *pmi = (MOUSEINFO*)buf;
         // Future:
@@ -121,8 +121,8 @@ void MouseReportParser::Parse(USBHID *hid __attribute__((unused)), bool is_rpt_i
         // Only the first byte matters (buttons). We do NOT need to save position info.
         prevState.bInfo[0] = buf[0];
 #endif
-
 };
+#endif
 
 void KeyboardReportParser::Parse(USBHID *hid, bool is_rpt_id __attribute__((unused)), uint8_t len __attribute__((unused)), uint8_t *buf) {
         // On error - return
@@ -147,7 +147,7 @@ void KeyboardReportParser::Parse(USBHID *hid, bool is_rpt_id __attribute__((unus
                                 up = true;
                 }
                 if (!down) {
-                        HandleLockingKeys(hid, buf[i]);
+                       // HandleLockingKeys(hid, buf[i]);
                         OnKeyDown(*buf, buf[i]);
                 }
                 if (!up)
@@ -157,6 +157,7 @@ void KeyboardReportParser::Parse(USBHID *hid, bool is_rpt_id __attribute__((unus
                 prevState.bInfo[i] = buf[i];
 };
 
+#if 0
 const uint8_t KeyboardReportParser::numKeys[10] PROGMEM = {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')'};
 const uint8_t KeyboardReportParser::symKeysUp[12] PROGMEM = {'_', '+', '{', '}', '|', '~', ':', '"', '~', '<', '>', '?'};
 const uint8_t KeyboardReportParser::symKeysLo[12] PROGMEM = {'-', '=', '[', ']', '\\', ' ', ';', '\'', '`', ',', '.', '/'};
@@ -199,3 +200,4 @@ uint8_t KeyboardReportParser::OemToAscii(uint8_t mod, uint8_t key) {
         }
         return ( 0);
 }
+#endif

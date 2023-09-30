@@ -36,6 +36,7 @@ e-mail   :  support@circuitsathome.com
 // Already defined in hid.h
 // #define HID_MAX_HID_CLASS_DESCRIPTORS 5
 
+#if 0
 struct MOUSEINFO {
 
         struct {
@@ -81,7 +82,7 @@ protected:
         virtual void OnMiddleButtonDown(MOUSEINFO *mi __attribute__((unused))) {
         };
 };
-
+#endif
 struct MODIFIERKEYS {
         uint8_t bmLeftCtrl : 1;
         uint8_t bmLeftShift : 1;
@@ -119,35 +120,36 @@ struct KBDLEDS {
 };
 
 class KeyboardReportParser : public HIDReportParser {
+#if 0
         static const uint8_t numKeys[10];
         static const uint8_t symKeysUp[12];
         static const uint8_t symKeysLo[12];
         static const uint8_t padKeys[5];
-
+#endif
 protected:
 
         union {
                 KBDINFO kbdInfo;
                 uint8_t bInfo[sizeof (KBDINFO)];
         } prevState;
-
+#if 0
         union {
                 KBDLEDS kbdLeds;
                 uint8_t bLeds;
         } kbdLockingKeys;
-
         uint8_t OemToAscii(uint8_t mod, uint8_t key);
+#endif
 
 public:
 
         KeyboardReportParser() {
-                kbdLockingKeys.bLeds = 0;
+                //kbdLockingKeys.bLeds = 0;
         };
 
         void Parse(USBHID *hid, bool is_rpt_id, uint8_t len, uint8_t *buf);
 
 protected:
-
+#if 0
         virtual uint8_t HandleLockingKeys(USBHID* hid, uint8_t key) {
                 uint8_t old_keys = kbdLockingKeys.bLeds;
 
@@ -170,7 +172,7 @@ protected:
 
                 return 0;
         };
-
+#endif
         virtual void OnControlKeysChanged(uint8_t before __attribute__((unused)), uint8_t after __attribute__((unused))) {
         };
 
@@ -179,7 +181,7 @@ protected:
 
         virtual void OnKeyUp(uint8_t mod __attribute__((unused)), uint8_t key __attribute__((unused))) {
         };
-
+#if 0
         virtual const uint8_t *getNumKeys() {
                 return numKeys;
         };
@@ -195,6 +197,7 @@ protected:
         virtual const uint8_t *getPadKeys() {
                 return padKeys;
         };
+#endif
 };
 
 template <const uint8_t BOOT_PROTOCOL>

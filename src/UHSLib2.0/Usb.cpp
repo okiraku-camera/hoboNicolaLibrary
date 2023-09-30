@@ -879,7 +879,7 @@ void USBHost::resumeKeyboard() {
 //	while(!(regRd(rHIRQ) & bmBUSEVENTIRQ)); //wait for sample operation to finish
 #endif
 	regWr(rUSBCTL, 0);
-	delay(10);	// OSCOKIRQ‚ğƒeƒXƒg‚·‚é‚Ì‚ª³‚µ‚¢B
+	delay(10);	// OSCOKIRQã‚’ãƒ†ã‚¹ãƒˆã™ã‚‹ã®ãŒæ­£ã—ã„ã€‚
 	uint8_t mode = regRd(rMODE);
 	mode |= bmSOFKAENAB;
 	regWr(rMODE, mode);
