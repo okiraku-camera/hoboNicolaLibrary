@@ -172,17 +172,28 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 		else if (code == HID_L_CTRL)
 			code = HID_CAPS;
 	}
-	if (code == HID_CAPS)
+	if (code == HID_CAPS) {
 		caps_pressed = pressed;
-
+		// USレイアウトのときCapsLockキーをImeOffにする。
+		// メインスケッチのFnキーテーブルで、Fn + HID_IMEOFFでCapsLockとなるようにしておく。
+		if (Settings().is_caps_to_imeoff_us() && Settings().is_us_layout())
+			code = HID_IME_OFF;
+	}
 	if (Settings().is_ralt_to_hiragana() && code == HID_R_ALT)
 		code = HID_HIRAGANA;
+	// アダプターをカスタマイズ不能なキーボードに接続した場合、ここで変換してやる
+	if (code == HID_HIRAGANA && Settings().is_us_layout())
+		code = HID_IME_ON;
 /**
 * 空白キーが左親指の位置にあるとき、これを無変換(F14)キーとした方が便利ならば設定する。
 * 無変換キーを親指左キーとして使うことになる。空白キーを消滅させるわけにはいかないので変換キーを空白とする。
 */
-	if (Settings().is_spc_to_muhenkan() && code == HID_SPACE)
-		code = Settings().is_us_layout() ? HID_F14 : HID_MUHENKAN;	
+	if (Settings().is_spc_to_muhenkan()) {
+		if (code == HID_SPACE)
+			code = Settings().is_us_layout() ? HID_F14 : HID_MUHENKAN;	
+		else if (code == HID_MUHENKAN)
+			code = HID_IME_OFF;	// 元々の無変換はIME-OFFにしてみる。(1.7.1)
+	} 
 /**
  * 変換(F15)キーが右親指の位置にあるとき、空白キーとした方が便利なら設定する 
  * 空白キーを親指右キーとして使うことになる。変換キーは消滅する。
@@ -221,6 +232,7 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 		return;
 	}
 
+#if 0
 // 全角／半角でShift+Spaceを出してみる(暫定)。ついでにNicolaモードもオンオフする。
 // Settings().is_kanji_toggle_nicola() も兼ねることになる。
 	if (code == HID_ZENHAN && Settings().is_kanji_shift_space()) {
@@ -252,7 +264,7 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 		}
 		return;
 	}
-
+#endif
 	if (pressed) {
 		if (!isNicola()) {
 			report_press(code, modifiers);
@@ -269,8 +281,7 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 			}
 			return;
 		} else {
-			if (((code == HID_CAPS) && Settings().is_eisu_to_nicola_off()) || 
-					( code == HID_IME_OFF && Settings().is_imeoff_to_nicola_off()) || 
+			if (((code == HID_CAPS || code == HID_IME_OFF) && Settings().is_eisu_to_nicola_off()) || 
 					(code == HID_ZENHAN && Settings().is_kanji_toggle_nicola()) ||
 					(code == HID_ZENHAN && Settings().is_kanji_to_nicola_off())) {
 				nicola_mode = 0;

@@ -51,9 +51,9 @@ static const uint8_t set_15[] PROGMEM = 	"U : US LAYOUT";
 static const uint8_t set_16[] PROGMEM = 	"M : MSC NOTIFY (TINYUSB)";
 static const uint8_t set_17[] PROGMEM = 	"K : KEYBOARD SUSPEND";
 static const uint8_t set_18[] PROGMEM = 	"N : NUMLOCK = NICOLA MODE";
-static const uint8_t set_19[] PROGMEM = 	"Z : HAN/ZEN -> SHIFT+SPACE";
-static const uint8_t set_20[] PROGMEM = 	"S : SPC    -> MUHENKAN (US:F14)";
-//static const uint8_t set_21[] PROGMEM = 	"I : ImeOff -> NICOLA OFF";
+static const uint8_t set_19[] PROGMEM = 	"S : SPC    -> MUHENKAN (US:F14)";
+static const uint8_t set_20[] PROGMEM = 	"I : CapsLock -> ImeOff (US)";
+// static const uint8_t set_21[] PROGMEM = 	"Z : HAN/ZEN -> SHIFT+SPACE";
 
 static const uint8_t set_end[] PROGMEM = 	"...";
 
@@ -161,13 +161,13 @@ void HoboNicola::show_setting() {
 					f = Settings().is_numlock_as_nicola();
 					break;
 				case 19:
-					f = Settings().is_kanji_shift_space();
-					break;
-				case 20:
 					f = Settings().is_spc_to_muhenkan();
 					break;
+				case 20:
+					f = Settings().is_caps_to_imeoff_us();
+					break;
 //				case 21:
-//					f = Settings().is_imeoff_to_nicola_off();
+//					f = Settings().is_kanji_shift_space();
 //					break;
 				default:
 					break;
@@ -273,17 +273,15 @@ void HoboNicola::setup_options(uint8_t hid) {
 	case HID_K:
 		new_settings ^= USE_KBD_SUSPEND;
 		break;
-	case HID_Z:
-		new_settings ^= KANJI_TO_SHIFT_SPACE;
-		break;
+//	case HID_Z:
+//		new_settings ^= KANJI_TO_SHIFT_SPACE;
+//		break;
 	case HID_S:
 		new_settings ^= SPC_TO_MUHENKAN;
 		break;
-#if 0		
 	case HID_I:
-		new_settings ^= IMEOFF_TO_NICOLA_OFF;
+		new_settings ^= CAPS_TO_IMEOFF_US;
 		break;
-#endif
 	}
 	setup_mode = false;
 	Settings().save(new_settings);
