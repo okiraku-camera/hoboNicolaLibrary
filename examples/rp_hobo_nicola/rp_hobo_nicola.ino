@@ -172,6 +172,7 @@ static const uint16_t fn_keys[] PROGMEM = {
 	HID_R_ARROW,					HID_END,
 	HID_L_ARROW,					HID_HOME,
 	HID_ENTER,						FN_MEDIA_PLAY_PAUSE,
+	HID_IME_OFF,					HID_CAPS,								// Fn + ImeOff (Caps) = CapsLock
 	HID_ESCAPE | WITH_R_CTRL,  FN_SYSTEM_SLEEP,   // Ctrl + App + Esc  
 	0, 0
 };
