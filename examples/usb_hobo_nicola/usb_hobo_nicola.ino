@@ -42,6 +42,7 @@ static const uint16_t fn_keys[] PROGMEM = {
 	HID_R_ARROW,					HID_END,
 	HID_L_ARROW,					HID_HOME,
 	HID_ENTER,						FN_MEDIA_PLAY_PAUSE,
+	HID_IME_OFF,						HID_CAPS,								// Fn + ImeOff (Caps) = CapsLock
 	HID_ESCAPE | WITH_R_CTRL,  FN_SYSTEM_SLEEP,   // Ctrl + App + Esc 
 #if defined(NRF52_SERIES)
 	HID_B | WITH_L_CTRL | WITH_L_ALT,  FN_BLE_SWITH,
@@ -113,10 +114,8 @@ class KeyboardEvent : public KeyboardReportParser {
 				if (change & mask)  hobo_nicola.key_event(key + i, after & mask);
 			}
 		};
-		void OnKeyPressed(uint8_t key) {};
 		void OnKeyDown  (uint8_t mod, uint8_t key) { hobo_nicola.key_event(key, true); };
 		void OnKeyUp  (uint8_t mod, uint8_t key) { hobo_nicola.key_event(key, false); };
-		virtual uint8_t HandleLockingKeys(USBHID* hid, uint8_t key) { return 0; }
 };
 
 USBHost Usbhost;
