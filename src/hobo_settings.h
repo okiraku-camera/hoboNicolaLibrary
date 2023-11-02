@@ -7,7 +7,7 @@
 	static const uint32_t SPC_TO_RIGHT = 2;
 	static const uint32_t SPC_TO_OYAYUBI = 3;	// 0x11 1-2の設定をクリアする。
 	static const uint32_t OUTPUT_IMMEDIATE_ON = 4;
-	static const uint32_t EISU_TO_NICOLA_OFF = 8;		// 英数(Caps)キーならばNICOLA OFF。USのときは使わないこと。
+	static const uint32_t EISU_TO_NICOLA_OFF = 8;		// 英数(Caps)キーならばNICOLA OFF。
 	static const uint32_t KANA_TO_NICOLA_ON	= 0x10;	// ひらがな または ImeOnならばNICOLA ON
 	static const uint32_t SINGLE_OYAYUBI_MODE = 0x40;
 	static const uint32_t SELF_REPEAT = 0x80;
@@ -21,9 +21,11 @@
 	static const uint32_t USE_MSC_NOTIFY 				= 0x4000;		// TINYUSB専用
 	static const uint32_t USE_KBD_SUSPEND 			= 0x8000;		// キーボード疑似サスペンド
 	static const uint32_t NUML_AS_NICOLA 				= 0x10000L;	// NumLock LEDとNICOLAモードを同期する
-	//static const uint32_t KANJI_TO_SHIFT_SPACE	= 0x20000L;	// 全半キーで Shift + Spaceを出す。
+	static const uint32_t MUHENKAN_TO_NICOLA_ON	= 0x20000L;	// 無変換／F14が押されたらNICOLAにする。
 	static const uint32_t SPC_TO_MUHENKAN				= 0x40000L;	// 一方通行 空白キーを無変換にする。
 	static const uint32_t CAPS_TO_IMEOFF_US			= 0x80000L;	// USのときCapsLockをImeOffとする CapsLockはFn+CapsLockをFnキーテーブルに設定しておけばよい。
+	static const uint32_t MUHENKAN_TO_IMEOFF		= 0x100000L;	// 一方通行 無変換／F14をImeOffとする。MUHENKAN_TO_NICOLA_ONやSPC_TO_MUHENKANより先に処理する。
+	
 
 class _Settings  {
 	uint32_t settings;
@@ -85,12 +87,10 @@ public:
 	bool is_henkan_to_spc() const { return (bool)(settings & HENKAN_TO_SPC); }	
 	bool is_us_layout() const { return (bool)(settings & US_LAYOUT); }
 	bool is_use_kbd_suspend() const { return (bool)(settings & USE_KBD_SUSPEND); }
-	
-//	bool is_kanji_shift_space() const { return (bool)(settings & KANJI_TO_SHIFT_SPACE); }
-
 	bool is_spc_to_muhenkan() const { return (bool)(settings & SPC_TO_MUHENKAN); }	
-	// bool is_imeoff_to_nicola_off() const { return (bool)(settings & IMEOFF_TO_NICOLA_OFF); }
 	bool is_caps_to_imeoff_us() const { return (bool)(settings & CAPS_TO_IMEOFF_US); }
+	bool is_muhenkan_to_nicola_on() const { return (bool)(settings & MUHENKAN_TO_NICOLA_ON); }
+	bool is_muhenkan_to_imeoff() const { return (bool)(settings & MUHENKAN_TO_IMEOFF); }
 
 	bool is_use_msc_notify() const { 
 #if defined(USE_TINYUSB)

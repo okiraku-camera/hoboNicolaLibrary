@@ -20,6 +20,7 @@
 	  hoboNicola 1.5.0.		Aug. 10. 2021.
 	  hoboNicola 1.6.1.		Apr. 1.  2022.	M,K,N settings.
 		hoboNicola 1.7.0.	  Apr. 1.  2023.	
+		hoboNicola 1.7.2.	  Oct. 10.  2023.	
 	
 */
 
@@ -51,9 +52,10 @@ static const uint8_t set_15[] PROGMEM = 	"U : US LAYOUT";
 static const uint8_t set_16[] PROGMEM = 	"M : MSC NOTIFY (TINYUSB)";
 static const uint8_t set_17[] PROGMEM = 	"K : KEYBOARD SUSPEND";
 static const uint8_t set_18[] PROGMEM = 	"N : NUMLOCK = NICOLA MODE";
-static const uint8_t set_19[] PROGMEM = 	"S : SPC    -> MUHENKAN (US:F14)";
-static const uint8_t set_20[] PROGMEM = 	"I : CapsLock -> ImeOff (US)";
-// static const uint8_t set_21[] PROGMEM = 	"Z : HAN/ZEN -> SHIFT+SPACE";
+static const uint8_t set_19[] PROGMEM = 	"S : SPC -> MUHENKAN/F14";
+static const uint8_t set_20[] PROGMEM = 	"I : CAPS -> ImeOff (US)";
+static const uint8_t set_21[] PROGMEM = 	"B : MUHENKAN/F14 -> NICOLA ON";
+static const uint8_t set_22[] PROGMEM = 	"F : MUHENKAN/F14 -> ImeOff";
 
 static const uint8_t set_end[] PROGMEM = 	"...";
 
@@ -80,7 +82,8 @@ const uint8_t* const output_settings[] PROGMEM = {
 	set_18,
 	set_19,
 	set_20,
-//	set_21,
+	set_21,
+	set_22,
 	set_end 
 };
 
@@ -166,9 +169,12 @@ void HoboNicola::show_setting() {
 				case 20:
 					f = Settings().is_caps_to_imeoff_us();
 					break;
-//				case 21:
-//					f = Settings().is_kanji_shift_space();
-//					break;
+				case 21:
+					f = Settings().is_muhenkan_to_nicola_on();
+					break;
+				case 22:
+					f = Settings().is_muhenkan_to_imeoff();
+					break;
 				default:
 					break;
 				}
@@ -282,6 +288,12 @@ void HoboNicola::setup_options(uint8_t hid) {
 	case HID_I:
 		new_settings ^= CAPS_TO_IMEOFF_US;
 		break;
+	case HID_B:
+		new_settings ^= MUHENKAN_TO_NICOLA_ON;
+		break;
+	case HID_F:
+		new_settings ^= MUHENKAN_TO_IMEOFF;
+		break;
 	}
 	setup_mode = false;
 	Settings().save(new_settings);
@@ -292,7 +304,7 @@ void HoboNicola::setup_options(uint8_t hid) {
 #elif defined(ARDUINO_ARCH_RP2040)
 	if (new_settings != save_set) { 
 		delay(100);
-	// rp-hobo-nicolaの場合、rebootしないと入力処理が停止してしまう。eeprom libraryのcommit() でcore1が止まるのか。
+	// rp-hobo-nicolaの場合、rebootしないと入力処理が停止してしまう。eeprom libraryのcommit() がcore1に影響しているのか
 		watchdog_reboot(0, 0, 10);	// reboot after a while.
 	}
 #endif
