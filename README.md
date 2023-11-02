@@ -2,7 +2,7 @@
 
 hoboNicola keyboard and adapter library.  Copyright 2023 Takeshi Higasa, okiraku-camera.tokyo
 
-version 1.7.1
+version 1.7.2
 
 ## hoboNicolaについて 
 
@@ -74,6 +74,8 @@ USBホストコントローラーごとに実装例を用意してあり、USB�
   * XD87 PCB (https://kprepublic.com/) を使った自作キーボード用の実装です。ターゲットのマイコンは ATMega32U4 (+5V/16MHz) なので Arduino Leonardo または SparkFun Pro Micro をターゲットしてビルドします。このキーボードについては [こちらを参照のこと](./assets/xd87.md)。
 * xd64
   * XD64(ver3) PCB ver3 (https://kprepublic.com/) を使った自作キーボード用の実装です。ターゲットのマイコンはXD87と同じです。このキーボードについては [こちらを参照のこと](./assets/xd64.md)。
+*	nk60_hobo_nicola
+	* RP2040を載せたオリジナルPCBを使った自作キーボード用の実装です。ハードウェアについては、[ブログの投稿を参照](https://okiraku-camera.tokyo/blog/?p=16074)。
 
 なお、hoboNicolaライブラリを自作キーボードに適用する際には、キーボードPCBの回路構成を知っておく必要があります。
 
