@@ -67,6 +67,7 @@
 #define HID_BACKSP	0x2a 
 #define HID_TAB		0x2b 
 #define HID_SPACE	0x2c 
+#define HID_SPC HID_SPACE 
 
 #define HID_MINUS		0x2d 
 #define HID_EQUALS		0x2e  
@@ -171,9 +172,11 @@
 
 #define HID_J_UL		HID_INT1
 #define HID_HIRAGANA	  HID_INT2
+#define HID_HIRA			  HID_INT2
 #define HID_J_BSLASH	  HID_INT3
-#define HID_HENKAN	  HID_INT4
+#define HID_HENKAN		  HID_INT4
 #define HID_MUHENKAN	  HID_INT5
+#define HID_MUHEN			  HID_INT5
 
 #define HID_LANG1	0x90
 #define HID_LANG2	0x91
@@ -230,9 +233,12 @@ static const uint8_t FN_MEDIA_SCAN_PREV = FN_MEDIA_CODE_START + 5;
 static const uint8_t FN_MEDIA_STOP = 			FN_MEDIA_CODE_START + 6;
 static const uint8_t FN_MEDIA_VOL_UP = 		FN_MEDIA_CODE_START + 7;
 static const uint8_t FN_MEDIA_V_UP 	= 		FN_MEDIA_VOL_UP;
+static const uint8_t FN_M_V_UP 	= 				FN_MEDIA_VOL_UP;
 static const uint8_t FN_MEDIA_VOL_DOWN =	FN_MEDIA_CODE_START + 8;
 static const uint8_t FN_MEDIA_V_DN 	=			FN_MEDIA_VOL_DOWN;
+static const uint8_t FN_M_V_DN 	=					FN_MEDIA_VOL_DOWN;
 static const uint8_t FN_MEDIA_MUTE =			FN_MEDIA_CODE_START + 9;
+static const uint8_t FN_M_MUTE =					FN_MEDIA_MUTE;
 static const uint8_t FN_MEDIA_CODE_END = 0xb0;
 
 static const uint8_t FN_SYSTEM_CODE_START = FN_MEDIA_CODE_END;
