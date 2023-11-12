@@ -298,7 +298,7 @@ void HoboNicola::output() {
 }
 
 void HoboNicola::immediate_output(uint16_t moji) {
-	if (!Settings().is_immediate_output() || setup_mode || LOWBYTE(moji) == NID_SETUP_KEY)
+	if (!Settings().is_immediate_output() || setup_mode)
 		return;
 	const uint8_t* p = get_output_data(moji, isShiftPressed() ? NID_SHIFT_KEY : 0);
 	if (p) {

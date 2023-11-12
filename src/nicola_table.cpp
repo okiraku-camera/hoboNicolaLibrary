@@ -223,11 +223,13 @@ uint16_t HoboNicola::get_nid(uint8_t& k) {
 		if (!dedicated_oyakeys)
 			m = MKWORD(k, NID_RIGHT_OYAYUBI);
 		break;
+#if 0
 	case HID_PAUSE:
 	case HID_DELETE:
 		if (!is_initial_state())
 			m = MKWORD(k, NID_SETUP_KEY);	// Oyayubi_Stateのみだろう。
 		break;			
+#endif
 	default:
 		if (dedicated_oyakeys) {	// 専用の親指キーがある
 			if (k == left_oyayubi_code)

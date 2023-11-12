@@ -87,9 +87,13 @@ const u16 STRING_LANGUAGE[2] = {
 	0x0409	// English
 };
 
+#if 0
 #ifndef USB_PRODUCT
 // If no product is provided, use USB IO Board
 #define USB_PRODUCT     "USB IO Board"
+#endif
+#else
+#define USB_PRODUCT     "Arduino"
 #endif
 
 const u8 STRING_PRODUCT[] PROGMEM = USB_PRODUCT;
@@ -106,7 +110,8 @@ const u8 STRING_PRODUCT[] PROGMEM = USB_PRODUCT;
 #  define USB_MANUFACTURER "SparkFun"
 #elif !defined(USB_MANUFACTURER)
 // Fall through to unknown if no manufacturer name was provided in a macro
-#  define USB_MANUFACTURER "Unknown"
+//#  define USB_MANUFACTURER "Unknown"
+#define USB_MANUFACTURER "xxx"
 #endif
 
 const u8 STRING_MANUFACTURER[] PROGMEM = USB_MANUFACTURER;

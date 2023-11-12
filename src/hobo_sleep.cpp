@@ -45,6 +45,7 @@ void enter_sleep(int16_t timeout_ms) {
 			wdt_prcl = _BV(WDP2);								// 250msec.
 		else if (timeout_ms <= 500)
 			wdt_prcl =(_BV(WDP2) | _BV(WDP0));	// 500msec.
+#if 0			
 		else if (timeout_ms <= 1000)
 			wdt_prcl = (_BV(WDP2) | _BV(WDP1));	// 1000msec.
 		else if (timeout_ms <= 2000)
@@ -53,6 +54,7 @@ void enter_sleep(int16_t timeout_ms) {
 			wdt_prcl = _BV(WDP3);							// 4000msec.
 		else if (timeout_ms <= 8000)
 			wdt_prcl = (_BV(WDP3) | _BV(WDP1));	// 8000msec.
+#endif
 		else			
 			wdt_prcl = (_BV(WDP2) | _BV(WDP1));	// 1000msec.
 
