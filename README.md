@@ -7,6 +7,8 @@ version 1.7.3
 ひらがなをImeOnにするオプション (設定O) の追加。
 NICOLAモードにしないオプション (設定X) の追加。同時打鍵や配列変更は本体側で。
 
+これまでのhoboNicolaLibraryの履歴などについては、[ブログの投稿](https://okiraku-camera.tokyo/blog/?page_id=8211)を参照してください (以下の内容と重複する箇所もあります)。
+
 ## hoboNicolaについて 
 
 hoboNicolaライブラリは、一般的なUSBキーボードをほぼNICOLAキーボードとして使うためのアダプター用ファームウェアとして2018年頃に作りました。このライブラリを使うことで、入力時の配列を(ほぼ)NICOLA配列にすると同時に、NICOLA規格に準じた親指キー同時打鍵入力が可能となります。hoboNicolaライブラリを組み込んだアダプター(USB-USB, PS/2-USB)のことを、hoboNicolaアダプターと称しており、回路などはブログ等で公開されています。
