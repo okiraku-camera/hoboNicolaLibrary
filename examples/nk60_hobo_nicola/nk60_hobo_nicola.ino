@@ -42,6 +42,7 @@ static const uint8_t FN_BG_OFF		    = FN_EXTRA_START + 4;
 static const uint16_t fn_keys[] PROGMEM = {
 	WITH_R_CTRL | HID_S, FN_SETUP_MODE,
 	WITH_R_CTRL | HID_ESCAPE,	 FN_SYSTEM_SLEEP,		// Ctrl + Fn + Esc 
+	WITH_R_CTRL | HID_ZENHAN,	 FN_SYSTEM_SLEEP,		// Fn + Escを半全キーとしている場合 
 	WITH_R_CTRL | HID_PGUP, FN_MEDIA_VOL_UP,
 	WITH_R_CTRL | HID_PGDOWN, FN_MEDIA_VOL_DOWN,
 	WITH_R_CTRL | HID_DELETE,	 FN_MEDIA_PLAY_PAUSE,
@@ -111,7 +112,7 @@ void loop1() {
 void setup() {
 	init_nk60();
 	nk60Keyboard::init_hobo_nicola(&kbd, "nk60");
-	delay(300);
+	delay(100);
 }
 
 static bool suspended = false;
