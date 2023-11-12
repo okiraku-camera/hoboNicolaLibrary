@@ -2,7 +2,10 @@
 
 hoboNicola keyboard and adapter library.  Copyright 2023 Takeshi Higasa, okiraku-camera.tokyo
 
-version 1.7.2
+version 1.7.3
+
+ひらがなをImeOnにするオプション (設定O) の追加。
+NICOLAモードにしないオプション (設定X) の追加。同時打鍵や配列変更は本体側で。
 
 ## hoboNicolaについて 
 
