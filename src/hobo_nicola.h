@@ -27,7 +27,7 @@
 #if !defined(__HOBO_NICOLA_H__)
 #define __HOBO_NICOLA_H__
 
-#define HOBO_NICOLA_LIBRARY_VERSION "172"
+#define HOBO_NICOLA_LIBRARY_VERSION "173"
 
 #if !defined(ARDUINO_ARCH_AVR)
 #define PROGMEM
@@ -68,15 +68,14 @@ static const uint8_t NID_LEFT_OYAYUBI	= 0x80;
 static const uint8_t NID_RIGHT_OYAYUBI = 0x81;
 static const uint8_t NID_SHIFT_KEY = 0x82;
 static const uint8_t NID_LONG_PRESSED = 0x83;
-static const uint8_t NID_SETUP_KEY = 0xf0;
+// static const uint8_t NID_SETUP_KEY = 0xf0;
 
 class HoboNicola  {
 	key_report_t report;
-	uint32_t settings;	// current copy of eeprom.
+	//uint32_t settings;	// current copy of eeprom.
 
 	uint8_t nicola_mode;	// 同時打鍵しますよ。
 	
-	bool disable_nicola;
 	bool dedicated_oyakeys;
 	// 左右の親指キーが専用または決め打ちの場合に実装側で値をセットすること。
 	uint8_t left_oyayubi_code;
@@ -89,8 +88,7 @@ public:
 	void releaseAll(bool all = true);
 	void idle();
 	void error_blink(int period = 100);
-	void set_disable_nicola(bool f = true) { disable_nicola = f; }
-
+	
 // 親指キーのコードを変換、無変換、空白以外で指定したいようなとき
 	void set_oyayubi_keys(uint8_t left, uint8_t right) { left_oyayubi_code = left; right_oyayubi_code = right; }
 	void has_dedicated_oyakeys(bool f = true) { dedicated_oyakeys = f; }
@@ -104,7 +102,7 @@ public:
 		Release_Wait_State		// 文字確定後リリース待ち（長押し用）
 	} state;
 	
-	bool is_initial_state() const { return (bool) ( state == Initial_State); }
+	//bool is_initial_state() const { return (bool) ( state == Initial_State); }
 
 	void enter_setup_mode(bool f = true) { setup_mode = f; }
 	bool is_setup_mode() const { return setup_mode; }

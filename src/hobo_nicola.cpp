@@ -35,7 +35,7 @@ static HoboNicola* kbd;
 HoboNicola::HoboNicola()  {
 	memset(&report, 0, sizeof(key_report_t));
 	modifiers = 0;
-	setup_mode = disable_nicola = dedicated_oyakeys = false;
+	setup_mode = dedicated_oyakeys = false;
 	nicola_mode = 0;
 	left_oyayubi_code = right_oyayubi_code = 0;
 	nicola_state(Init);
@@ -47,7 +47,8 @@ void msc_notify(uint8_t code) { last_fd_data = code; }
 
 // IME状態通知でScrLockとMSC Notifyがどちらも有効のときは、MSC Notifyが優先する。
 const uint8_t HoboNicola::isNicola() {
-	if (disable_nicola) return 0;
+	if (Settings().is_disable_nicola()) return 0;
+
 	if (Settings().is_use_msc_notify() && !is_ble_connected())
 		nicola_mode = last_fd_data;
 	else if (Settings().is_scrlock_as_nicola()) nicola_mode = isScrLock();	
@@ -182,13 +183,15 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 	if (Settings().is_ralt_to_hiragana() && code == HID_R_ALT)
 		code = HID_HIRAGANA;
 	// アダプターをカスタマイズ不能なキーボードに接続した場合、ここで変換してやる
-	if (code == HID_HIRAGANA && Settings().is_us_layout())
-		code = HID_IME_ON;
+	if ((code == HID_HIRAGANA) && (Settings().is_us_layout() || Settings().is_kana_to_imeon()))
+			code = HID_IME_ON;
+
+	if (Settings().is_us_layout() && code == HID_MUHENKAN)
+			code = HID_F14;
 // キーマップ上の無変換／F14をImeOffキーとするかどうか。左親指の左隣に無変換がある想定。
 // 以降の処理で空白を無変換にしたりするが影響しない。
 	if ((code == HID_MUHENKAN || code == HID_F14) && Settings().is_muhenkan_to_imeoff())
 		code = HID_IME_OFF;
-
 /**
 * 空白キーが左親指の位置にあるとき、空白を無変換(F14)キーとした方が便利ならば設定する。
 * 無変換キーを親指左キーとして使うことになる。空白キーを消滅させるわけにはいかないので変換キーを空白とする。
@@ -234,6 +237,12 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 		if (pressed)
 			setup_options(code);
 		releaseAll();
+		return;
+	}
+
+	// NICOLAモードにしない場合はここでおしまい。
+	if (Settings().is_disable_nicola()) {
+		key_report(code, modifiers, pressed);
 		return;
 	}
 

@@ -20,7 +20,7 @@
 	  hoboNicola 1.5.0.		Aug. 10. 2021.
 	  hoboNicola 1.6.1.		Apr. 1.  2022.	M,K,N settings.
 		hoboNicola 1.7.0.	  Apr. 1.  2023.	
-		hoboNicola 1.7.2.	  Oct. 10.  2023.	
+		hoboNicola 1.7.3.	  Nov. 10.  2023.	
 	
 */
 
@@ -56,6 +56,8 @@ static const uint8_t set_19[] PROGMEM = 	"S : SPC -> MUHENKAN/F14";
 static const uint8_t set_20[] PROGMEM = 	"I : CAPS -> ImeOff (US)";
 static const uint8_t set_21[] PROGMEM = 	"B : MUHENKAN/F14 -> NICOLA ON";
 static const uint8_t set_22[] PROGMEM = 	"F : MUHENKAN/F14 -> ImeOff";
+static const uint8_t set_23[] PROGMEM = 	"O : HIRAGANA -> ImeOn";
+static const uint8_t set_24[] PROGMEM = 	"X : DISABLE NICOLA";
 
 static const uint8_t set_end[] PROGMEM = 	"...";
 
@@ -84,10 +86,13 @@ const uint8_t* const output_settings[] PROGMEM = {
 	set_20,
 	set_21,
 	set_22,
+	set_23,
+	set_24,
 	set_end 
 };
 
 void HoboNicola::show_hex() {
+#if !defined(__AVR_ATmega32U4__)
 	char tmp[64];
 	sprintf(tmp, "%08lx : %08lx : %ld : %ld", 
 			Settings().get_data(), Settings().get_extra(), Settings().get_flush_count(), Settings().get_size());
@@ -96,6 +101,7 @@ void HoboNicola::show_hex() {
 		delay(10);
 	}
 	stroke(HID_ENTER, 0);
+#endif
 }
 
 void HoboNicola::show_setting() {
@@ -175,6 +181,12 @@ void HoboNicola::show_setting() {
 				case 22:
 					f = Settings().is_muhenkan_to_imeoff();
 					break;
+				case 23:
+					f = Settings().is_kana_to_imeon();
+					break;
+				case 24:
+					f = Settings().is_disable_nicola();
+					break;
 				default:
 					break;
 				}
@@ -197,7 +209,7 @@ void HoboNicola::show_setting() {
 #if defined(ARDUINO_ARCH_RP2040)
 #include "hardware/watchdog.h"
 #endif
-// nicola_state から呼ばれる。
+
 void HoboNicola::setup_options(uint8_t hid) {
 	uint32_t new_settings = Settings().get_data();
 #if defined(__SAMD21G18A__) || defined(__SAMD21E18A__) || defined(ARDUINO_ARCH_RP2040)
@@ -268,7 +280,7 @@ void HoboNicola::setup_options(uint8_t hid) {
 		new_settings ^= HENKAN_TO_SPC;
 		break;
 	case HID_U:
-		new_settings ^= US_LAYOUT;	// Windows10がUSレイアウトのときに使う。英数出力をUSにするわけではない。
+		new_settings ^= US_LAYOUT;	// WindowsがUSレイアウトのときに使う。英数出力をUSにするわけではない。
 		set_nid_table(new_settings & US_LAYOUT);
 		break;
 	case HID_M:
@@ -293,6 +305,12 @@ void HoboNicola::setup_options(uint8_t hid) {
 		break;
 	case HID_F:
 		new_settings ^= MUHENKAN_TO_IMEOFF;
+		break;
+	case HID_O:
+		new_settings ^= KANA_TO_IMEON;
+		break;
+	case HID_X:
+		new_settings ^= DISABLE_NICOLA;
 		break;
 	}
 	setup_mode = false;

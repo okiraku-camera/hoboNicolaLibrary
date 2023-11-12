@@ -25,6 +25,8 @@
 	static const uint32_t SPC_TO_MUHENKAN				= 0x40000L;	// 一方通行 空白キーを無変換にする。
 	static const uint32_t CAPS_TO_IMEOFF_US			= 0x80000L;	// USのときCapsLockをImeOffとする CapsLockはFn+CapsLockをFnキーテーブルに設定しておけばよい。
 	static const uint32_t MUHENKAN_TO_IMEOFF		= 0x100000L;	// 一方通行 無変換／F14をImeOffとする。MUHENKAN_TO_NICOLA_ONやSPC_TO_MUHENKANより先に処理する。
+	static const uint32_t DISABLE_NICOLA				= 0x200000L;	// 通知やキー操作でNICOLAモードにしない。NICOLA関連の処理はホスト側でやる。
+	static const uint32_t KANA_TO_IMEON					= 0x400000L;	// ひらがなキーを日本語キーボードでも常にIMEONにする。Mac用
 	
 
 class _Settings  {
@@ -91,6 +93,8 @@ public:
 	bool is_caps_to_imeoff_us() const { return (bool)(settings & CAPS_TO_IMEOFF_US); }
 	bool is_muhenkan_to_nicola_on() const { return (bool)(settings & MUHENKAN_TO_NICOLA_ON); }
 	bool is_muhenkan_to_imeoff() const { return (bool)(settings & MUHENKAN_TO_IMEOFF); }
+	bool is_kana_to_imeon() const { return (bool)(settings & KANA_TO_IMEON); }
+	bool is_disable_nicola() const { return (bool)(settings & DISABLE_NICOLA); }
 
 	bool is_use_msc_notify() const { 
 #if defined(USE_TINYUSB)
