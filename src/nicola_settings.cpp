@@ -26,6 +26,9 @@
 
 #include "hobo_nicola.h"
 #include "hobo_settings.h"
+#if defined(ARDUINO_ARCH_RP2040)
+#include "hardware/watchdog.h"
+#endif
 #if defined(ARDUINO_NRF52_ADAFRUIT)
 #include "nrf_nvic.h"
 #endif
@@ -198,6 +201,10 @@ void HoboNicola::show_setting() {
 				delay(10);
 			}
 		}
+#if defined(ARDUINO_ARCH_RP2040)
+	watchdog_update ();
+#endif
+
 	}
 	show_hex();
 	stroke(HID_ENTER, 0);
@@ -206,9 +213,6 @@ void HoboNicola::show_setting() {
 		nicola_mode = false;
 }
 
-#if defined(ARDUINO_ARCH_RP2040)
-#include "hardware/watchdog.h"
-#endif
 
 void HoboNicola::setup_options(uint8_t hid) {
 	uint32_t new_settings = Settings().get_data();

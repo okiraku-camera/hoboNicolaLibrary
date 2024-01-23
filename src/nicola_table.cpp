@@ -86,7 +86,7 @@ static const uint8_t* const output_shift[] PROGMEM = {		// Shiftキー押下中
 //1        2        3         4         5        6         7         8         9         10       11         12        13
 	s_excl,  s_dquot, s_hash,   s_doll,   s_perct, s_amp,    s_quot,   s_l_pren, s_r_pren, s_nul,   s_equ,     s_tild,   s_pipe,
 	s_nul,   s_nul,   s_nul,    s_nul,    s_nul,   s_nul,    s_nul,    s_nul,    s_nul,    s_nul,   s_l_cbrac, s_r_cbrac,
-	s_nul,   s_nul,   s_larrow, s_rarrow, s_nul,   s_pa,     s_darrow, s_uarrow, s_plus,   s_nul,  s_nul,     s_nul,
+	s_nul,   s_nul,   s_larrow, s_rarrow, s_nul,   s_pa,     s_darrow, s_uarrow, s_nul,    s_plus,  s_nul,     s_nul,
 	s_nul,   s_pi,    s_nul,    s_pu,     s_pe,    s_delete, s_enter,  s_nul,    s_po,     s_quest
 };
 
@@ -137,7 +137,7 @@ static const uint8_t* const output_shift_us[] PROGMEM = {		// US Layout with Shi
 //1        2        3         4         5        6         7         8         9         10        11         12        13
 	s_excl,  s_at,    s_hash,   s_doll,   s_perct, s_carret, s_amp,    s_aste,   s_l_pren, s_r_pren, s_uline,   s_plus,   s_pipe,
 	s_nul,   s_nul,   s_nul,    s_nul,    s_nul,   s_nul,    s_nul,    s_nul,    s_nul,    s_nul,    s_l_cbrac, s_r_cbrac,
-	s_nul,   s_nul,   s_larrow, s_rarrow, s_nul,   s_pa,     s_darrow, s_uarrow, s_colon,  s_nul,    s_nul,     s_nul,
+	s_nul,   s_nul,   s_larrow, s_rarrow, s_nul,   s_pa,     s_darrow, s_uarrow, s_nul,    s_colon,  s_nul,     s_nul,
 	s_nul,   s_pi,    s_nul,    s_pu,     s_pe,    s_delete, s_enter,  s_nul,    s_po,     s_quest
 };
 

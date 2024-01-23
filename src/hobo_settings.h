@@ -63,10 +63,12 @@ public:
 	const uint32_t get_flush_count() { return flush_count; }
 	const uint32_t get_size() { return _size(); }
 	const uint8_t get_xd_rgb_value() { return extra_settings & 0xff ; }
+	const int16_t get_rp_pwm_max_value() { return extra_settings & 0xffff ; }
 
 	void save(uint32_t new_set);
 	void save_extra(uint32_t new_extra);
 	void save_xd_rgb_value(uint8_t val);
+	void save_rp_pwm_max_value(int16_t val);
 
 	bool is_immediate_output() const { return (bool)(settings & OUTPUT_IMMEDIATE_ON); }
 	bool is_spc_to_left() const { return (bool)(settings & SPC_TO_LEFT); }

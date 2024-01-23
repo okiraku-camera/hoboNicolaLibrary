@@ -71,6 +71,7 @@ void _Settings::save_extra(uint32_t new_extra) {
 }
 
 void _Settings::save_xd_rgb_value(uint8_t val) { save_extra((extra_settings & 0xffffff00) | val); }
+void _Settings::save_rp_pwm_max_value(int16_t val) { save_extra((extra_settings & 0xffff0000) | val); }
 
 
 // AVR ATmega32u_4

@@ -27,7 +27,7 @@
 #if !defined(__HOBO_NICOLA_H__)
 #define __HOBO_NICOLA_H__
 
-#define HOBO_NICOLA_LIBRARY_VERSION "173"
+#define HOBO_NICOLA_LIBRARY_VERSION "174"
 
 #if !defined(ARDUINO_ARCH_AVR)
 #define PROGMEM
@@ -88,6 +88,7 @@ public:
 	void releaseAll(bool all = true);
 	void idle();
 	void error_blink(int period = 100);
+	void nicola_off() { nicola_mode = 0; }
 	
 // 親指キーのコードを変換、無変換、空白以外で指定したいようなとき
 	void set_oyayubi_keys(uint8_t left, uint8_t right) { left_oyayubi_code = left; right_oyayubi_code = right; }
