@@ -2,7 +2,7 @@
 
 hoboNicola keyboard and adapter library.  Copyright 2023 Takeshi Higasa, okiraku-camera.tokyo
 
-version 1.7.3
+version 1.7.4
 
 ひらがなをImeOnにするオプション (設定O) の追加。
 NICOLAモードにしないオプション (設定X) の追加。同時打鍵や配列変更は本体側で。
@@ -33,7 +33,7 @@ NICOLA規格の詳細については、http://nicola.sunicom.co.jp/spec/jisdraft
 ## ハードウェアについて
 hoboNicolaアダプターは、コントローラとして使うマイコンと、USBやPS/2といったキーボードインタフェース回路を組み合わせたものです。物理的なキーボード側はUSBホストとしてふるまい、PCなどのホストと接続する側はUSBデバイスとしてふるまう必要があります。USBデバイスとしての機能を備えたマイコンを使ったArduinoボードやオリジナルのPCBと、MAX3421EEなどのUSBホストコントローラを組み合わせるのが一般的な構成方法です。
 
-### Arduinoボード
+### Arduinoボード(アダプター用)
 今まで動作を確認しているArduinoボードは以下のとおりです。ビルドのためには各ボード用のBSP (Board Support Package)あるいはコアパッケージの導入が必要です。
 
 * AVR
@@ -63,7 +63,7 @@ hoboNicolaLibrary はArduinoのライブラリとして導入することを前�
 
 いくつかのUSBホストコントローラー用の実装やキーボードPCB用の実装は Arduino スケッチ (.inoファイル) として examples ディレクトリに入っているので、ターゲットとするデバイスやマイコンに応じたスケッチを開き、別名で保存するところから、開発を始めることができます。
 
-### 実装例 (examples)
+### アダプター実装例 (examples)
 
 USBホストコントローラーごとに実装例を用意してあり、USBキーボード用の実装は4種類のマイコン(ATMega32U4, ATSAMD21, nRF52840 and RP2040)での動作を確認しています。AVR以外のマイコンを用いる場合、Adafruit TinyUSB ライブラリの導入が必須です。
 
@@ -75,12 +75,18 @@ USBホストコントローラーごとに実装例を用意してあり、USB�
   * 専用のUSB-Hostコントローラを用いずRP2040単独で構成するアダプター用の実装です。この実装では、[sekigon-gonnoc/Pico-PIO-USB](https://github.com/sekigon-gonnoc/Pico-PIO-USB) と [Adafruit_TinyUSB Library](https://github.com/adafruit/Adafruit_TinyUSB_Arduino) が必須です。
 * ps2_hobo_nicola
   * PS/2キーボード用アダプターの実装例でATMega32U4のみが対象です。
+
+### キーボード実装例 (examples)
+hoboNicolaLibraryを組み込んだ自作キーボード用の実装例です。RP2040を使ったキーボードでは、Adafruit TinyUSB ライブラリの導入が必須です。
+
 * xd87
   * XD87 PCB (https://kprepublic.com/) を使った自作キーボード用の実装です。ターゲットのマイコンは ATMega32U4 (+5V/16MHz) なので Arduino Leonardo または SparkFun Pro Micro をターゲットしてビルドします。このキーボードについては [こちらを参照のこと](./assets/xd87.md)。
 * xd64
   * XD64(ver3) PCB ver3 (https://kprepublic.com/) を使った自作キーボード用の実装です。ターゲットのマイコンはXD87と同じです。このキーボードについては [こちらを参照のこと](./assets/xd64.md)。
 *	nk60_hobo_nicola
-	* RP2040を載せたオリジナルPCBを使った自作キーボード用の実装です。ハードウェアについては、[ブログの投稿を参照](https://okiraku-camera.tokyo/blog/?p=16074)。
+	* RP2040を載せたオリジナルPCBを使った自作60%キーボード用の実装です。ハードウェアについては、[ブログの投稿を参照](https://okiraku-camera.tokyo/blog/?p=16074)。
+*	nk80_rev2_hobo_nicola
+	* RP2040を載せたオリジナルPCBを使った自作80%キーボード用の実装です。準備中
 
 なお、hoboNicolaライブラリを自作キーボードに適用する際には、キーボードPCBの回路構成を知っておく必要があります。
 
