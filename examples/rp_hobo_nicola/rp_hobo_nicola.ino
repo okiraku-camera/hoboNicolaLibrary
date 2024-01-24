@@ -15,8 +15,8 @@
 	You should have received a copy of the GNU General Public License
 	along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-	version 1.7.0  Jul. 1, 2023.
-		(Pico-pio-usb 0.5.2, Arduino-pico 3.3.0, Adafruit Tinyusb 2.2.1) 
+	version 1.7.4  Oct. 20, 2023.
+		(Pico-pio-usb 0.5.3, Arduino-pico 3.6.0, Adafruit Tinyusb 2.2.5) 
 */
 
 #include "Adafruit_USBH_Host.h"
@@ -179,7 +179,9 @@ static const uint16_t fn_keys[] PROGMEM = {
 
 class rp2040_hobo_nicola : public HoboNicola {
 	public:
-		rp2040_hobo_nicola() {  }
+		rp2040_hobo_nicola() {
+			use_pio_usb = 1;
+		}
 		const uint16_t* fn_keys_table() { return fn_keys; }
 };
 

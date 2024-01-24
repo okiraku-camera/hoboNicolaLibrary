@@ -216,15 +216,14 @@ void HoboNicola::show_setting() {
 
 void HoboNicola::setup_options(uint8_t hid) {
 	uint32_t new_settings = Settings().get_data();
-#if defined(__SAMD21G18A__) || defined(__SAMD21E18A__) || defined(ARDUINO_ARCH_RP2040)
 	uint32_t save_set = new_settings;
-#endif
 	switch(hid) {
 	case HID_J_BSLASH:	// 上段右端
 	case HID_BSLASH:	// US backslash or HID_J_RBRACK
 	case HID_BACKSP:
 		show_setting();
-		break;
+		setup_mode = false;
+		return;
 	case HID_1:
 		new_settings |= SPC_TO_LEFT;
 		new_settings &= ~SPC_TO_RIGHT;
@@ -318,15 +317,16 @@ void HoboNicola::setup_options(uint8_t hid) {
 		break;
 	}
 	setup_mode = false;
-	Settings().save(new_settings);
+	if (save_set != new_settings)  
+		Settings().save(new_settings);
 // SAMDのみ。nRF52ではうまくいかないので。	
 #if defined(__SAMD21G18A__) || defined(__SAMD21E18A__) 
 	if ((new_settings ^ save_set) & USE_MSC_NOTIFY)
 		NVIC_SystemReset();
 #elif defined(ARDUINO_ARCH_RP2040)
-	if (new_settings != save_set) { 
-		delay(100);
-	// rp-hobo-nicolaの場合、rebootしないと入力処理が停止してしまう。eeprom libraryのcommit() がcore1に影響しているのか
+ 	// rp-hobo-nicolaの場合、rebootしないと入力処理が停止してしまう。eeprom libraryのcommit() がcore1に影響しているのか
+	if (use_pio_usb && new_settings != save_set) { 
+		delay(50);
 		watchdog_reboot(0, 0, 10);	// reboot after a while.
 	}
 #endif

@@ -75,7 +75,6 @@ class HoboNicola  {
 	//uint32_t settings;	// current copy of eeprom.
 
 	uint8_t nicola_mode;	// 同時打鍵しますよ。
-	
 	bool dedicated_oyakeys;
 	// 左右の親指キーが専用または決め打ちの場合に実装側で値をセットすること。
 	uint8_t left_oyayubi_code;
@@ -135,8 +134,8 @@ public:
 	void apply_kbd_led();
 	void restore_kbd_led();
 
-
 protected:
+	uint8_t use_pio_usb;	// rp_hobo_nicolaですよ
 	uint8_t modifiers;
 
 	void report_press(uint8_t key, uint8_t mod);

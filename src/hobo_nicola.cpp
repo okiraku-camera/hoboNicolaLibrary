@@ -36,7 +36,7 @@ HoboNicola::HoboNicola()  {
 	memset(&report, 0, sizeof(key_report_t));
 	modifiers = 0;
 	setup_mode = dedicated_oyakeys = false;
-	nicola_mode = 0;
+	nicola_mode = use_pio_usb = 0;
 	left_oyayubi_code = right_oyayubi_code = 0;
 	nicola_state(Init);
 }
