@@ -18,11 +18,9 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-    Included in hoboNicola 1.7.2.		Oct. 10. 2023.
-		solid Fnkey version.
-
+    Included in hoboNicola 1.7.4.		Jan. 3. 2024.
+		
 		Select "Generic RP2040 (Raspberry Pi Pico/RP2040)" as target board.
-
 */
 #include "nk60.h"
 #include "hobo_nicola.h"
@@ -43,20 +41,20 @@ static const uint16_t fn_keys[] PROGMEM = {
 	WITH_R_CTRL | HID_S, FN_SETUP_MODE,
 	WITH_R_CTRL | HID_ESCAPE,	 FN_SYSTEM_SLEEP,		// Ctrl + Fn + Esc 
 	WITH_R_CTRL | HID_ZENHAN,	 FN_SYSTEM_SLEEP,		// Fn + Escを半全キーとしている場合 
-	WITH_R_CTRL | HID_PGUP, FN_MEDIA_VOL_UP,
-	WITH_R_CTRL | HID_PGDOWN, FN_MEDIA_VOL_DOWN,
-	WITH_R_CTRL | HID_DELETE,	 FN_MEDIA_PLAY_PAUSE,
+	WITH_R_CTRL | HID_ENTER,	 FN_MEDIA_PLAY_PAUSE,
 	WITH_R_CTRL | HID_END, FN_MEDIA_SCAN_NEXT,
 	WITH_R_CTRL | HID_HOME, FN_MEDIA_SCAN_PREV,
 	WITH_R_CTRL | WITH_L_CTRL | HID_B, FN_START_DFU,
+	WITH_R_CTRL | HID_PGDOWN, FN_BG_DIMMER,			// R-Ctrl + ↓ NICOLAモードのときのみ。
+	WITH_R_CTRL | HID_PGUP, 	FN_BG_BRIGHTER,		// R-Ctrl + ↑ NICOLAモードのときのみ。
 	HID_IME_OFF, HID_CAPS,
 	0, 0
 };
 
-class nk60Keyboard : public HoboNicola {
+class nk60HoboNicola : public HoboNicola {
 	uint8_t _nicola_led;
 public:
-	nk60Keyboard() { 
+	nk60HoboNicola() { 
 		_nicola_led = 0;
 	}
 	const uint16_t* fn_keys_table() { return fn_keys; }
@@ -70,7 +68,7 @@ public:
 	void error_led(uint8_t on) { }
 	void nicola_led(uint8_t on) {
 		_nicola_led = on;
-		BGLED(on);      
+		BGLED(on);       
 	}
 	void toggle_nicola_led() {
 		_nicola_led ^= 1;
@@ -78,13 +76,14 @@ public:
 	}
 };
 
-nk60Keyboard kbd;
+nk60HoboNicola hobonicola;
 
 extern "C" {
 	#include "pico/bootrom.h"
 }
+#include "nk_rp_pwmled.h"
 
-void nk60Keyboard::extra_function(uint8_t k, bool pressed) {
+void nk60HoboNicola::extra_function(uint8_t k, bool pressed) {
 	if (!pressed)
 		return ;  
 	switch(k) {
@@ -92,6 +91,14 @@ void nk60Keyboard::extra_function(uint8_t k, bool pressed) {
 		releaseAll();	
 		delay(10);
 		reset_usb_boot(0, 0);	// never return.
+		break;
+	case FN_BG_DIMMER:
+ 		rp_pwm_dimmer();
+		Settings().save_rp_pwm_max_value(get_rp_pwm_max_value());
+		break;
+	case FN_BG_BRIGHTER:
+		rp_pwm_brighter();
+		Settings().save_rp_pwm_max_value(get_rp_pwm_max_value());
 		break;
 	default:
 		break;
@@ -103,34 +110,38 @@ void setup1() {
 	delay(10);	// wait for core0 setup done.
 }
 
-static unsigned long scan_interval = 5;
+static unsigned long scan_interval = 8;
 void loop1() {
 	delay(scan_interval);
 	matrix_scan();
 }
 
 void setup() {
+	Serial.end();	// disable CDC.
 	init_nk60();
-	nk60Keyboard::init_hobo_nicola(&kbd, "nk60");
-	delay(100);
+	nk60HoboNicola::init_hobo_nicola(&hobonicola, "nk60");
+	set_rp_pwm_max_value(Settings().get_rp_pwm_max_value());
+	delay(10);
+	watchdog_start_tick(12);
+	watchdog_enable(1000, false);
 }
 
 static bool suspended = false;
 void loop() {
 	bool pressed;
+	watchdog_update ();
 	uint8_t key = nk60_get_key(pressed, Settings().is_us_layout());
 	if (!is_usb_suspended()) {
    	if (suspended) {
-			scan_interval = 5;
 			suspended = false;
-			kbd.restore_kbd_led();
+			hobonicola.restore_kbd_led();
 			nk60_table_change(HID_X_FN1, false);
 		}
 		if (key) {
-			kbd.key_event(key, pressed);
+			hobonicola.key_event(key, pressed);
 			return;
 		}
-		kbd.idle();
+		hobonicola.idle();
 		delay(5);
 	} else { // usb suspended.
 		if (key != 0) {
@@ -140,11 +151,9 @@ void loop() {
 		}
 		if (!suspended) {
 			led_sleep();
-			scan_interval = 200;
+			hobonicola.nicola_off();
 			delay(3);
 			suspended = true;
 		}
-		if (Settings().is_use_kbd_suspend())	//ほとんど効果がない。
-			delay(500);
 	}
 }
