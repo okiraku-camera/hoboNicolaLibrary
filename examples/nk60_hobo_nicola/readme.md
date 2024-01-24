@@ -1,4 +1,16 @@
-ボードタイプとして、Generic RP2040を選択する。
-コンパイル時の定義は ARDUINO_GENERIC_RP2040 となるので、UHSLib2.0内の該当箇所にそのように書く。
-基本的にはrp pico と同じ定義としておく。
-LED用のGPIOポート等は個別の実装ごとに定義すること。
+## Hobo-nicola keyboard implementation for nk60 PCB revision 3.
+
+To build this software you will need:
+ * nk60 PCB (revision3). https://okiraku-camera.tokyo/blog/?p=16074
+ * Arduino-pico Version 3.6.0 
+ * Adafruit TinyUSB Library for Arduino : Version 2.2.5
+ * hoboNicola Library : Version 1.7.4
+ 
+ In Arduino Board configuration : 
+  * Board: Generic RP2040
+  * USB Stack: Adafruit TinyUSB
+  * CPU Speed: 50 MHz is preferable (less current consumption).
+
+When updating the firmware, drop the .uf2 file onto the drive created by the UF2 bootloader, because Arduino's built-in CDC is disabled.
+ 
+

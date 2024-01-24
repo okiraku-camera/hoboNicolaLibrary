@@ -4,8 +4,11 @@ hoboNicola keyboard and adapter library.  Copyright 2023 Takeshi Higasa, okiraku
 
 version 1.7.4
 
-ひらがなをImeOnにするオプション (設定O) の追加。
-NICOLAモードにしないオプション (設定X) の追加。同時打鍵や配列変更は本体側で。
+ * ひらがなをImeOnにするオプション (設定O) の追加。
+ * NICOLAモードにしないオプション (設定X) の追加。同時打鍵や配列変更は本体側で。
+ * NK80 (rev.2) keyboard PCBのサポートを追加。
+ * NK60 (rev.3) keyboard PCBの修正。
+
 
 これまでのhoboNicolaLibraryの履歴などについては、[ブログの投稿](https://okiraku-camera.tokyo/blog/?page_id=8211)を参照してください (以下の内容と重複する箇所もあります)。
 
