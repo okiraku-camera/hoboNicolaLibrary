@@ -93,16 +93,10 @@ void CAPSLED(uint8_t on) {
 }
 
 void BGLED(uint8_t on) {
-#if 1	
-	if (on) {
+	if (on)
 		rp_start_pwm();
-	} else {	
+	else
 		rp_stop_pwm();
-		}
-#else
-	pinMode(_BG_LED, OUTPUT);
-	digitalWrite(_BG_LED, on ? 1 : 0);
-#endif
 }
 
 void init_nk60() {
@@ -131,15 +125,9 @@ void init_nk60() {
 
 	memset(key_state, 0, sizeof(key_state));
 	memset(last_key_state, 0, sizeof(last_key_state));
-
-//	Serial.begin(115200);
-//	while(!Serial)
-//		;
 }
 
 void led_sleep() {
-	//pinMode(_CAPS_LED, INPUT_PULLUP);
-	//pinMode(_BG_LED1, INPUT_PULLUP);
 	BGLED(0);
 	CAPSLED(0);
 }
