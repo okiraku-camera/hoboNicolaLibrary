@@ -35,8 +35,20 @@ RP2040
 ## NK60 rev031, JP layout
 RP2040
 
+( XVX Profile Keycaps set.)
+
+![](./images/nk60_rev31_us1.jpg)
+
+## NK60 rev031, JP layout
+RP2040
+
+( ARCHISS JIS Keycaps set.)
+
 ![](./images/nk60_rev031_jp.jpg)
 
+( Keychron JIS Keycaps set.)
+
+![](./images/nk60_rev31_jp2.jpg)
 
 
 [戻る/Back](../README.md)
