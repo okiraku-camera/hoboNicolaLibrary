@@ -29,7 +29,7 @@
 //	1 2 3 4 5 6 7 8 9 0 - ^ \... (行末が\ではいけません） 
 //  q w e r t y u i o p @ [
 //  a s d f g h j k l ; : ]
-//  z x c v b n m , . / _
+//  z x c v b n m , . / (under_scoreは含まない)
 static const uint8_t hid_to_nid_jp[] = {
 	HID_1, HID_2, HID_3, HID_4, HID_5, HID_6, HID_7, HID_8,     HID_9,      HID_0,       HID_MINUS,   HID_EQUALS,  HID_J_BSLASH,
 	HID_Q, HID_W, HID_E, HID_R, HID_T, HID_Y, HID_U, HID_I,     HID_O,      HID_P,       HID_J_AT,    HID_J_LBRACK,
