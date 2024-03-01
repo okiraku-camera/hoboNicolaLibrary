@@ -18,7 +18,7 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
   
-  Included in hoboNicola 1.6.4.		Feb. 1. 2023.*/
+  Included in hoboNicola 1.7.5.		Feb. 22. 2024.*/
 
 #include <avr/io.h>
 #include <avr/wdt.h>
@@ -118,9 +118,9 @@ static const uint8_t scan_to_hid_table[2][SW_COUNT] = {
 	HID_HIRAGANA, HID_SPACE,     HID_MUHENKAN, HID_J_UL,     HID_L_ARROW, HID_BACKSP, HID_R_CTRL,  HID_X_FN1, HID_D_ARROW, HID_R_ARROW  // sw61～70
 },
   {     
-	HID_ESCAPE,   HID_F1,        HID_F2,       HID_F3,       HID_F4,      HID_F5,     HID_F6,      HID_F7,    HID_F8,      HID_F9, // sw1～10
-	HID_F10,      HID_F11,       HID_F12,      HID_INSERT,   HID_TAB,     HID_Q,      HID_W,       HID_E,     HID_R,       HID_T,// sw11～20
-	HID_Y,        HID_U,         HID_I,        HID_O,        HID_PRNTSCRN,HID_SCRLOCK,HID_PAUSE,   HID_UNDEF, HID_CAPS,    HID_A,// sw21～30
+	HID_GRAVE_AC, HID_F1,        HID_F2,       HID_F3,       HID_F4,      HID_F5,     HID_F6,      HID_F7,    HID_F8,      HID_F9, // sw1～10
+	HID_F10,      HID_F11,       HID_F12,      HID_INSERT,   HID_TAB,     HID_F13,    HID_F14,     HID_F15,   HID_F16,     HID_F17,// sw11～20
+	HID_F18,      HID_F19,       HID_F20,      HID_F21,      HID_PRNTSCRN,HID_SCRLOCK,HID_PAUSE,   HID_UNDEF, HID_CAPS,    HID_A,// sw21～30
 	HID_S,        HID_D,         HID_F,        HID_G,        HID_H,       HID_J,      HID_K,       HID_L,     HID_SEMICOL, HID_QUOTE,   // sw31～40
 	HID_J_RBR_32, HID_ENTER,     HID_L_SHIFT,  HID_UNDEF,    HID_Z,       HID_X,      HID_C,       HID_V,     HID_B,       HID_N,  // sw41～50
 	FN_MEDIA_MUTE,FN_MEDIA_V_DN, FN_MEDIA_V_UP,HID_SLASH,    HID_DELETE,  HID_PGUP,   HID_L_CTRL,  HID_L_GUI, HID_L_ALT,   HID_UNDEF,   // sw51～60
@@ -142,8 +142,8 @@ void xd64_table_change(uint8_t key, bool pressed) {
  * 物理的なレイアウトはJIS。
 */
 uint8_t xd64_get_key(bool& pressed, bool us_layout) { 
-	uint8_t k;     
-	k = xd_get_buffer();
+	uint8_t fn = hid_table_index == HID_TABLE_FN1;
+	uint8_t k = xd_get_buffer();
 	if (k == 0) return 0;
 	pressed = ((k & 0x80) == 0);
 	k &= 0x7f;
@@ -151,7 +151,7 @@ uint8_t xd64_get_key(bool& pressed, bool us_layout) {
 		uint8_t hid = scan_to_hid_table[hid_table_index][k - 1];
 		if (hid != 0) {
 			if (us_layout) {
-				if (hid == HID_CAPS && hid_table_index == HID_TABLE_BASE)
+				if (hid == HID_CAPS && !fn)
 					return HID_IME_OFF;	// CapsLock = Fn + Caps
 				switch(hid) {
 				case HID_J_BSLASH:
@@ -163,7 +163,7 @@ uint8_t xd64_get_key(bool& pressed, bool us_layout) {
 				//case HID_J_RBR_32:
 					//return HID_RBRACK;		// ] NICOLA時の取消キーとして残す
 				case HID_J_UL:
-					return HID_GRAVE_AC;
+					return fn ? hid : HID_R_SHIFT;	// USのとき Fn + _ で _ を出す( MacOS )
 				case HID_MUHENKAN:
 					return HID_F14;
 				case HID_HENKAN:

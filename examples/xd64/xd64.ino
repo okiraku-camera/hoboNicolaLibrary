@@ -32,17 +32,18 @@
 // scan_to_hidテーブルが切り替わるならば Fnオン時のコードで定義する。
 static const uint16_t fn_keys[] PROGMEM = {
 	WITH_R_CTRL | HID_S, FN_SETUP_MODE,
-	WITH_R_CTRL | HID_PGUP, FN_MEDIA_VOL_UP,
-	WITH_R_CTRL | HID_PGDOWN, FN_MEDIA_VOL_DOWN,
-	WITH_R_CTRL | HID_DELETE,	 FN_MEDIA_PLAY_PAUSE,
+	WITH_R_CTRL | HID_ESCAPE,	 FN_SYSTEM_SLEEP,		// Ctrl + Fn + Esc 
+	WITH_R_CTRL | HID_ZENHAN,	 FN_SYSTEM_SLEEP,		// Fn + Escを半全キーとしている場合 
+	WITH_R_CTRL | HID_ENTER,	 FN_MEDIA_PLAY_PAUSE,
 	WITH_R_CTRL | HID_END, FN_MEDIA_SCAN_NEXT,
 	WITH_R_CTRL | HID_HOME, FN_MEDIA_SCAN_PREV,
-	WITH_R_CTRL | HID_ESCAPE,	 FN_SYSTEM_SLEEP,		// Ctrl + Fn + Esc 
-	WITH_L_CTRL | WITH_R_CTRL | HID_B, FN_XD_START_DFU,
-	WITH_L_CTRL | HID_PGDOWN, FN_RGB_DIMMER,
-	WITH_L_CTRL | HID_PGUP, FN_RGB_BRIGHTER,
+	WITH_R_CTRL | WITH_L_CTRL | HID_B, FN_XD_START_DFU,
+	WITH_R_CTRL | HID_PGDOWN, FN_RGB_DIMMER,
+	WITH_R_CTRL | HID_PGUP, FN_RGB_BRIGHTER,
 	WITH_L_ALT | WITH_L_CTRL | HID_PGDOWN, FN_RGB_OFF,
 	WITH_L_ALT | WITH_L_CTRL | HID_PGUP, FN_RGB_MAX,
+	HID_IME_OFF, HID_CAPS,								// Caps --> ImeOffのとき、Fn + CapsでCapsLockにする。(US)
+	WITH_L_SHIFT | HID_IME_OFF, HID_CAPS,	// Caps --> ImeOffのとき、Shift + Fn + CapsでCapsLockにする。(JP)
 	0, 0
 };
 
@@ -61,7 +62,7 @@ public:
 
 	void capslock_led(uint8_t on) { CAPSLED(on); }
 	void scrlock_led(uint8_t on)  { BGLED(on); }
-	void error_led(uint8_t on) { }
+	void error_led(uint8_t on) { CAPSLED(on); }
 	void nicola_led(uint8_t on) {
 		_nicola_led = on;
 		scrlock_led(on);      
