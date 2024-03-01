@@ -47,7 +47,8 @@ static const uint16_t fn_keys[] PROGMEM = {
 	WITH_R_CTRL | WITH_L_CTRL | HID_B, FN_START_DFU,
 	WITH_R_CTRL | HID_PGDOWN, FN_BG_DIMMER,			// R-Ctrl + ↓ NICOLAモードのときのみ。
 	WITH_R_CTRL | HID_PGUP, 	FN_BG_BRIGHTER,		// R-Ctrl + ↑ NICOLAモードのときのみ。
-	HID_IME_OFF, HID_CAPS,
+	HID_IME_OFF, HID_CAPS,								// Caps --> ImeOffのとき、Fn + CapsでCapsLockにする。(US)
+	WITH_L_SHIFT | HID_IME_OFF, HID_CAPS,	// Caps --> ImeOffのとき、Shift + Fn + CapsでCapsLockにする。(JP)
 	0, 0
 };
 

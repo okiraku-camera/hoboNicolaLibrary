@@ -65,7 +65,7 @@ public:
 	void extra_function(uint8_t fk, bool pressed)	;
 
 	void capslock_led(uint8_t on) { CAPSLED(on); }
-	void error_led(uint8_t on) { }
+	void error_led(uint8_t on) { CAPSLED(on); }
 	void nicola_led(uint8_t on) {
 		_nicola_led = on;
 		BGLED(on);

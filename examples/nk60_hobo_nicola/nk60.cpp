@@ -18,7 +18,7 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
   
-  	hoboNicola 1.7.4.		Jan. 4 2024.
+  	hoboNicola 1.7.5.		Feb. 22 2024.
 */
 
 #include <Arduino.h>
@@ -178,7 +178,9 @@ uint8_t nk60_get_key(bool& pressed, bool us_layout) {
 			case HID_CAPS:	// USレイアウトのときCapsはFnオンが条件。
 				return fn ? HID_CAPS : HID_IME_OFF;
 			case HID_J_UL:
-				return HID_GRAVE_AC;	// ` ~
+//				return HID_GRAVE_AC;	// ` ~
+//				return HID_R_SHIFT;	// ` ~
+				return fn ? hid : HID_R_SHIFT;	// Fn + R-Shiftで HID_J_ULを出す。
 			case HID_MUHENKAN:
 				return HID_F14;	
 			case HID_HENKAN:

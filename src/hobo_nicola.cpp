@@ -177,16 +177,17 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 		caps_pressed = pressed;
 		// USレイアウトのときCapsLockキーをImeOffにする。
 		// メインスケッチのFnキーテーブルで、Fn + HID_IMEOFFでCapsLockとなるようにしておく。
-		if (Settings().is_caps_to_imeoff_us() && Settings().is_us_layout())
+//		if (Settings().is_caps_to_imeoff() && Settings().is_us_layout())
+		if (Settings().is_caps_to_imeoff())
 			code = HID_IME_OFF;
 	}
-	if (Settings().is_ralt_to_hiragana() && code == HID_R_ALT)
+	if (code == HID_R_ALT && Settings().is_ralt_to_hiragana() )
 		code = HID_HIRAGANA;
 	// アダプターをカスタマイズ不能なキーボードに接続した場合、ここで変換してやる
 	if ((code == HID_HIRAGANA) && (Settings().is_us_layout() || Settings().is_kana_to_imeon()))
 			code = HID_IME_ON;
 
-	if (Settings().is_us_layout() && code == HID_MUHENKAN)
+	if (code == HID_MUHENKAN && Settings().is_us_layout())
 			code = HID_F14;
 // キーマップ上の無変換／F14をImeOffキーとするかどうか。左親指の左隣に無変換がある想定。
 // 以降の処理で空白を無変換にしたりするが影響しない。
@@ -196,19 +197,23 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 * 空白キーが左親指の位置にあるとき、空白を無変換(F14)キーとした方が便利ならば設定する。
 * 無変換キーを親指左キーとして使うことになる。空白キーを消滅させるわけにはいかないので変換キーを空白とする。
 */
-	if (Settings().is_spc_to_muhenkan()) {
-		if (code == HID_SPACE)
-			code = Settings().is_us_layout() ? HID_F14 : HID_MUHENKAN;	
-		else if (code == HID_MUHENKAN)
-			code = HID_IME_OFF;	// 元々の無変換はIME-OFFにしてみる。(1.7.1)
-	} 
+	if ((code == HID_SPACE) && Settings().is_spc_to_muhenkan())
+		code = Settings().is_us_layout() ? HID_F14 : HID_MUHENKAN;	
 /**
  * 変換(F15)キーが右親指の位置にあるとき、空白キーとした方が便利なら設定する 
  * 空白キーを親指右キーとして使うことになる。変換キーは消滅する。
 */
-	if (Settings().is_henkan_to_spc() && (code == HID_HENKAN || code == HID_F15))
+	if ((code == HID_HENKAN || code == HID_F15) && Settings().is_henkan_to_spc() )
 		code = HID_SPACE;
-	
+
+// 設定Zが有効なら無変換はF14、変換はF15にする MacのJISキーボード用
+	if (Settings().is_setting_z()) {
+		if (code == HID_MUHENKAN)
+			code = HID_F14;
+		else if (code == HID_HENKAN)
+			code = HID_F15;
+	}
+
 	if (is_media_code(code)) { 
 		send_media_code(code, pressed);
 		return;
@@ -239,7 +244,6 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 		releaseAll();
 		return;
 	}
-
 	// NICOLAモードにしない場合はここでおしまい。
 	if (Settings().is_disable_nicola()) {
 		key_report(code, modifiers, pressed);
@@ -284,6 +288,7 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 			report_press(code, modifiers);
 			if (((code == HID_HIRAGANA || code == HID_IME_ON) && Settings().is_kana_to_nicola_on()) || 
 					((code == HID_MUHENKAN || code == HID_F14) && Settings().is_muhenkan_to_nicola_on()) ||
+					((code == HID_HENKAN || code == HID_F15) && Settings().is_henkan_to_nicola_on()) ||
 					(code == HID_ZENHAN && Settings().is_kanji_toggle_nicola())) {
 				if (!Settings().is_use_msc_notify()) {
 					if (Settings().is_scrlock_as_nicola()) 	
@@ -475,7 +480,6 @@ void HoboNicola::strokeChar(uint8_t c, uint8_t& mod, bool no_release) {
 	stroke(k, mod, no_release);
 }
 
-
 /**
 NICOLAモードのときだけでも、先にHIDコードに変換してまとめて出力するようにしたい。
 Shiftキーに無関係な文字だけを対象とする。
@@ -536,9 +540,7 @@ void HoboNicola::send_PGM_string(const uint8_t* p, unsigned long delay_ms) {
 
 uint8_t HoboNicola::hid_led_state = 0;
 uint8_t HoboNicola::last_hid_led_state = 0;
-static void hid_led_notify(uint8_t data) {
-	HoboNicola::hid_led_state = data;
-}
+static void hid_led_notify(uint8_t data) { HoboNicola::hid_led_state = data; }
 
 void HoboNicola::apply_kbd_led() {
 	if (HoboNicola::hid_led_state != HoboNicola::last_hid_led_state) {
@@ -556,10 +558,7 @@ void HoboNicola::restore_kbd_led() {
 	HoboNicola::last_hid_led_state = 0;
 }
 
-
-uint8_t HoboNicola::get_hid_led_state() {
-	return hid_led_state;
-}
+uint8_t HoboNicola::get_hid_led_state() { return hid_led_state; }
 
 inline uint8_t HoboNicola::isScrLock() const { return (hid_led_state & HID_LED_SCRLOCK) != 0 ? 1 : 0; }
 inline uint8_t HoboNicola::isNumLock() const { return (hid_led_state & HID_LED_NUMLOCK) != 0 ? 1 : 0; }
@@ -572,8 +571,15 @@ void HoboNicola::init_hobo_nicola(HoboNicola* kbd_impl, const char* device_name)
 
 	set_hid_led_callback(hid_led_notify);
 	set_nid_table(Settings().is_us_layout());
-	hid_begin(device_name);
-	delay(10);
+	if (!hid_begin(device_name)) {
+		kbd_impl->error_blink(100);
+	}
+	
+	delay(5);
+
+	if (Settings().is_hid_reduce_delay())
+		set_hid_output_delay(HID_DELAY_SHORT);
+
 	if (Settings().is_use_msc_notify())
 		fake_drive_init();	// とりあえず常時オン
 }

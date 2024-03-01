@@ -104,11 +104,14 @@ typedef void (*request_callback_t)(uint8_t, uint8_t);
 
 class HID_ : public PluggableUSBModule
 {
+	uint8_t _poll_interval;
 public:
   HID_(void);
   int begin(void);
   int SendReport(uint8_t id, const void* data, int len);
   void AppendDescriptor(HIDSubDescriptor* node);
+
+	void setPollingInterval(uint8_t msec) { _poll_interval = msec; }
 
 protected:
   // Implementation of the PluggableUSBModule
@@ -130,7 +133,7 @@ private:
 public:
   void set_request_callback(request_callback_t fn) {
   	request_notify = fn;
-//	request_notify(HID_SET_IDLE, idle);	// 通知が来る前に知らせておきたい。
+//	request_notify(HID_SET_IDLE, idle);	
   };
 };
 

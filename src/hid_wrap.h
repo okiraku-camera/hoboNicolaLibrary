@@ -25,10 +25,15 @@ typedef void (*led_callback_t)(uint8_t);
 
 void send_hid_report(uint8_t id, const void* data, int len);
 void set_hid_led_callback(led_callback_t fn);
-void hid_begin(const char* name = 0);
+bool hid_begin(const char* name = 0);
 
 
 bool is_usb_suspended();
 void usb_wakeup();
+
+#define HID_DELAY_NORMAL	6
+#define HID_DELAY_SHORT		3
+
+void set_hid_output_delay(uint8_t msec);
 
 #endif

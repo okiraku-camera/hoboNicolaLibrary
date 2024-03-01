@@ -39,7 +39,7 @@ int HID_::getInterface(uint8_t* interfaceCount)
 	HIDDescriptor hidInterface = {
 		D_INTERFACE(pluggedInterface, 1, USB_DEVICE_CLASS_HUMAN_INTERFACE, HID_SUBCLASS_NONE, HID_PROTOCOL_KEYBOARD),
 		D_HIDREPORT(descriptorSize),
-		D_ENDPOINT(USB_ENDPOINT_IN(pluggedEndpoint), USB_ENDPOINT_TYPE_INTERRUPT, USB_EP_SIZE, 0x01)
+		D_ENDPOINT(USB_ENDPOINT_IN(pluggedEndpoint), USB_ENDPOINT_TYPE_INTERRUPT, USB_EP_SIZE, _poll_interval)
 	};
 	return USB_SendControl(0, &hidInterface, sizeof(hidInterface));
 }
@@ -170,7 +170,7 @@ bool HID_::setup(USBSetup& setup)
 
 HID_::HID_(void) : PluggableUSBModule(1, 1, epType),
                    rootNode(NULL), descriptorSize(0),
-                   protocol(HID_BOOT_PROTOCOL), idle(125)
+                   protocol(HID_BOOT_PROTOCOL), idle(125), 	_poll_interval(2)
 {
 	epType[0] = EP_TYPE_INTERRUPT_IN;
 	PluggableUSB().plug(this);

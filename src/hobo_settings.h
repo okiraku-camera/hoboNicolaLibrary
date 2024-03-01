@@ -23,12 +23,14 @@
 	static const uint32_t NUML_AS_NICOLA 				= 0x10000L;	// NumLock LEDとNICOLAモードを同期する
 	static const uint32_t MUHENKAN_TO_NICOLA_ON	= 0x20000L;	// 無変換／F14が押されたらNICOLAにする。
 	static const uint32_t SPC_TO_MUHENKAN				= 0x40000L;	// 一方通行 空白キーを無変換にする。
-	static const uint32_t CAPS_TO_IMEOFF_US			= 0x80000L;	// USのときCapsLockをImeOffとする CapsLockはFn+CapsLockをFnキーテーブルに設定しておけばよい。
+	static const uint32_t CAPS_TO_IMEOFF				= 0x80000L;	// CapsLockをImeOffとする CapsLockはFn+CapsLockをFnキーテーブルに設定しておけばよい。
 	static const uint32_t MUHENKAN_TO_IMEOFF		= 0x100000L;	// 一方通行 無変換／F14をImeOffとする。MUHENKAN_TO_NICOLA_ONやSPC_TO_MUHENKANより先に処理する。
 	static const uint32_t DISABLE_NICOLA				= 0x200000L;	// 通知やキー操作でNICOLAモードにしない。NICOLA関連の処理はホスト側でやる。
 	static const uint32_t KANA_TO_IMEON					= 0x400000L;	// ひらがなキーを日本語キーボードでも常にIMEONにする。Mac用
+	static const uint32_t HENKAN_TO_NICOLA_ON		= 0x800000L;	// 変換／F15が押されたらNICOLAにする。
+	static const uint32_t REDUCE_DELAY					= 0x1000000L;	// HIDコード送信時の遅延を短縮する
+	static const uint32_t HENKAN_MUHENKAN_FK		= 0x2000000L;	// 変換無変換は無条件にF15,F14にする
 	
-
 class _Settings  {
 	uint32_t settings;
 	uint32_t extra_settings;
@@ -92,11 +94,15 @@ public:
 	bool is_us_layout() const { return (bool)(settings & US_LAYOUT); }
 	bool is_use_kbd_suspend() const { return (bool)(settings & USE_KBD_SUSPEND); }
 	bool is_spc_to_muhenkan() const { return (bool)(settings & SPC_TO_MUHENKAN); }	
-	bool is_caps_to_imeoff_us() const { return (bool)(settings & CAPS_TO_IMEOFF_US); }
+	bool is_caps_to_imeoff() const { return (bool)(settings & CAPS_TO_IMEOFF); }
 	bool is_muhenkan_to_nicola_on() const { return (bool)(settings & MUHENKAN_TO_NICOLA_ON); }
 	bool is_muhenkan_to_imeoff() const { return (bool)(settings & MUHENKAN_TO_IMEOFF); }
 	bool is_kana_to_imeon() const { return (bool)(settings & KANA_TO_IMEON); }
 	bool is_disable_nicola() const { return (bool)(settings & DISABLE_NICOLA); }
+	bool is_henkan_to_nicola_on() const { return (bool)(settings & HENKAN_TO_NICOLA_ON); }
+	bool is_hid_reduce_delay() const { return (bool)(settings & REDUCE_DELAY); }
+	bool is_setting_z() const { return (bool)(settings & HENKAN_MUHENKAN_FK);}
+
 
 	bool is_use_msc_notify() const { 
 #if defined(USE_TINYUSB)

@@ -21,7 +21,8 @@
 	  hoboNicola 1.6.1.		Apr. 1.  2022.	M,K,N settings.
 		hoboNicola 1.7.0.	  Apr. 1.  2023.	
 		hoboNicola 1.7.3.	  Nov. 10.  2023.	
-	
+		hoboNicola 1.7.5.	  Feb. 2.  2024. HENKAN_TO_IMEON	
+		
 */
 
 #include "hobo_nicola.h"
@@ -56,11 +57,14 @@ static const uint8_t set_16[] PROGMEM = 	"M : MSC NOTIFY (TINYUSB)";
 static const uint8_t set_17[] PROGMEM = 	"K : KEYBOARD SUSPEND";
 static const uint8_t set_18[] PROGMEM = 	"N : NUMLOCK = NICOLA MODE";
 static const uint8_t set_19[] PROGMEM = 	"S : SPC -> MUHENKAN/F14";
-static const uint8_t set_20[] PROGMEM = 	"I : CAPS -> ImeOff (US)";
+static const uint8_t set_20[] PROGMEM = 	"I : CAPS -> ImeOff";
 static const uint8_t set_21[] PROGMEM = 	"B : MUHENKAN/F14 -> NICOLA ON";
 static const uint8_t set_22[] PROGMEM = 	"F : MUHENKAN/F14 -> ImeOff";
 static const uint8_t set_23[] PROGMEM = 	"O : HIRAGANA -> ImeOn";
 static const uint8_t set_24[] PROGMEM = 	"X : DISABLE NICOLA";
+static const uint8_t set_25[] PROGMEM = 	"J : HENKAN/F15 -> NICOLA ON";
+static const uint8_t set_26[] PROGMEM = 	"R : REDUCE OUPUT DELAY";
+static const uint8_t set_27[] PROGMEM = 	"Z : USE F14/F15";
 
 static const uint8_t set_end[] PROGMEM = 	"...";
 
@@ -91,6 +95,9 @@ const uint8_t* const output_settings[] PROGMEM = {
 	set_22,
 	set_23,
 	set_24,
+	set_25,
+	set_26,
+	set_27,
 	set_end 
 };
 
@@ -176,7 +183,7 @@ void HoboNicola::show_setting() {
 					f = Settings().is_spc_to_muhenkan();
 					break;
 				case 20:
-					f = Settings().is_caps_to_imeoff_us();
+					f = Settings().is_caps_to_imeoff();
 					break;
 				case 21:
 					f = Settings().is_muhenkan_to_nicola_on();
@@ -190,6 +197,15 @@ void HoboNicola::show_setting() {
 				case 24:
 					f = Settings().is_disable_nicola();
 					break;
+				case 25:
+					f = Settings().is_henkan_to_nicola_on();
+					break;
+				case 26:
+					f = Settings().is_hid_reduce_delay();
+					break;
+				case 27:
+					f = Settings().is_setting_z();
+				break;
 				default:
 					break;
 				}
@@ -301,7 +317,7 @@ void HoboNicola::setup_options(uint8_t hid) {
 		new_settings ^= SPC_TO_MUHENKAN;
 		break;
 	case HID_I:
-		new_settings ^= CAPS_TO_IMEOFF_US;
+		new_settings ^= CAPS_TO_IMEOFF;
 		break;
 	case HID_B:
 		new_settings ^= MUHENKAN_TO_NICOLA_ON;
@@ -315,10 +331,24 @@ void HoboNicola::setup_options(uint8_t hid) {
 	case HID_X:
 		new_settings ^= DISABLE_NICOLA;
 		break;
+	case HID_J:
+		new_settings ^= HENKAN_TO_NICOLA_ON;
+		break;
+	case HID_R:
+		new_settings ^= REDUCE_DELAY;
+		break;
+	case HID_Z:
+		new_settings ^= HENKAN_MUHENKAN_FK;
+		break;
 	}
 	setup_mode = false;
-	if (save_set != new_settings)  
+	if (save_set != new_settings) {
 		Settings().save(new_settings);
+		if (new_settings & REDUCE_DELAY)
+			set_hid_output_delay(HID_DELAY_SHORT);
+		else
+			set_hid_output_delay(HID_DELAY_NORMAL);
+	} 	
 // SAMDのみ。nRF52ではうまくいかないので。	
 #if defined(__SAMD21G18A__) || defined(__SAMD21E18A__) 
 	if ((new_settings ^ save_set) & USE_MSC_NOTIFY)

@@ -36,6 +36,9 @@ static uint8_t usb_led_state = 0;
 #include "HID.h"
 #endif
 
+static uint8_t hid_output_delay = HID_DELAY_NORMAL;	// default value is modest
+#define ble_send_delay_ms 2
+
 static led_callback_t callback_fn = 0;
 
 void set_hid_led_callback(led_callback_t fn) {
@@ -75,10 +78,10 @@ static const uint8_t _hidReportDescriptor[] PROGMEM = {
 	0x95, REPORT_KEY_COUNT, //   
 	0x75, 0x08, //   REPORT_SIZE (8bit)
 	0x15, 0x00, //   LOGICAL_MINIMUM (0) 
-	0x25, 0xdd, //   LOGICAL_MAXIMUM (221)
+	0x26, 0xdf, 0x00, //   LOGICAL_MAXIMUM (221)
 	0x05, 0x07, //   USAGE_PAGE (Keyboard)
 	0x19, 0x00, //     USAGE_MINIMUM  keys,
-	0x29, 0xdd, //     USAGE_MAXIMUM
+	0x2a, 0xdf, 0x00,//     USAGE_MAXIMUM
 	0x81, 0x00, //   INPUT (Data,Ary,Abs)
 	0xc0,    // END_COLLECTION
 /**
@@ -269,7 +272,7 @@ const bool is_ble_connected() { return false; }
 
 #if defined(USE_TINYUSB)
 static void hid_report_callback_ada(uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize) {
-	if (report_id == REPORT_ID_KBD && report_type == HID_REPORT_TYPE_OUTPUT && bufsize > 0)
+	if (report_id == REPORT_ID_KBD && report_type == HID_REPORT_TYPE_OUTPUT && buffer && bufsize > 0)
 		usb_led_state = buffer[0];	// buffer[0]にLED状態が入っている。(bsp 1.0.0～) 前は違った。
 	if (!is_ble_connected() && callback_fn)
 		callback_fn(usb_led_state);
@@ -283,26 +286,16 @@ static void hid_report_callback(uint8_t request, uint8_t data) {
 
 // send_report();
 #if defined(USE_TINYUSB)
-	#define _send_report(a,b,c)	_hid.sendReport(id, data, len)
-	#define send_delay_ms 5
+	#define _send_report(id,data,len)	_hid.sendReport(id, data, len)
 #else
-	#define _send_report(a,b,c)	HID().SendReport(id, data, len)
-	#define send_delay_ms 5
+	#define _send_report(id,data,len)	HID().SendReport(id, data, len)
 #endif
-#define ble_send_delay_ms 2
-
-
-// send_delay_ms は、Windows Explorerの検索フィールドが xyuとかxtuとか取りこぼすので対策したもの。
-// ずいぶんと遅くなっているかもしれない。
-uint8_t last_data[16] = { 0 };
-int last_len = 0;
-
 void send_hid_report(uint8_t id, const void* data, int len) {
 	static unsigned long last_send = 0;
 #if defined(ARDUINO_NRF52_ADAFRUIT)
 	if (is_ble_connected()) {
 		if (last_send != 0 && (millis() - last_send) < ble_send_delay_ms)
-			delay(send_delay_ms);
+		delay(ble_send_delay_ms);
 		ble_hid.sendReport(id, data, len);
 		return;
 	}
@@ -313,27 +306,31 @@ void send_hid_report(uint8_t id, const void* data, int len) {
 		return;
 #endif
 
-	if (last_send != 0 && (millis() - last_send) < send_delay_ms)
-		delay(send_delay_ms);
+	if (last_send != 0 && (millis() - last_send) < hid_output_delay)
+		delay(hid_output_delay);
 	_send_report(id, data, len);
 	last_send = millis();
 }
 
-void hid_begin(const char* name) {
+// how to set country code in HID Descriptor (bCountryCode) ?
+bool hid_begin(const char* name) {
 #if defined(ARDUINO_NRF52_ADAFRUIT)
 	init_ble();	// valid only nrf52
 #endif
 #if defined(USE_TINYUSB)
 	_hid.setBootProtocol(HID_ITF_PROTOCOL_KEYBOARD);
-	_hid.setPollInterval(1);
+	_hid.setPollInterval(2);
 	_hid.setReportDescriptor(_hidReportDescriptor, sizeof(_hidReportDescriptor));
 	_hid.setStringDescriptor(name);
 	_hid.setReportCallback(NULL, hid_report_callback_ada);
-	_hid.begin();
+	return _hid.begin();
+
 #else
 	static HIDSubDescriptor node(_hidReportDescriptor, sizeof(_hidReportDescriptor));
+	HID().setPollingInterval(3);
 	HID().AppendDescriptor(&node);
 	HID().set_request_callback(hid_report_callback);
+	return true;
 #endif
 }
 
@@ -353,4 +350,8 @@ void usb_wakeup() {
 	if (USBDevice.isSuspended())	
 		USBDevice.wakeupHost();
 #endif
+}
+
+void set_hid_output_delay(uint8_t msec) {
+	hid_output_delay = msec;
 }
