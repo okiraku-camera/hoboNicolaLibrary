@@ -1,6 +1,6 @@
 # Hobo-nicola keyboard and adapter library for Arduino environments.
 
-hoboNicola keyboard and adapter library.  Copyright 2023 Takeshi Higasa, okiraku-camera.tokyo
+hoboNicola keyboard and adapter library.  Copyright (C) Takeshi Higasa, okiraku-camera.tokyo
 
 これまでのhoboNicolaLibraryの履歴などについては、[ブログの投稿](https://okiraku-camera.tokyo/blog/?page_id=8211)を参照してください (以下の内容と重複する箇所もあります)。
 
@@ -63,7 +63,7 @@ hoboNicolaLibrary はArduinoのライブラリとして導入することを前�
 USBホストコントローラーごとに実装例を用意してあり、USBキーボード用の実装は4種類のマイコン(ATMega32U4, ATSAMD21, nRF52840 and RP2040)での動作を確認しています。AVR以外のマイコンを用いる場合、Adafruit TinyUSB ライブラリの導入が必須です。
 
 * ch9350_hobo_nicola	
-  * CH9350L をUSBホストコントローラーとして用いるアダプター用の実装です。
+  * CH9350L をUSBホストコントローラーとして用いるアダプター用の実装です。現在のところ更新を停止しています。
 * usb_hobo_nicola
   * MAX3421EE (USB Host Shield) をUSBホストコントローラーとして用いるアダプター用の実装です。[felis/USB_Host_Shield_2.0](https://github.com/felis/USB_Host_Shield_2.0) に依存していますが、hoboNicola用の修正を加えた一式をhoboNicolaLibrary内に含んでいるので新たな導入は不要です。
 * rp_hobo_nicola
