@@ -32,18 +32,21 @@
 // scan_to_hidテーブルが切り替わるならば Fnオン時のコードで定義する。
 static const uint16_t fn_keys[] PROGMEM = {
 	WITH_R_CTRL | HID_S, FN_SETUP_MODE,
+	WITH_R_CTRL | HID_F16, FN_MEMORY_READ_MODE,	// Fn + R
+	WITH_R_CTRL | HID_F19, FN_MEMORY_WRITE_MODE,	// Fn + U
+
 	WITH_R_CTRL | HID_ESCAPE,	 FN_SYSTEM_SLEEP,		// Ctrl + Fn + Esc 
 	WITH_R_CTRL | HID_ZENHAN,	 FN_SYSTEM_SLEEP,		// Fn + Escを半全キーとしている場合 
 	WITH_R_CTRL | HID_ENTER,	 FN_MEDIA_PLAY_PAUSE,
 	WITH_R_CTRL | HID_END, FN_MEDIA_SCAN_NEXT,
 	WITH_R_CTRL | HID_HOME, FN_MEDIA_SCAN_PREV,
-	WITH_R_CTRL | WITH_L_CTRL | HID_B, FN_XD_START_DFU,
 	WITH_R_CTRL | HID_PGDOWN, FN_RGB_DIMMER,
 	WITH_R_CTRL | HID_PGUP, FN_RGB_BRIGHTER,
 	WITH_L_ALT | WITH_L_CTRL | HID_PGDOWN, FN_RGB_OFF,
 	WITH_L_ALT | WITH_L_CTRL | HID_PGUP, FN_RGB_MAX,
 	HID_IME_OFF, HID_CAPS,								// Caps --> ImeOffのとき、Fn + CapsでCapsLockにする。(US)
 	WITH_L_SHIFT | HID_IME_OFF, HID_CAPS,	// Caps --> ImeOffのとき、Shift + Fn + CapsでCapsLockにする。(JP)
+	WITH_R_CTRL | WITH_L_CTRL | HID_B, FN_XD_START_DFU,
 	0, 0
 };
 
@@ -106,7 +109,7 @@ static const int16_t RGB_COUNT = 12;
 void setup() {
 	init_xd64();
 	set_xd_rgb_port(RGB_COUNT, &PORTF, PINF6);
-	set_xd_rgb_value(Settings().get_xd_rgb_value());
+	set_xd_rgb_value(pSettings->get_xd_rgb_value());
 	xd_rgb_sync();
 	BGLED(0);
 	CAPSLED(0);
@@ -117,7 +120,7 @@ void setup() {
 static bool suspended = false;
 void loop() {
 	bool pressed;
-	uint8_t key = xd64_get_key(pressed, Settings().is_us_layout());
+	uint8_t key = xd64_get_key(pressed, _US_LAYOUT(global_setting));
 	if (!is_usb_suspended()) {
     	if (suspended) {
 			xd_clear_buffer();

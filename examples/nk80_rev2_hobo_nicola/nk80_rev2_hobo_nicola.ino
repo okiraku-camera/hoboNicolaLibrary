@@ -18,7 +18,7 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-    Included in hoboNicola 1.7.4.		Jan. 3. 2024.
+    Included in hoboNicola 1.7.6.		Mar. 8. 2024.
 	
 		Select "Generic RP2040 (Raspberry Pi Pico/RP2040)" as target board.
 
@@ -39,6 +39,9 @@ static const uint8_t FN_BG_OFF		    = FN_EXTRA_START + 4;
 // Fnオンでscan_to_hidテーブルが切り替わるならば Fnオン時のコードで定義する。
 static const uint16_t fn_keys[] PROGMEM = {
 	WITH_R_CTRL | HID_S, FN_SETUP_MODE,
+	WITH_R_CTRL | HID_R,	FN_MEMORY_READ_MODE,	// read stored settings
+	WITH_R_CTRL | HID_W,	FN_MEMORY_WRITE_MODE,	// store current settings
+
 	WITH_R_CTRL | HID_ESCAPE,	FN_SYSTEM_SLEEP,		// Ctrl + Fn + Esc 
 	WITH_R_CTRL | HID_ZENHAN,	 FN_SYSTEM_SLEEP,		// Fn + Escを半全キーとしている場合 
 	WITH_R_CTRL | HID_ENTER,	FN_MEDIA_PLAY_PAUSE,
@@ -94,11 +97,11 @@ void nk80HoboNicola::extra_function(uint8_t k, bool pressed) {
 		break;
 	case FN_BG_DIMMER:
  		rp_pwm_dimmer();
-		Settings().save_rp_pwm_max_value(get_rp_pwm_max_value());
+		pSettings->save_rp_pwm_max_value(get_rp_pwm_max_value());
 		break;
 	case FN_BG_BRIGHTER:
 		rp_pwm_brighter();
-		Settings().save_rp_pwm_max_value(get_rp_pwm_max_value());
+		pSettings->save_rp_pwm_max_value(get_rp_pwm_max_value());
 		break;
 	default:
 		break;
@@ -120,7 +123,7 @@ void setup() {
 	Serial.end();	// disable CDC (1.7.4)
 	init_nk80();
 	nk80HoboNicola::init_hobo_nicola(&hobonicola, "nk80_2");
-	set_rp_pwm_max_value(Settings().get_rp_pwm_max_value());
+	set_rp_pwm_max_value(pSettings->get_rp_pwm_max_value());
 	delay(10);
 	watchdog_start_tick(12);
 	watchdog_enable(1000, false);
@@ -130,7 +133,7 @@ static bool suspended = false;
 void loop() {
 	bool pressed;
 	watchdog_update ();
-	uint8_t key = nk80_get_key(pressed, Settings().is_us_layout());
+	uint8_t key = nk80_get_key(pressed, _US_LAYOUT(global_setting));
 	if (!is_usb_suspended()) {
    	if (suspended) {
 			suspended = false;

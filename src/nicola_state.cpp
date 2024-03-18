@@ -30,7 +30,7 @@ void HoboNicola::timer_tick(unsigned long now) {
 		event_time = 0;
 		nicola_state(Time_out, 0);
 	}
-	if (Settings().is_self_repeat() && (repeat_time != 0) && (now > repeat_time)) {
+	if (_SELF_REPEAT(global_setting) && (repeat_time != 0) && (now > repeat_time)) {
 		nicola_state(Key_repeat, 0);
 		repeat_time = now + repeat_interval;
 	}
@@ -102,7 +102,7 @@ void HoboNicola::nicola_state(nicola_event_t e, uint16_t param) {
 		case Time_out:
 			repeat_moji = moji;
 			output();
-			if (Settings().is_single_oyayubi_mode()) {	// 長押し待ちへ
+			if (_SINGLE_OYAYUBI_MODE(global_setting)) {	// 長押し待ちへ
 				event_time = now + e_longpressTime;
 				state = Release_Wait_State;
 			} else {
@@ -298,7 +298,7 @@ void HoboNicola::output() {
 }
 
 void HoboNicola::immediate_output(uint16_t moji) {
-	if (!Settings().is_immediate_output() || setup_mode)
+	if (!_OUTPUT_IMMEDIATE_ON(global_setting) || setup_mode)
 		return;
 	const uint8_t* p = get_output_data(moji, isShiftPressed() ? NID_SHIFT_KEY : 0);
 	if (p) {

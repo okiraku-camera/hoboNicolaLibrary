@@ -16,28 +16,25 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
   
-		hoboNicola 1.5.0. First build.
-		hoboNicola 1.6.1. support MSC Notify
-		hoboNicola 1.6.2.	Feb. 22. 2022	Add MSC Notify Functionalities. 
-		hoboNicola 1.7.0		Mar. 3.  2023   xd64(ver3) support, rearrangement symbols (nicol mode), xd87 us-layout.
+		hoboNicola 1.7.6		Mar. 8.  2024.
 */
 
 #include "hobo_nicola.h"
 #include "fake_drive.h"
 #include "char_to_hid.h"
 
-_Settings& Settings() {
-	return _Settings::instance();
-}
+// まどろっこしいので変数でもつ。
+uint32_t global_setting;
+_Settings*	pSettings = 0;
 
 static HoboNicola* kbd;
-
 HoboNicola::HoboNicola()  {
 	memset(&report, 0, sizeof(key_report_t));
 	modifiers = 0;
-	setup_mode = dedicated_oyakeys = false;
+	setup_mode = dedicated_oyakeys =  false;
 	nicola_mode = use_pio_usb = 0;
 	left_oyayubi_code = right_oyayubi_code = 0;
+	memory_setup_option = Memory_Setup_None;
 	nicola_state(Init);
 }
 
@@ -47,12 +44,12 @@ void msc_notify(uint8_t code) { last_fd_data = code; }
 
 // IME状態通知でScrLockとMSC Notifyがどちらも有効のときは、MSC Notifyが優先する。
 const uint8_t HoboNicola::isNicola() {
-	if (Settings().is_disable_nicola()) return 0;
+	if (_DISABLE_NICOLA(global_setting)) return 0;
 
-	if (Settings().is_use_msc_notify() && !is_ble_connected())
+	if (_USE_MSC_NOTIFY(global_setting) && !is_ble_connected())
 		nicola_mode = last_fd_data;
-	else if (Settings().is_scrlock_as_nicola()) nicola_mode = isScrLock();	
-	else if (Settings().is_numlock_as_nicola()) nicola_mode = isNumLock();	
+	else if (_SCR_AS_NICOLA(global_setting)) nicola_mode = isScrLock();	
+	else if (_NUML_AS_NICOLA(global_setting)) nicola_mode = isNumLock();	
 	return nicola_mode;
 }
 
@@ -121,7 +118,15 @@ bool HoboNicola::doFunction(const uint8_t code, bool pressed) {
 				key_report(fk, modifiers, pressed);
 			else if (fk == FN_SETUP_MODE) {
 				if (pressed)
-					setup_mode ^= 1;
+					setup_mode = 1;
+				releaseAll();
+			} else if (fk == FN_MEMORY_READ_MODE) {
+				if (pressed)
+					memory_setup_option = Memory_Setup_Read;
+				releaseAll();
+			} else if (fk == FN_MEMORY_WRITE_MODE) {
+				if (pressed)
+					memory_setup_option = Memory_Setup_Write;
 				releaseAll();
 			} else if (fk >= FN_EXTRA_START && fk < FN_EXTRA_END)
 				extra_function(fk, pressed);
@@ -167,7 +172,7 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 	}
 
 // キーの入れ替えなど
-	if (Settings().is_swap_caps_ctrl()) {	// CAPSと左CTRL入れ替え
+	if (_SWAP_CAPS_CTRL(global_setting)) {	// CAPSと左CTRL入れ替え
 		if (code == HID_CAPS)
 			code = HID_L_CTRL;
 		else if (code == HID_L_CTRL)
@@ -177,42 +182,43 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 		caps_pressed = pressed;
 		// USレイアウトのときCapsLockキーをImeOffにする。
 		// メインスケッチのFnキーテーブルで、Fn + HID_IMEOFFでCapsLockとなるようにしておく。
-//		if (Settings().is_caps_to_imeoff() && Settings().is_us_layout())
-		if (Settings().is_caps_to_imeoff())
+		if (_CAPS_TO_IMEOFF(global_setting))
 			code = HID_IME_OFF;
 	}
-	if (code == HID_R_ALT && Settings().is_ralt_to_hiragana() )
+	if (code == HID_R_ALT && _RALT_TO_HIRAGANA(global_setting))
 		code = HID_HIRAGANA;
 	// アダプターをカスタマイズ不能なキーボードに接続した場合、ここで変換してやる
-	if ((code == HID_HIRAGANA) && (Settings().is_us_layout() || Settings().is_kana_to_imeon()))
+	if ((code == HID_HIRAGANA) && (_US_LAYOUT(global_setting) || _KANA_TO_IMEON(global_setting)))
 			code = HID_IME_ON;
-
-	if (code == HID_MUHENKAN && Settings().is_us_layout())
+	if (code == HID_MUHENKAN && _US_LAYOUT(global_setting))
 			code = HID_F14;
 // キーマップ上の無変換／F14をImeOffキーとするかどうか。左親指の左隣に無変換がある想定。
 // 以降の処理で空白を無変換にしたりするが影響しない。
-	if ((code == HID_MUHENKAN || code == HID_F14) && Settings().is_muhenkan_to_imeoff())
+	if ((code == HID_MUHENKAN || code == HID_F14) && _MUHENKAN_TO_IMEOFF(global_setting))
 		code = HID_IME_OFF;
 /**
 * 空白キーが左親指の位置にあるとき、空白を無変換(F14)キーとした方が便利ならば設定する。
 * 無変換キーを親指左キーとして使うことになる。空白キーを消滅させるわけにはいかないので変換キーを空白とする。
 */
-	if ((code == HID_SPACE) && Settings().is_spc_to_muhenkan())
-		code = Settings().is_us_layout() ? HID_F14 : HID_MUHENKAN;	
+	if ((code == HID_SPACE) && _SPC_TO_MUHENKAN(global_setting))
+		code = _US_LAYOUT(global_setting) ? HID_F14 : HID_MUHENKAN;	
 /**
  * 変換(F15)キーが右親指の位置にあるとき、空白キーとした方が便利なら設定する 
  * 空白キーを親指右キーとして使うことになる。変換キーは消滅する。
 */
-	if ((code == HID_HENKAN || code == HID_F15) && Settings().is_henkan_to_spc() )
+	if ((code == HID_HENKAN || code == HID_F15) && _HENKAN_TO_SPC(global_setting) )
 		code = HID_SPACE;
 
-// 設定Zが有効なら無変換はF14、変換はF15にする MacのJISキーボード用
-	if (Settings().is_setting_z()) {
+// 設定Zが有効なら無変換はF14、変換はF15にする MacのJISキーボード用 1.7.5
+	if (_HENKAN_MUHENKAN_FK(global_setting)) {
 		if (code == HID_MUHENKAN)
 			code = HID_F14;
 		else if (code == HID_HENKAN)
 			code = HID_F15;
 	}
+// F14や無変換はEnterキーにしてしまう。親指左キーとしている場合に設定すること。
+	if ((code == HID_MUHENKAN || code == HID_F14) && _MUHENKAN_F14_TO_LEFT(global_setting))
+		code = HID_ENTER;
 
 	if (is_media_code(code)) { 
 		send_media_code(code, pressed);
@@ -239,13 +245,21 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 			return;
 	}
 	if (setup_mode) {	// 設定中
+		releaseAll();
 		if (pressed)
 			setup_options(code);
-		releaseAll();
 		return;
 	}
+	if (memory_setup_option == Memory_Setup_Read || memory_setup_option == Memory_Setup_Write) {	// 設定セットの選択中
+		releaseAll();
+		if (pressed)
+			setup_memory_select(code);	// 書込みまたは読出しする設定セット名の選択。
+		return;
+	}
+
+
 	// NICOLAモードにしない場合はここでおしまい。
-	if (Settings().is_disable_nicola()) {
+	if (_DISABLE_NICOLA(global_setting)) {
 		key_report(code, modifiers, pressed);
 		return;
 	}
@@ -286,14 +300,14 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 	if (pressed) {
 		if (!isNicola()) {
 			report_press(code, modifiers);
-			if (((code == HID_HIRAGANA || code == HID_IME_ON) && Settings().is_kana_to_nicola_on()) || 
-					((code == HID_MUHENKAN || code == HID_F14) && Settings().is_muhenkan_to_nicola_on()) ||
-					((code == HID_HENKAN || code == HID_F15) && Settings().is_henkan_to_nicola_on()) ||
-					(code == HID_ZENHAN && Settings().is_kanji_toggle_nicola())) {
-				if (!Settings().is_use_msc_notify()) {
-					if (Settings().is_scrlock_as_nicola()) 	
+			if (((code == HID_HIRAGANA || code == HID_IME_ON) && _KANA_TO_NICOLA_ON(global_setting)) || 
+					((code == HID_MUHENKAN || code == HID_F14) && _MUHENKAN_TO_NICOLA_ON(global_setting)) ||
+					((code == HID_HENKAN || code == HID_F15) && _HENKAN_TO_NICOLA_ON(global_setting)) ||
+					(code == HID_ZENHAN && _KANJI_TOGGLE_NICOLA(global_setting))) {
+				if (!_USE_MSC_NOTIFY(global_setting)) {
+					if (_SCR_AS_NICOLA(global_setting)) 	
 						stroke(HID_SCRLOCK, modifiers);	// make scrlock on
-					else if (Settings().is_numlock_as_nicola()) 
+					else if (_NUML_AS_NICOLA(global_setting)) 
 						stroke(HID_KEYPAD_NUMLOCK, modifiers);	// make numlock on
 					else 
 						nicola_mode = 1;
@@ -301,14 +315,14 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 			}
 			return;
 		} else {
-			if (((code == HID_CAPS || code == HID_IME_OFF) && Settings().is_eisu_to_nicola_off()) || 
-					(code == HID_ZENHAN && Settings().is_kanji_toggle_nicola()) ||
-					(code == HID_ZENHAN && Settings().is_kanji_to_nicola_off())) {
+			if (((code == HID_CAPS || code == HID_IME_OFF) && _EISU_TO_NICOLA_OFF(global_setting)) || 
+					(code == HID_ZENHAN && _KANJI_TOGGLE_NICOLA(global_setting)) ||
+					(code == HID_ZENHAN && _KANJI_TO_NICOLA_OFF(global_setting))) {
 				nicola_mode = 0;
-				if (!Settings().is_use_msc_notify()) {
-					if (Settings().is_scrlock_as_nicola()) 	
+				if (!_USE_MSC_NOTIFY(global_setting)) {
+					if (_SCR_AS_NICOLA(global_setting)) 	
 						stroke(HID_SCRLOCK, modifiers);	// make scrlock off
-					else if (Settings().is_numlock_as_nicola()) 
+					else if (_NUML_AS_NICOLA(global_setting)) 
 						stroke(HID_KEYPAD_NUMLOCK, modifiers);	// make numlock off
 				}
 			}
@@ -346,19 +360,20 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 }
 
 static unsigned long blink_timer = 0;
-static const unsigned long blink_interval = 300;
-static const unsigned long setup_blink_interval = 300;
-static const unsigned long kdblock_blink_interval = 600;
-bool keyboard_lock = false;	// 暫定
+static const unsigned long setup_blink_interval = 400;
+//static const unsigned long kdblock_blink_interval = 600;
+static const unsigned long memory_blink_interval = 200;
+//bool keyboard_lock = false;	// 暫定
 
 void HoboNicola::idle() {
 	unsigned long now = millis();
 	timer_tick(now);	// drive state-machine.
-	if (!setup_mode && !keyboard_lock) {
+//	if (!setup_mode && !keyboard_lock) {
+	if (!setup_mode && (memory_setup_option == Memory_Setup_None)) {
 		nicola_led(isNicola());
-    	blink_timer = 0;
+    blink_timer = 0;
 	} else {
-		const unsigned long n = setup_mode ? setup_blink_interval : kdblock_blink_interval;
+		const unsigned long n = setup_mode ? setup_blink_interval : memory_blink_interval;
 		if (blink_timer == 0)
 			blink_timer = now;
 		else if ((now - blink_timer) > n) {
@@ -472,7 +487,7 @@ void HoboNicola::strokeChar(uint8_t c) {
 }
 
 void HoboNicola::strokeChar(uint8_t c, uint8_t& mod, bool no_release) {
-	uint16_t k = char_to_hid(c, Settings().is_us_layout());
+	uint16_t k = char_to_hid(c, _US_LAYOUT(global_setting));
 	if ((k & WITH_SHIFT) && !(mod & HID_SHIFT_MASK))
 		mod |= HID_L_SHIFT_MASK;           
 	else if (!(k & WITH_SHIFT) && (mod & HID_SHIFT_MASK))
@@ -496,7 +511,7 @@ void HoboNicola::send_PGM_string2(const uint8_t* p) {
 	uint8_t i = 0;
 	while(*tp) {
 		uint8_t c = PGM_READ_BYTE(tp++);
-		uint16_t k = char_to_hid(c, Settings().is_us_layout());
+		uint16_t k = char_to_hid(c, _US_LAYOUT(global_setting));
 		if (k & WITH_SHIFT) {
 			send_PGM_string(p);	// やっぱりやめる。
 			return;
@@ -568,18 +583,15 @@ void HoboNicola::init_hobo_nicola(HoboNicola* kbd_impl, const char* device_name)
 	if (!device_name)
 		device_name = "hoboNicola";
 	set_fd_notify_cb( msc_notify );	// 常にセット
-
+	pSettings = _Settings::Create();
+	global_setting = pSettings->get_data();
 	set_hid_led_callback(hid_led_notify);
-	set_nid_table(Settings().is_us_layout());
-	if (!hid_begin(device_name)) {
-		kbd_impl->error_blink(100);
-	}
-	
-	delay(5);
-
-	if (Settings().is_hid_reduce_delay())
+	set_nid_table(_US_LAYOUT(global_setting));
+	if (!hid_begin(device_name)) 	kbd_impl->error_blink(100);
+		
+	if (_REDUCE_DELAY(global_setting))
 		set_hid_output_delay(HID_DELAY_SHORT);
 
-	if (Settings().is_use_msc_notify())
+	if (_USE_MSC_NOTIFY(global_setting))
 		fake_drive_init();	// とりあえず常時オン
 }

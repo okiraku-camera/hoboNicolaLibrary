@@ -15,8 +15,8 @@
 	You should have received a copy of the GNU General Public License
 	along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-	version 1.7.4  Oct. 20, 2023.
-		(Pico-pio-usb 0.5.3, Arduino-pico 3.6.0, Adafruit Tinyusb 2.2.5) 
+	version 1.7.6  Mar. 8, 2024.
+		(Pico-pio-usb 0.5.3, Arduino-pico 3.7.2, Adafruit Tinyusb 2.3.3) 
 */
 
 #include "Adafruit_USBH_Host.h"
@@ -164,6 +164,9 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 // Function keys with Fn-key pressed.
 static const uint16_t fn_keys[] PROGMEM = {
 	HID_S | WITH_R_CTRL,	FN_SETUP_MODE,
+	HID_R | WITH_R_CTRL,	FN_MEMORY_READ_MODE,
+	HID_W | WITH_R_CTRL,	FN_MEMORY_WRITE_MODE,
+
 	HID_M,        				FN_MEDIA_MUTE,
 	HID_COMMA,						FN_MEDIA_VOL_DOWN,
 	HID_PERIOD,						FN_MEDIA_VOL_UP,
@@ -202,7 +205,7 @@ void loop() {
 			kbd_led_state = 0;
 			delay(200);
 			all_led_off();
-			if (Settings().is_use_kbd_suspend())
+			if (_USE_KBD_SUSPEND(global_setting))
 				multicore_reset_core1();  // stop core1
 				suspended = true;
 		}
@@ -211,7 +214,7 @@ void loop() {
 		if ( suspended ) {
 			suspended = false;
 			delay(10);
-			if (Settings().is_use_kbd_suspend())
+			if (_USE_KBD_SUSPEND(global_setting))
 				watchdog_reboot(0, 0, 10);  // reboot after a while. 
 			prev_kbd_led_state = 0xff;  
 		}

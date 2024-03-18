@@ -164,6 +164,9 @@ void nk60_table_change(uint8_t key, bool pressed) {
 		hid_table_index = HID_TABLE_BASE;
 }
 
+#include "hobo_settings.h"
+extern uint32_t global_setting;
+
 uint8_t nk60_get_key(bool& pressed, bool us_layout) { 
 	uint8_t k;
 	queue_entry_t key;
@@ -176,7 +179,9 @@ uint8_t nk60_get_key(bool& pressed, bool us_layout) {
 		if (us_layout) {
 			switch(hid) {
 			case HID_CAPS:	// USレイアウトのときCapsはFnオンが条件。
-				return fn ? HID_CAPS : HID_IME_OFF;
+				if (!_SWAP_CAPS_CTRL(global_setting) && !fn)
+					return HID_IME_OFF;
+				break;
 			case HID_J_UL:
 //				return HID_GRAVE_AC;	// ` ~
 //				return HID_R_SHIFT;	// ` ~

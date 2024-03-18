@@ -27,7 +27,7 @@
 #if !defined(__HOBO_NICOLA_H__)
 #define __HOBO_NICOLA_H__
 
-#define HOBO_NICOLA_LIBRARY_VERSION "175"
+#define HOBO_NICOLA_LIBRARY_VERSION "176"
 
 #if !defined(ARDUINO_ARCH_AVR)
 #define PROGMEM
@@ -58,8 +58,6 @@ typedef enum {  // ステートマシンに与えるイベント
 	Key_repeat
 } nicola_event_t;
 
-extern _Settings& Settings();
-
 // following bytes have hid-id
 #define HID_DIRECT_PREFIX	0x01
 
@@ -70,9 +68,11 @@ static const uint8_t NID_SHIFT_KEY = 0x82;
 static const uint8_t NID_LONG_PRESSED = 0x83;
 // static const uint8_t NID_SETUP_KEY = 0xf0;
 
+extern uint32_t global_setting;
+extern _Settings* pSettings;
+
 class HoboNicola  {
 	key_report_t report;
-	//uint32_t settings;	// current copy of eeprom.
 
 	uint8_t nicola_mode;	// 同時打鍵しますよ。
 	bool dedicated_oyakeys;
@@ -81,7 +81,7 @@ class HoboNicola  {
 	uint8_t right_oyayubi_code;
 	
 public:
-	HoboNicola();
+	HoboNicola() ;
 	const uint8_t isNicola() ;
 	void key_event(uint8_t code, bool pressed);
 	void releaseAll(bool all = true);
@@ -102,11 +102,7 @@ public:
 		Release_Wait_State		// 文字確定後リリース待ち（長押し用）
 	} state;
 	
-	//bool is_initial_state() const { return (bool) ( state == Initial_State); }
-
-	void enter_setup_mode(bool f = true) { setup_mode = f; }
-	bool is_setup_mode() const { return setup_mode; }
-
+	
 	uint8_t isScrLock() const;
 	uint8_t isNumLock() const;
 
@@ -185,5 +181,12 @@ private:
 	void setup_options(uint8_t nid);
 	void show_setting();
 	void show_hex();
+
+	enum {
+		Memory_Setup_None = 0,
+		Memory_Setup_Read = 1,
+		Memory_Setup_Write = 2
+	} memory_setup_option;
+	void setup_memory_select(uint8_t hid);	// 設定セットのスロットの選択。
 };
 #endif

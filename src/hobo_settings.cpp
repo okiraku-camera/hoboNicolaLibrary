@@ -16,22 +16,29 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
   
-    Included in...
-			hoboNicola 1.6.1.	Feb. 22. 2022	Initial version. EEPROM, FlashStorage, InternalFS.
-			hoboNicola 1.6.2.	June. 20. 2022	Arduino-pico EEPROM emulation.
+  hoboNicola 1.7.6.	Mar. 8. 2024	
 */
 
 #include "arduino.h"
 #include "hobo_settings.h"
 
+_Settings* _Settings::pInstance = 0;
+
+static const uint16_t  SETTINGS_ADDR =	0;
+static const uint16_t  EXTRA_ADDR	= 8;
+static const uint16_t  COUNTER_ADDR	= 16;
+
+static const int8_t SET_COUNT = 3;
+static const uint16_t  SET_ADDR[]	= { 32, 40, 48 };
+
 typedef struct {
-	uint8_t _m[32];
+//	uint8_t _m[32];
+	uint8_t _m[64];
 } nvm_data_t;
 
 static nvm_data_t __attribute__((__aligned__(8))) nvm_data;
 
 uint32_t _Settings::_size() { return sizeof(nvm_data_t)	; }
-
 void _Settings::_write(uint16_t  addr, uint32_t value) { 
 	*((uint32_t*)&nvm_data._m[addr]) = value;
 	*((uint32_t*)&nvm_data._m[addr+4]) = ~value;
@@ -73,6 +80,20 @@ void _Settings::save_extra(uint32_t new_extra) {
 void _Settings::save_xd_rgb_value(uint8_t val) { save_extra((extra_settings & 0xffffff00) | val); }
 void _Settings::save_rp_pwm_max_value(int16_t val) { save_extra((extra_settings & 0xffff0000) | val); }
 
+
+// 現在のsettingsの値を指定のスロットに保存する。
+void _Settings::save_set(int8_t index) {
+	if (index <  0 || index >= SET_COUNT)
+		return ;
+	set_at(SET_ADDR[index], settings);
+}
+
+// 指定スロットの値を返す。
+uint32_t _Settings::load_set(int8_t index) {
+	if (index < 0 || index >= SET_COUNT)
+		return 0;
+	return get_at(SET_ADDR[index]);
+}
 
 // AVR ATmega32u_4
 #if defined(ARDUINO_ARCH_AVR)

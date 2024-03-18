@@ -105,7 +105,7 @@ static const int16_t RGB_COUNT = 14;
 void setup() {
 	init_xd87();
 	set_xd_rgb_port(RGB_COUNT, &PORTB, PINB7);
-	set_xd_rgb_value(Settings().get_xd_rgb_value());
+	set_xd_rgb_value(pSettings->get_xd_rgb_value());
 	xd_rgb_sync();
 	BGLED(0);
 	CAPSLED(0);
@@ -116,7 +116,7 @@ void setup() {
 static bool suspended = false;
 void loop() {
 	bool pressed;
-	uint8_t key = xd87_get_key(pressed, Settings().is_us_layout());
+	uint8_t key = xd87_get_key(pressed, _US_LAYOUT(global_setting));
 	if (!is_usb_suspended()) {
    	if (suspended) {
 			xd_clear_buffer();
@@ -143,7 +143,7 @@ void loop() {
 			delay(3);
 			suspended = true;
 		}
-		if (Settings().is_use_kbd_suspend()) {
+		if (_USE_KBD_SUSPEND(global_setting)) {
 // 全ポートピンをINPUT_PULLUPとしておくことで、12mAほど節約できる。
 			DDRB = DDRC = DDRD = DDRE = DDRF = 0; 					// all input
 			PORTB = PORTC = PORTD = PORTE = PORTF = 0xff;	// all input-pullup

@@ -205,12 +205,12 @@ uint16_t HoboNicola::get_nid(uint8_t& k) {
 		break;
 	case HID_SPACE:
 		if (!dedicated_oyakeys) {
-			if (Settings().is_single_oyayubi_mode())	// シングル親指のとき、空白キーは右親指キーとみなす。
-				m = MKWORD(k, NID_RIGHT_OYAYUBI);
-			if (Settings().is_spc_to_left())
-				m = MKWORD(k, NID_LEFT_OYAYUBI);
-			else if (Settings().is_spc_to_right())
-				m = MKWORD(k, NID_RIGHT_OYAYUBI);
+			if (_SINGLE_OYAYUBI_MODE(global_setting))	// シングル親指のとき、空白キーは右親指キーとみなす。
+				m = MKWORD(HID_SPACE, NID_RIGHT_OYAYUBI);
+			if (_SPC_TO_LEFT(global_setting))
+				m = MKWORD(HID_SPACE, NID_LEFT_OYAYUBI);
+			else if (_SPC_TO_RIGHT(global_setting))
+				m = MKWORD(HID_SPACE, NID_RIGHT_OYAYUBI);
 		}
 		break;
 	case HID_F14:
@@ -218,18 +218,16 @@ uint16_t HoboNicola::get_nid(uint8_t& k) {
 		if (!dedicated_oyakeys)
 			m = MKWORD(k, NID_LEFT_OYAYUBI);
 		break;
+	case HID_ENTER:
+		if (_MUHENKAN_F14_TO_LEFT(global_setting))	// 左親指キーはEnterとする。
+			m = MKWORD(HID_ENTER, NID_LEFT_OYAYUBI);
+		break;
 	case HID_F15:
 	case HID_HENKAN:
 		if (!dedicated_oyakeys)
 			m = MKWORD(k, NID_RIGHT_OYAYUBI);
 		break;
-#if 0
-	case HID_PAUSE:
-	case HID_DELETE:
-		if (!is_initial_state())
-			m = MKWORD(k, NID_SETUP_KEY);	// Oyayubi_Stateのみだろう。
-		break;			
-#endif
+
 	default:
 		if (dedicated_oyakeys) {	// 専用の親指キーがある
 			if (k == left_oyayubi_code)
@@ -260,7 +258,7 @@ const uint8_t*  HoboNicola::get_output_data(uint16_t moji, uint16_t oyayubi) {
 	else if (LOWBYTE(oyayubi) == NID_LEFT_OYAYUBI)
 		address = (uint8_t*)PGM_READ_ADDR(left_arr[n]);
 	else if (LOWBYTE(oyayubi) == NID_RIGHT_OYAYUBI)
-		if (Settings().is_single_oyayubi_mode())
+		if (_SINGLE_OYAYUBI_MODE(global_setting))
 			address = (uint8_t*)PGM_READ_ADDR(single_simul_arr[n]);
 		else
 			address = (uint8_t*)PGM_READ_ADDR(right_arr[n]);

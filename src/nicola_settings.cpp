@@ -16,12 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-  Included in...
-	  hoboNicola 1.5.0.		Aug. 10. 2021.
-	  hoboNicola 1.6.1.		Apr. 1.  2022.	M,K,N settings.
-		hoboNicola 1.7.0.	  Apr. 1.  2023.	
-		hoboNicola 1.7.3.	  Nov. 10.  2023.	
-		hoboNicola 1.7.5.	  Feb. 2.  2024. HENKAN_TO_IMEON	
+	hoboNicola 1.7.6.	  Mar. 11.  2024. setup related.	
 		
 */
 
@@ -64,7 +59,8 @@ static const uint8_t set_23[] PROGMEM = 	"O : HIRAGANA -> ImeOn";
 static const uint8_t set_24[] PROGMEM = 	"X : DISABLE NICOLA";
 static const uint8_t set_25[] PROGMEM = 	"J : HENKAN/F15 -> NICOLA ON";
 static const uint8_t set_26[] PROGMEM = 	"R : REDUCE OUPUT DELAY";
-static const uint8_t set_27[] PROGMEM = 	"Z : USE F14/F15";
+static const uint8_t set_27[] PROGMEM = 	"Y : ENTER -> LEFT OYAYUBI";
+static const uint8_t set_28[] PROGMEM = 	"Z : USE F14/F15";
 
 static const uint8_t set_end[] PROGMEM = 	"...";
 
@@ -98,24 +94,64 @@ const uint8_t* const output_settings[] PROGMEM = {
 	set_25,
 	set_26,
 	set_27,
+	set_28,
 	set_end 
 };
 
+static char hex_char(uint8_t b) {
+	if (b < 10)
+		return '0' + b;
+	else	
+		return 'A' + (b - 10);
+}
+
+static char* hex_string32(uint32_t val, char* hex) {
+	for (uint8_t i = 0; i < 4; ++i) {
+		uint8_t b = (val >> (8 * (3 - i))) & 0xFF;
+		hex[i * 2] = hex_char(b >> 4);
+		hex[i * 2 + 1] = hex_char(b & 0x0F);
+	}
+	hex[8] = '\0';
+	return hex;
+}
+
+#if 0
+char* to_string32(uint32_t val, char* str) {
+    char temp[11];
+    int index = 0;
+    do {
+        temp[index++] = '0' + val % 10; 
+        val /= 10;
+    } while (val > 0);
+    for (int i = 0; i < index; ++i)
+        str[i] = temp[index - 1 - i];
+    str[index] = '\0';
+		return str;
+}
+#endif
+
+static const char _sep[] =	" : ";
+
 void HoboNicola::show_hex() {
-#if !defined(__AVR_ATmega32U4__)
 	char tmp[64];
-	sprintf(tmp, "%08lx : %08lx : %ld : %ld", 
-			Settings().get_data(), Settings().get_extra(), Settings().get_flush_count(), Settings().get_size());
+	char hex[12];
+//	sprintf(tmp, "%08lx : %08lx : %ld : %ld", pSettings->get_data(), pSettings->get_extra(), pSettings->get_flush_count(), pSettings->get_size());
+	hex_string32(pSettings->get_data(), tmp);
+	strcat(tmp, _sep);
+	strcat(tmp, hex_string32(pSettings->get_extra(), hex));
+	strcat(tmp, _sep);
+	strcat(tmp, hex_string32(pSettings->get_flush_count(), hex));
+	strcat(tmp, _sep);
+	strcat(tmp, hex_string32(pSettings->get_size(), hex));
 	for(uint8_t i = 0; i < strlen(tmp); i++) {
 		strokeChar(tmp[i]);
 		delay(10);
 	}
 	stroke(HID_ENTER, 0);
-#endif
 }
 
 void HoboNicola::show_setting() {
-	if (!Settings().is_us_layout())
+	if (!_US_LAYOUT(global_setting))
 		stroke(HID_CAPS, 0);
 	delay(5);
 	stroke(HID_ENTER, 0);
@@ -126,86 +162,89 @@ void HoboNicola::show_setting() {
 				bool f = false;
 				switch(i) {
 				case 1:
-					f = Settings().is_spc_to_left();
+					f = _SPC_TO_LEFT(global_setting);
 					break;
 				case 2:
-					f = Settings().is_spc_to_right();
+					f = _SPC_TO_RIGHT(global_setting);
 					break;
 				case 3:
-					f = Settings().is_spc_to_none();
+					f = _SPC_TO_NONE(global_setting);
 					break;
 				case 4:
-					f = Settings().is_single_oyayubi_mode();
+					f = _SINGLE_OYAYUBI_MODE(global_setting);
 					break;
 				case 5:
-					f = Settings().is_self_repeat();
+					f = _SELF_REPEAT(global_setting);
 					break;
 				case 6:
-					f = Settings().is_scrlock_as_nicola();
+					f = _SCR_AS_NICOLA(global_setting);
 					break;
 				case 7:
-					f = Settings().is_eisu_to_nicola_off();
+					f = _EISU_TO_NICOLA_OFF(global_setting);
 					break;
 				case 8:
-					f = Settings().is_kana_to_nicola_on();
+					f = _KANA_TO_NICOLA_ON(global_setting);
 					break;
 				case 9:
-					f = Settings().is_kanji_toggle_nicola();
+					f = _KANJI_TOGGLE_NICOLA(global_setting);
 					break;
 				case 10:
-					f = Settings().is_kanji_to_nicola_off();
+					f = _KANJI_TO_NICOLA_OFF(global_setting);
 					break;
 				case 11:
-					f = Settings().is_immediate_output();
+					f = _OUTPUT_IMMEDIATE_ON(global_setting);
 					break;
 				case 12:
-					f = Settings().is_ralt_to_hiragana();
+					f = _RALT_TO_HIRAGANA(global_setting);
 					break;
 				case 13:
-					f = Settings().is_swap_caps_ctrl();
+					f = _SWAP_CAPS_CTRL(global_setting);
 					break;
 				case 14:
-					f = Settings().is_henkan_to_spc();
+					f = _HENKAN_TO_SPC(global_setting);
 					break;
 				case 15:
-					f = Settings().is_us_layout();
+					f = _US_LAYOUT(global_setting);
 					break;
 				case 16:
-					f = Settings().is_use_msc_notify();
+					f = _USE_MSC_NOTIFY(global_setting);
 					break;
 				case 17:
-					f = Settings().is_use_kbd_suspend();
+					f = _USE_KBD_SUSPEND(global_setting);
 					break;
 				case 18:
-					f = Settings().is_numlock_as_nicola();
+					f = _NUML_AS_NICOLA(global_setting);
 					break;
 				case 19:
-					f = Settings().is_spc_to_muhenkan();
+					f = _SPC_TO_MUHENKAN(global_setting);
 					break;
 				case 20:
-					f = Settings().is_caps_to_imeoff();
+					f = _CAPS_TO_IMEOFF(global_setting);
 					break;
 				case 21:
-					f = Settings().is_muhenkan_to_nicola_on();
+					f = _MUHENKAN_TO_NICOLA_ON(global_setting);
 					break;
 				case 22:
-					f = Settings().is_muhenkan_to_imeoff();
+					f = _MUHENKAN_TO_IMEOFF(global_setting);
 					break;
 				case 23:
-					f = Settings().is_kana_to_imeon();
+					f = _KANA_TO_IMEON(global_setting);
 					break;
 				case 24:
-					f = Settings().is_disable_nicola();
+					f = _DISABLE_NICOLA(global_setting);
 					break;
 				case 25:
-					f = Settings().is_henkan_to_nicola_on();
+					f = _HENKAN_TO_NICOLA_ON(global_setting);
 					break;
 				case 26:
-					f = Settings().is_hid_reduce_delay();
+					f = _REDUCE_DELAY(global_setting);
 					break;
 				case 27:
-					f = Settings().is_setting_z();
-				break;
+					f = _MUHENKAN_F14_TO_LEFT(global_setting);
+					break;
+				case 28:
+					f = _HENKAN_MUHENKAN_FK(global_setting);
+					break;
 				default:
 					break;
 				}
@@ -228,10 +267,60 @@ void HoboNicola::show_setting() {
 	if (isNicola())
 		nicola_mode = false;
 }
+//  指定のスロットからの読出し、または指定のスロットへの書き込みを行う。
+// 読出し後にはマイコンをリセットしたい。
+void HoboNicola::setup_memory_select(uint8_t hid) {
+	int8_t index = 0;
+	switch(hid) {
+	case HID_A:
+	case HID_B:
+	case HID_C:
+		index = hid - HID_A;
+		if (memory_setup_option == Memory_Setup_Write)
+			pSettings->save_set(index);
+		else if (memory_setup_option == Memory_Setup_Read) {
+			uint32_t data = pSettings->load_set(index);
+			pSettings->save(data);
+			global_setting = pSettings->get_data();
+		}
+#if defined(ARDUINO_ARCH_RP2040)
+ 	// rp-hobo-nicolaはreboot
+		if (use_pio_usb) {
+			watchdog_reboot(0, 0, 100);
+			return;
+		}
+#endif
+
+		break;
+	case HID_P:	// 3つのセットの値を表示する。
+		{
+			char tmp[64] = "cur:";
+			stroke(HID_ENTER, 0);
+//			sprintf(tmp, "cur: %08lx, A: %08lx, B: %08lx, C: %08lx", pSettings->get_data(), pSettings->load_set(0), pSettings->load_set(1), pSettings->load_set(2));
+			char hex[12];
+			strcat(tmp, hex_string32(pSettings->get_data(), hex));
+			strcat(tmp, ", A:");
+			strcat(tmp, hex_string32(pSettings->load_set(0), hex));
+			strcat(tmp, ", B:");
+			strcat(tmp, hex_string32(pSettings->load_set(1), hex));
+			strcat(tmp, ", C:");
+			strcat(tmp, hex_string32(pSettings->load_set(2), hex));
+			for(uint8_t i = 0; i < strlen(tmp); i++) {
+				strokeChar(tmp[i]);
+				delay(10);
+			}
+			stroke(HID_ENTER, 0);
+		}
+		break;
+	default:
+		break;
+	};
+	memory_setup_option = Memory_Setup_None;
+}
 
 
 void HoboNicola::setup_options(uint8_t hid) {
-	uint32_t new_settings = Settings().get_data();
+	uint32_t new_settings = pSettings->get_data();
 	uint32_t save_set = new_settings;
 	switch(hid) {
 	case HID_J_BSLASH:	// 上段右端
@@ -272,7 +361,7 @@ void HoboNicola::setup_options(uint8_t hid) {
 		new_settings ^= KANA_TO_NICOLA_ON;
 		break;
 	case HID_9:
-		if (Settings().is_kanji_toggle_nicola())
+		if (_KANJI_TOGGLE_NICOLA(global_setting))
 			new_settings &= ~KANJI_TOGGLE_NICOLA;
 		else {
 			new_settings |= KANJI_TOGGLE_NICOLA;
@@ -280,7 +369,7 @@ void HoboNicola::setup_options(uint8_t hid) {
 		}
 		break;
 	case HID_0:
-		if (Settings().is_kanji_to_nicola_off())
+		if (_KANJI_TO_NICOLA_OFF(global_setting))
 			new_settings &= ~KANJI_TO_NICOLA_OFF;
 		else {
 			new_settings |= KANJI_TO_NICOLA_OFF;
@@ -310,9 +399,6 @@ void HoboNicola::setup_options(uint8_t hid) {
 	case HID_K:
 		new_settings ^= USE_KBD_SUSPEND;
 		break;
-//	case HID_Z:
-//		new_settings ^= KANJI_TO_SHIFT_SPACE;
-//		break;
 	case HID_S:
 		new_settings ^= SPC_TO_MUHENKAN;
 		break;
@@ -337,13 +423,17 @@ void HoboNicola::setup_options(uint8_t hid) {
 	case HID_R:
 		new_settings ^= REDUCE_DELAY;
 		break;
+	case HID_Y:
+		new_settings ^= MUHENKAN_F14_TO_LEFT;
+		break;
 	case HID_Z:
 		new_settings ^= HENKAN_MUHENKAN_FK;
 		break;
 	}
 	setup_mode = false;
 	if (save_set != new_settings) {
-		Settings().save(new_settings);
+		pSettings->save(new_settings);
+		global_setting = pSettings->get_data();
 		if (new_settings & REDUCE_DELAY)
 			set_hid_output_delay(HID_DELAY_SHORT);
 		else
@@ -355,9 +445,9 @@ void HoboNicola::setup_options(uint8_t hid) {
 		NVIC_SystemReset();
 #elif defined(ARDUINO_ARCH_RP2040)
  	// rp-hobo-nicolaの場合、rebootしないと入力処理が停止してしまう。eeprom libraryのcommit() がcore1に影響しているのか
-	if (use_pio_usb && new_settings != save_set) { 
-		delay(50);
-		watchdog_reboot(0, 0, 10);	// reboot after a while.
+	if (use_pio_usb && (new_settings != save_set)) { 
+		watchdog_reboot(0, 0, 100);	// reboot after a while.
+		return;
 	}
 #endif
 }

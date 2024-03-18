@@ -15,7 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-	version 1.7.0  Jul. 1, 2023.
+	version 1.7.6  Mar. 8, 2024.
 		support Arduino boards below.
 		Pro Micro(+3.3V/8MHz),
 		QTPy-m0 and XIAO-m0, 
@@ -34,6 +34,9 @@ static const uint8_t FN_BLE_SWITH  = FN_EXTRA_START;
 // Function keys with Fn-key pressed.
 static const uint16_t fn_keys[] PROGMEM = {
 	HID_S | WITH_R_CTRL,	FN_SETUP_MODE,
+	HID_R | WITH_R_CTRL,	FN_MEMORY_READ_MODE,	// read stored settings
+	HID_W | WITH_R_CTRL,	FN_MEMORY_WRITE_MODE,	// store current settings
+
 	HID_M,								FN_MEDIA_MUTE,
 	HID_COMMA,						FN_MEDIA_VOL_DOWN,
 	HID_PERIOD,						FN_MEDIA_VOL_UP,
@@ -42,7 +45,7 @@ static const uint16_t fn_keys[] PROGMEM = {
 	HID_R_ARROW,					HID_END,
 	HID_L_ARROW,					HID_HOME,
 	HID_ENTER,						FN_MEDIA_PLAY_PAUSE,
-	HID_IME_OFF,						HID_CAPS,								// Fn + ImeOff (Caps) = CapsLock
+	HID_IME_OFF,					HID_CAPS,								// Fn + ImeOff (Caps) = CapsLock
 	HID_ESCAPE | WITH_R_CTRL,  FN_SYSTEM_SLEEP,   // Ctrl + App + Esc 
 #if defined(NRF52_SERIES)
 	HID_B | WITH_L_CTRL | WITH_L_ALT,  FN_BLE_SWITH,
@@ -129,11 +132,11 @@ KeyboardEvent kbd;
 void setup() {
 	hobo_device_setup();
 	HoboNicola::init_hobo_nicola(&hobo_nicola, "usb_hobo_nicola");
-	if (Usbhost.Init() == -1)
-		hobo_nicola.error_blink();
-	delay( 200 );
 	HidKeyboard.SetReportParser(0, &kbd);
+	if (Usbhost.Init() == -1)	hobo_nicola.error_blink();
+	delay( 60 );
 }
+
 static const uint32_t hobo_sleep_ms = 1000;
 // 30 minutes経過したらキーボードによる復帰はやらない。
 static const uint32_t no_resume_ms = 1800L * 1000L; // 30minutes.
@@ -146,7 +149,7 @@ void loop() {
 	if (is_usb_suspended() ) {
 		kbd.sync_led(0);
 		all_led_off();
-		if (Settings().is_use_kbd_suspend()){
+		if (_USE_KBD_SUSPEND(global_setting)){
 			Usbhost.suspendKeyboard(); // suspend keyboard and max3421E
 			suspended = true;
 		}
