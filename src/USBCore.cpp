@@ -90,13 +90,12 @@ const u16 STRING_LANGUAGE[2] = {
 #if 0
 #ifndef USB_PRODUCT
 // If no product is provided, use USB IO Board
-#define USB_PRODUCT     "USB IO Board"
-#endif
-#else
 #define USB_PRODUCT     "Arduino"
 #endif
-
 const u8 STRING_PRODUCT[] PROGMEM = USB_PRODUCT;
+#endif
+const u8 STRING_PRODUCT[] PROGMEM = "AVR hoboNicola";
+
 
 #if USB_VID == 0x2341
 #  if defined(USB_MANUFACTURER)
