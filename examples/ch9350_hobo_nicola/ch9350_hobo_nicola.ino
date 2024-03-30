@@ -15,12 +15,14 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-  version 1.6.4  Feb. 15, 2023.
+  version 1.7.6  Mar. 15, 2024.
 		support Arduino boards below.
 			Pro Micro(+3.3V/8MHz),
 			QTPy-m0 and XIAO-m0, 
 			SSCI ISP1807MB, XIAO-nRF52840,
 			XIAO-RP2040, Adafruit KB2040,
+
+		Adafruit TinyUSB Library 3.1.1                                   
 
 */
 #include "hobo_nicola.h"
@@ -112,7 +114,7 @@ void loop() {
 	if (is_usb_suspended()) {
 		ch9350.set_led_state(0);
 		all_led_off();
-		if (Settings().is_use_kbd_suspend()){
+		if (_USE_KBD_SUSPEND(global_setting)){
 			ch9350.suspend();
 			suspended = true;
 		}
