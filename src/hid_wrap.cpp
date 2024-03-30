@@ -25,7 +25,7 @@
 
 #if defined(USE_TINYUSB)
 #include "Adafruit_TinyUSB.h"
-Adafruit_USBD_HID _hid;
+static Adafruit_USBD_HID _hid;
 static uint8_t usb_led_state = 0;
 
 #if defined(ARDUINO_NRF52_ADAFRUIT)
@@ -84,6 +84,7 @@ static const uint8_t _hidReportDescriptor[] PROGMEM = {
 	0x2a, 0xdf, 0x00,//     USAGE_MAXIMUM
 	0x81, 0x00, //   INPUT (Data,Ary,Abs)
 	0xc0,    // END_COLLECTION
+
 /**
 	Consumer section.
  Control Types.....
@@ -321,7 +322,7 @@ bool hid_begin(const char* name) {
 	_hid.setBootProtocol(HID_ITF_PROTOCOL_KEYBOARD);
 	_hid.setPollInterval(2);
 	_hid.setReportDescriptor(_hidReportDescriptor, sizeof(_hidReportDescriptor));
-	_hid.setStringDescriptor(name);
+//	_hid.setStringDescriptor(name);
 	_hid.setReportCallback(NULL, hid_report_callback_ada);
 	return _hid.begin();
 
