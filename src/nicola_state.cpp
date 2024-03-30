@@ -87,9 +87,14 @@ void HoboNicola::nicola_state(nicola_event_t e, uint16_t param) {
 			state = Initial_State;
 			break;
 		case All_off:
-		case Key_released:
 			output();
 			state = Initial_State;
+			break;
+		case Key_released:
+			if (param == moji) {	// 関係のない文字のオフは無視する。
+				output();
+				state = Initial_State;
+			}
 			break;
 		case Moji_pressed:
 			output();
