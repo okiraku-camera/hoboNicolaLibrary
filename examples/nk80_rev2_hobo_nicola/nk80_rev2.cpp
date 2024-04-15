@@ -192,7 +192,8 @@ uint8_t nk80_get_key(bool& pressed, bool us_layout) {
 			case HID_J_RBR_32:		// sw61
 				return HID_ENTER;
 			case HID_J_UL:
-				return HID_R_SHIFT;
+				return fn ? hid : HID_R_SHIFT;	// Fn + R-Shiftで HID_J_ULを出す。
+//			return HID_R_SHIFT;
 			case HID_CAPS:	// USレイアウトのときCapsはFnオンが条件。
 				if (!_SWAP_CAPS_CTRL(global_setting) && !fn)
 					return HID_IME_OFF;	// CapsとCtrlを入れ替えるときはHID_CAPSとして出す。	
