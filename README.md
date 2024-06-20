@@ -1,6 +1,6 @@
 # Hobo-nicola keyboard and adapter library for Arduino environments.
 
-hoboNicola keyboard and adapter library.  Copyright (C) Takeshi Higasa, okiraku-camera.tokyo
+hoboNicola keyboard and adapter library.  Copyright (c) Takeshi Higasa, okiraku-camera.tokyo
 
 これまでのhoboNicolaLibraryの履歴などについては、[ブログの投稿](https://okiraku-camera.tokyo/blog/?page_id=8211)を参照してください (以下の内容と重複する箇所もあります)。
 
@@ -49,16 +49,18 @@ hoboNicolaアダプターは、コントローラとして使うマイコンと�
 * AVR
   * Arduino Leonardo (ATmega32u4 +5V/16MHz)
   * SparkFun Pro Micro (ATmega32u4 +3.3V/8MHz and +5V/16MHz)
-* SAMD21
+* SAMD21  (Adafruit SAMD Boards 1.7.13)
   * Adafruit QTPy SAMD21 (SAMD21E18)
   * Seeed Studio XIAO SAMD21, Seeeduino XIAO (SAMD21G1)
-* nRF52840
+* nRF52840 (Adafruit nRF52 Boards 1.6.0)
   * Seeed Studio XIAO nRF52840
   * SwitchScience ISP1807 Micro Board
-* RP2040
+* RP2040 (Arduino-pico 3.7.2)
   * Seeed Studio XIAO RP2040
   * Adafruit KB2040
   * Raspberry Pi Pico
+
+(For building with microcontrollers other than AVR (such as SAMD, nRF52, RP2040), the Adafruit TinyUSB library is required).
 
 AVRやRP2040については、オリジナルPCBでの動作も確認しています。
 
@@ -68,7 +70,7 @@ hoboNicolaLibrary はArduinoのライブラリとして導入することを前�
 
 現在のところ以下の開発ツールでビルドできることを確認しています。
 * Windows用のArduino(1.8.19) 
-* Visual Studio Code(1.80.0) Arduino-extension 0.6 とarduino-cliが導入済みであること。
+* Visual Studio Code(1.80.0) Arduino-extension 0.6以降 とarduino-cliが導入済みであること。
 * Arduino IDE (2.x.x) でもビルドできると思いますが確認していません。
 
 いくつかのUSBホストコントローラー用の実装やキーボードPCB用の実装は Arduino スケッチ (.inoファイル) として examples ディレクトリに入っているので、ターゲットとするデバイスやマイコンに応じたスケッチを開き、別名で保存するところから、開発を始めることができます。
@@ -78,7 +80,7 @@ hoboNicolaLibrary はArduinoのライブラリとして導入することを前�
 USBホストコントローラーごとに実装例を用意してあり、USBキーボード用の実装は4種類のマイコン(ATMega32U4, ATSAMD21, nRF52840 and RP2040)での動作を確認しています。AVR以外のマイコンを用いる場合、Adafruit TinyUSB ライブラリの導入が必須です。
 
 * ch9350_hobo_nicola	
-  * CH9350L をUSBホストコントローラーとして用いるアダプター用の実装です。現在のところ更新を停止しています。
+  * CH9350L をUSBホストコントローラーとして用いるアダプター用の実装です。
 * usb_hobo_nicola
   * MAX3421EE (USB Host Shield) をUSBホストコントローラーとして用いるアダプター用の実装です。[felis/USB_Host_Shield_2.0](https://github.com/felis/USB_Host_Shield_2.0) に依存していますが、hoboNicola用の修正を加えた一式をhoboNicolaLibrary内に含んでいるので新たな導入は不要です。
 * rp_hobo_nicola
@@ -99,6 +101,31 @@ hoboNicolaLibraryを組み込んだ自作キーボード用の実装例です。
 	* RP2040を載せたオリジナルPCBを使った自作80%キーボード用の実装です。[ こちらを参照](./assets/nk80_rev2.md)。
 
 なお、hoboNicolaライブラリを自作キーボードに適用する際には、キーボードPCBの回路構成を知っておく必要があります。
+
+### 履歴
+* 1.7.7
+  * お恥ずかしい話ですが、"Arduino.h" を "arduino.h" と書いてあるソースファイルがいくつかあって、Linuxでビルドできなかったので修正。
+	* オプションUの動作を若干変更。Uを有効にすると、同時にオプションZも有効になる。Uが有効のときにZ単独で無効にできる。つまり、US LayoutでもWindowsの無変換や変換キーのコードを出力できるようになった。これは Ubuntuのmozcで使うときF14やF15 よりも無変換、変換の方が都合が良さそうだからです。
+  * Adafruit Tiny USB Arduino (3.2.0), Arduino-pico (3.9.3), PICO Pio USB (0.6.0)で動作確認。AVR版の場合、これらのライブラリやBSPは不要です。
+
+
+* 1.7.6
+  * 左親指キーが無変換またはF14のとき、Enterキーのコードを出すオプション (設定Y)を追加。F14/無変換を左親指キーとしているときに使う。無変換操作（半確定操作）を行わないときに使う。
+	* TinyUSB 2.4.0以降(3.1.1まで確認)に対応 (バグのワークアラウンド)。
+
+* 1.7.5
+  * MacOSへの対応のため、以下のような変更を実施した。
+  * レポートディスクリプタを修正。 
+  * nk60 キーボードの基本レイアウトを変更。
+   * 変換(F15)キーでNICOLAモードをオンにする設定オプション (設定J) の追加
+   * ホストに対するコード出力時の遅延を短くするオプション (設定R) の追加。
+   * 無変換キー、変換キーを常にF14, F15キーに置き換えて出力するオプション(設定Z)の追加。
+   * CapsLockキーをレイアウト設定に関わらずImeOffキーとする ( 設定I ) 。従来はUS Layout時にのみ有効としていた。
+
+* 1.7.4
+  * NK80 rev2 PCBに対応。examples/nk80_rev2_hobo_nicolaを追加。
+  * NK60 rev3 PCBへの対応を変更。examples/nk60_hobo_nicola の修正(PWM LED関係)。
+  * ライブラリの小変更など。
 
 ### ギャラリー
 

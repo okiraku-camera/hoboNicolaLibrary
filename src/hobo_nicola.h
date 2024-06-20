@@ -27,7 +27,7 @@
 #if !defined(__HOBO_NICOLA_H__)
 #define __HOBO_NICOLA_H__
 
-#define HOBO_NICOLA_LIBRARY_VERSION "176"
+#define HOBO_NICOLA_LIBRARY_VERSION "177"
 
 #if !defined(ARDUINO_ARCH_AVR)
 #define PROGMEM
