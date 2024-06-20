@@ -198,10 +198,6 @@ uint8_t nk80_get_key(bool& pressed, bool us_layout) {
 				if (!_SWAP_CAPS_CTRL(global_setting) && !fn)
 					return HID_IME_OFF;	// CapsとCtrlを入れ替えるときはHID_CAPSとして出す。	
 				break;
-			case HID_MUHENKAN:
-				return HID_F14;	
-			case HID_HENKAN:
-				return HID_F15;
 			case HID_HIRAGANA:
 				return HID_IME_ON;
 			default:

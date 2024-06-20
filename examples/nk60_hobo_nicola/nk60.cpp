@@ -186,10 +186,11 @@ uint8_t nk60_get_key(bool& pressed, bool us_layout) {
 //				return HID_GRAVE_AC;	// ` ~
 //				return HID_R_SHIFT;	// ` ~
 				return fn ? hid : HID_R_SHIFT;	// Fn + R-Shiftで HID_J_ULを出す。
-			case HID_MUHENKAN:
-				return HID_F14;	
-			case HID_HENKAN:
-				return HID_F15;
+// ライブラリ内でやる。
+//			case HID_MUHENKAN:
+//				return HID_F14;	
+//			case HID_HENKAN:
+//				return HID_F15;
 			case HID_HIRAGANA:
 				return HID_IME_ON;
 			default:
