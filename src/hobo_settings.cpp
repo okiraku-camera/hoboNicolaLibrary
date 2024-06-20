@@ -19,7 +19,7 @@
   hoboNicola 1.7.6.	Mar. 8. 2024	
 */
 
-#include "arduino.h"
+#include "Arduino.h"
 #include "hobo_settings.h"
 
 _Settings* _Settings::pInstance = 0;

@@ -19,7 +19,7 @@
 #if !defined(__HOBO_LED__H__)
 #define __HOBO_LED__H__
 
-#include "arduino.h"
+#include "Arduino.h"
 
 void all_led_off();
 

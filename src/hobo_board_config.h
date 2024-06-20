@@ -26,7 +26,7 @@
 	add neopixel support.
 */
 
-#include "arduino.h"
+#include "Arduino.h"
 #ifndef __hobo_board_config_h__
 #define __hobo_board_config_h__
 

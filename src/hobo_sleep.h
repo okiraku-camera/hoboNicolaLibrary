@@ -1,5 +1,5 @@
 // hobo_sleep.h
-#include "arduino.h"
+#include "Arduino.h"
 
 #ifndef __HOBO_SLEEP_H__
 #define __HOBO_SLEEP_H__

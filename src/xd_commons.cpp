@@ -24,7 +24,7 @@
 #if defined(__AVR_ATmega32U4__)
 
 #include <avr/io.h>
-#include "arduino.h"
+#include "Arduino.h"
 #include "xd_commons.h"
 #include "hobo_nicola.h"
 

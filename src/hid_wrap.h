@@ -3,7 +3,7 @@
 #ifndef __HID_WRAP_H__
 #define __HID_WRAP_H__
 
-#include "arduino.h"
+#include "Arduino.h"
 
 #define REPORT_ID_KBD  1
 #define REPORT_ID_CONSUMER  2

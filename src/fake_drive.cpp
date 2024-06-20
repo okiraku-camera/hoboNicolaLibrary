@@ -31,7 +31,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-#include "arduino.h"
+#include "Arduino.h"
 #include "fake_drive.h"
 
 #if defined(USE_TINYUSB)
