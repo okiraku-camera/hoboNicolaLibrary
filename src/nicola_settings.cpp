@@ -59,8 +59,8 @@ static const uint8_t set_23[] PROGMEM = 	"O : HIRAGANA -> ImeOn";
 static const uint8_t set_24[] PROGMEM = 	"X : DISABLE NICOLA";
 static const uint8_t set_25[] PROGMEM = 	"J : HENKAN/F15 -> NICOLA ON";
 static const uint8_t set_26[] PROGMEM = 	"R : REDUCE OUPUT DELAY";
-static const uint8_t set_27[] PROGMEM = 	"Y : ENTER -> LEFT OYAYUBI";
-static const uint8_t set_28[] PROGMEM = 	"Z : USE F14/F15";
+static const uint8_t set_27[] PROGMEM = 	"Y : LEFT OYAYUBI -> ENTER";
+static const uint8_t set_28[] PROGMEM = 	"Z : HK/MHK -> F14/F15";
 
 static const uint8_t set_end[] PROGMEM = 	"...";
 
@@ -390,6 +390,8 @@ void HoboNicola::setup_options(uint8_t hid) {
 	case HID_U:
 		new_settings ^= US_LAYOUT;	// WindowsがUSレイアウトのときに使う。英数出力をUSにするわけではない。
 		set_nid_table(new_settings & US_LAYOUT);
+		if (new_settings & US_LAYOUT)
+			new_settings |= HENKAN_MUHENKAN_FK;
 		break;
 	case HID_M:
 #if defined(USE_TINYUSB)

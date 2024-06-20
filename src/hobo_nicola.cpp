@@ -190,8 +190,11 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 	// アダプターをカスタマイズ不能なキーボードに接続した場合、ここで変換してやる
 	if ((code == HID_HIRAGANA) && (_US_LAYOUT(global_setting) || _KANA_TO_IMEON(global_setting)))
 			code = HID_IME_ON;
-	if (code == HID_MUHENKAN && _US_LAYOUT(global_setting))
-			code = HID_F14;
+
+// _HENKAN_MUHENKAN_FK のときだけ F14にする。
+//	if (code == HID_MUHENKAN && _US_LAYOUT(global_setting))
+//			code = HID_F14;
+
 // キーマップ上の無変換／F14をImeOffキーとするかどうか。左親指の左隣に無変換がある想定。
 // 以降の処理で空白を無変換にしたりするが影響しない。
 	if ((code == HID_MUHENKAN || code == HID_F14) && _MUHENKAN_TO_IMEOFF(global_setting))
@@ -201,7 +204,8 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 * 無変換キーを親指左キーとして使うことになる。空白キーを消滅させるわけにはいかないので変換キーを空白とする。
 */
 	if ((code == HID_SPACE) && _SPC_TO_MUHENKAN(global_setting))
-		code = _US_LAYOUT(global_setting) ? HID_F14 : HID_MUHENKAN;	
+		//code = _US_LAYOUT(global_setting) ? HID_F14 : HID_MUHENKAN;	
+		code = HID_MUHENKAN;	
 /**
  * 変換(F15)キーが右親指の位置にあるとき、空白キーとした方が便利なら設定する 
  * 空白キーを親指右キーとして使うことになる。変換キーは消滅する。
