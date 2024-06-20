@@ -104,7 +104,6 @@ typedef void (*request_callback_t)(uint8_t, uint8_t);
 
 class HID_ : public PluggableUSBModule
 {
-	uint8_t _poll_interval;
 public:
   HID_(void);
   int begin(void);
@@ -128,6 +127,7 @@ private:
 
   uint8_t protocol;
   uint8_t idle;
+	uint8_t _poll_interval;
   
   request_callback_t request_notify;
 public:
