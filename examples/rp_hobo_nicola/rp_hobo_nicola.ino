@@ -1,6 +1,6 @@
 /**
 	rp_hobo_nicola.ino Main sketch of "Hobo-nicola usb/ble adapter for RP2040 using Pico_Pio_USB".
-	Copyright (c) 2022-2023 Takeshi Higasa
+	Copyright (c) Takeshi Higasa
 
 	This file is part of "Hobo-nicola keyboard and adapter".
 
@@ -15,8 +15,8 @@
 	You should have received a copy of the GNU General Public License
 	along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-	version 1.7.6  Mar. 8, 2024.
-		(Pico-pio-usb 0.5.3, Arduino-pico 3.7.2, Adafruit Tinyusb 2.3.3) 
+	version 1.7.7  June. 20, 2024.
+		(Pico-pio-usb 0.6.0, Arduino-pico 3.9.3, Adafruit Tinyusb 3.2.0) 
 */
 
 #include "Adafruit_USBH_Host.h"
