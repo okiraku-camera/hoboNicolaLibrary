@@ -19,7 +19,10 @@
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
     Included in hoboNicola 1.7.6.		Mar. 3. 2024.
-		
+
+	Confirmed successful build after updating dependencies. (Oct. 30, 2025.)
+		(Pico-pio-usb 0.7.2, Arduino-pico 5.4.2, Adafruit Tinyusb 3.7.3) 
+		Make sure to install the required libraries and select the correct board:
 		Select "Generic RP2040 (Raspberry Pi Pico/RP2040)" as target board.
 */
 #include "nk60.h"

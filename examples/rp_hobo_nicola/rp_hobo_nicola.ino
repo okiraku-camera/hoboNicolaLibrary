@@ -17,6 +17,9 @@
 
 	version 1.7.7  June. 20, 2024.
 		(Pico-pio-usb 0.6.0, Arduino-pico 3.9.3, Adafruit Tinyusb 3.2.0) 
+	Confirmed successful build after updating dependencies. (Oct. 30, 2025.)
+		(Pico-pio-usb 0.7.2, Arduino-pico 5.4.2, Adafruit Tinyusb 3.7.3) 
+	
 */
 
 #include "Adafruit_USBH_Host.h"
