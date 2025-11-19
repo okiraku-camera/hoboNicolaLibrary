@@ -375,6 +375,7 @@ void HoboNicola::setup_options(uint8_t hid) {
 			new_settings |= KANJI_TO_NICOLA_OFF;
 			new_settings &= ~KANJI_TOGGLE_NICOLA;
 		}
+		break;
 	case HID_MINUS:
 		new_settings ^= OUTPUT_IMMEDIATE_ON;
 		break;
