@@ -18,9 +18,10 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-    Included in hoboNicola 1.7.6.		Mar. 3. 2024.
+    Included in hoboNicola 1.7.8.		Nov. 20. 2025.
 
 	Confirmed successful build after updating dependencies. (Oct. 30, 2025.)
+		hoboNicola Library 1.7.8
 		(Pico-pio-usb 0.7.2, Arduino-pico 5.4.2, Adafruit Tinyusb 3.7.3) 
 		Make sure to install the required libraries and select the correct board:
 		Select "Generic RP2040 (Raspberry Pi Pico/RP2040)" as target board.
@@ -37,13 +38,12 @@ static const uint8_t FN_BG_DIMMER		= FN_EXTRA_START + 2;
 static const uint8_t FN_BG_MAX	      = FN_EXTRA_START + 3;
 static const uint8_t FN_BG_OFF		    = FN_EXTRA_START + 4;
 
-
 // Extended function keys with Fn-key pressed.
 // Fnオンでscan_to_hidテーブルが切り替わるならば Fnオン時のコードで定義する。
 static const uint16_t fn_keys[] PROGMEM = {
 	WITH_R_CTRL | HID_S, 	FN_SETUP_MODE,
-	WITH_R_CTRL | HID_F16,	FN_MEMORY_READ_MODE,	// Fn + R
-	WITH_R_CTRL | HID_F19,	FN_MEMORY_WRITE_MODE,	// Fn + U 
+//	WITH_R_CTRL | HID_F16,	FN_MEMORY_READ_MODE,	// Fn + R
+//	WITH_R_CTRL | HID_F19,	FN_MEMORY_WRITE_MODE,	// Fn + U 
 
 	WITH_R_CTRL | HID_ESCAPE,	 FN_SYSTEM_SLEEP,		// Ctrl + Fn + Esc 
 	WITH_R_CTRL | HID_ZENHAN,	 FN_SYSTEM_SLEEP,		// Fn + Escを半全キーとしている場合 
@@ -139,10 +139,10 @@ void loop() {
 	watchdog_update ();
 	uint8_t key = nk60_get_key(pressed, _US_LAYOUT(global_setting));
 	if (!is_usb_suspended()) {
-   	if (suspended) {
+		if (suspended) {
 			suspended = false;
 			hobonicola.restore_kbd_led();
-			nk60_table_change(HID_X_FN1, false);
+			nk60_table_change(HID_X_FN1, false); // Fnキーリリース状態に戻す。
 		}
 		if (key) {
 			hobonicola.key_event(key, pressed);
@@ -153,8 +153,9 @@ void loop() {
 	} else { // usb suspended.
 		if (key != 0) {
 			usb_wakeup();
-			delay(3);
-			return;
+			suspended = false;
+			watchdog_reboot(0, 0, 2);	// reboot after a while.
+			for(;;) {}
 		}
 		if (!suspended) {
 			led_sleep();
