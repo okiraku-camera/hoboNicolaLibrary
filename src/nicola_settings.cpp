@@ -58,7 +58,7 @@ static const uint8_t set_22[] PROGMEM = 	"F : MUHENKAN/F14 -> ImeOff";
 static const uint8_t set_23[] PROGMEM = 	"O : HIRAGANA -> ImeOn";
 static const uint8_t set_24[] PROGMEM = 	"X : DISABLE NICOLA";
 static const uint8_t set_25[] PROGMEM = 	"J : HENKAN/F15 -> NICOLA ON";
-static const uint8_t set_26[] PROGMEM = 	"R : REDUCE OUPUT DELAY";
+static const uint8_t set_26[] PROGMEM = 	"R : REDUCE OUTPUT DELAY";
 static const uint8_t set_27[] PROGMEM = 	"Y : LEFT OYAYUBI -> ENTER";
 static const uint8_t set_28[] PROGMEM = 	"Z : HK/MHK -> F14/F15";
 
@@ -267,6 +267,11 @@ void HoboNicola::show_setting() {
 	if (isNicola())
 		nicola_mode = false;
 }
+
+
+#if 1
+void HoboNicola::setup_memory_select(uint8_t hid) { }
+#else
 //  指定のスロットからの読出し、または指定のスロットへの書き込みを行う。
 // 読出し後にはマイコンをリセットしたい。
 void HoboNicola::setup_memory_select(uint8_t hid) {
@@ -290,7 +295,6 @@ void HoboNicola::setup_memory_select(uint8_t hid) {
 			return;
 		}
 #endif
-
 		break;
 	case HID_P:	// 3つのセットの値を表示する。
 		{
@@ -317,7 +321,7 @@ void HoboNicola::setup_memory_select(uint8_t hid) {
 	};
 	memory_setup_option = Memory_Setup_None;
 }
-
+#endif
 
 void HoboNicola::setup_options(uint8_t hid) {
 	uint32_t new_settings = pSettings->get_data();
