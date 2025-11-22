@@ -120,6 +120,7 @@ bool HoboNicola::doFunction(const uint8_t code, bool pressed) {
 				if (pressed)
 					setup_mode = 1;
 				releaseAll();
+#if 0
 			} else if (fk == FN_MEMORY_READ_MODE) {
 				if (pressed)
 					memory_setup_option = Memory_Setup_Read;
@@ -128,6 +129,7 @@ bool HoboNicola::doFunction(const uint8_t code, bool pressed) {
 				if (pressed)
 					memory_setup_option = Memory_Setup_Write;
 				releaseAll();
+#endif
 			} else if (fk >= FN_EXTRA_START && fk < FN_EXTRA_END)
 				extra_function(fk, pressed);
 			return true;
@@ -254,13 +256,14 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 			setup_options(code);
 		return;
 	}
+#if 0
 	if (memory_setup_option == Memory_Setup_Read || memory_setup_option == Memory_Setup_Write) {	// 設定セットの選択中
 		releaseAll();
 		if (pressed)
 			setup_memory_select(code);	// 書込みまたは読出しする設定セット名の選択。
 		return;
 	}
-
+#endif
 
 	// NICOLAモードにしない場合はここでおしまい。
 	if (_DISABLE_NICOLA(global_setting)) {

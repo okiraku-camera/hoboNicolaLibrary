@@ -27,7 +27,7 @@
 #if !defined(__HOBO_NICOLA_H__)
 #define __HOBO_NICOLA_H__
 
-#define HOBO_NICOLA_LIBRARY_VERSION "177"
+#define HOBO_NICOLA_LIBRARY_VERSION "178"
 
 #if !defined(ARDUINO_ARCH_AVR)
 #define PROGMEM
@@ -184,8 +184,8 @@ private:
 
 	enum {
 		Memory_Setup_None = 0,
-		Memory_Setup_Read = 1,
-		Memory_Setup_Write = 2
+//		Memory_Setup_Read = 1,
+//		Memory_Setup_Write = 2
 	} memory_setup_option;
 	void setup_memory_select(uint8_t hid);	// 設定セットのスロットの選択。
 };
