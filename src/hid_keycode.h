@@ -248,8 +248,8 @@ static const uint8_t FN_SYSTEM_WAKEUP = 0xb2;
 static const uint8_t FN_SYSTEM_CODE_END = 0xb8;
 
 static const uint8_t FN_SETUP_MODE				= 0xb8;	// Fnキーを使って設定を開始する
-static const uint8_t FN_MEMORY_READ_MODE	= 0xb9;	// 設定セットの記憶を開始する
-static const uint8_t FN_MEMORY_WRITE_MODE	= 0xba;	// 設定セットの読出しを開始する
+//static const uint8_t FN_MEMORY_READ_MODE	= 0xb9;	// 設定セットの記憶を開始する
+//static const uint8_t FN_MEMORY_WRITE_MODE	= 0xba;	// 設定セットの読出しを開始する
 
 #define HID_X_FN1 0xbc
 #define HID_X_FN2 0xbd
