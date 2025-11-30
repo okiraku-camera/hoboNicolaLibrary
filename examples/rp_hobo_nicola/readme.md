@@ -1,9 +1,10 @@
 ## Hobo-nicola adapter implementation for rp2040 using Pico-pio-usb library
 
 To build this software you will need:
- * Arduino-pico Version 5.4.2 
+ * Arduino-pico : Version 5.4.2 
  * Adafruit TinyUSB Library for Arduino : Version 3.7.3
- * hoboNicola Library : Version 1.7.7
+ * Pico-PIO-USB Library : version 0.7.2
+ * hoboNicola Library : Version 1.7.8
  
  In Arduino Board configuration : 
   * Board: your board, ex. Seeed xiao rp2040 

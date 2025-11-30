@@ -15,9 +15,7 @@
 	You should have received a copy of the GNU General Public License
 	along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-	version 1.7.7  June. 20, 2024.
-		(Pico-pio-usb 0.6.0, Arduino-pico 3.9.3, Adafruit Tinyusb 3.2.0) 
-	Confirmed successful build after updating dependencies. (Oct. 30, 2025.)
+	version 1.7.8  Nov. 30, 2025.
 		(Pico-pio-usb 0.7.2, Arduino-pico 5.4.2, Adafruit Tinyusb 3.7.3) 
 	
 */
@@ -167,9 +165,6 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 // Function keys with Fn-key pressed.
 static const uint16_t fn_keys[] PROGMEM = {
 	HID_S | WITH_R_CTRL,	FN_SETUP_MODE,
-	HID_R | WITH_R_CTRL,	FN_MEMORY_READ_MODE,
-	HID_W | WITH_R_CTRL,	FN_MEMORY_WRITE_MODE,
-
 	HID_M,        				FN_MEDIA_MUTE,
 	HID_COMMA,						FN_MEDIA_VOL_DOWN,
 	HID_PERIOD,						FN_MEDIA_VOL_UP,

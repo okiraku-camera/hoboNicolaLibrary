@@ -18,7 +18,7 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-    Included in hoboNicola 1.7.6.		Mar. 8. 2024.
+    Included in hoboNicola 1.7.8.		Nov. 30. 2025.
 	
 		Select "Generic RP2040 (Raspberry Pi Pico/RP2040)" as target board.
 
@@ -39,8 +39,6 @@ static const uint8_t FN_BG_OFF		    = FN_EXTRA_START + 4;
 // Fnオンでscan_to_hidテーブルが切り替わるならば Fnオン時のコードで定義する。
 static const uint16_t fn_keys[] PROGMEM = {
 	WITH_R_CTRL | HID_S, FN_SETUP_MODE,
-	WITH_R_CTRL | HID_R,	FN_MEMORY_READ_MODE,	// read stored settings
-	WITH_R_CTRL | HID_W,	FN_MEMORY_WRITE_MODE,	// store current settings
 
 	WITH_R_CTRL | HID_ESCAPE,	FN_SYSTEM_SLEEP,		// Ctrl + Fn + Esc 
 	WITH_R_CTRL | HID_ZENHAN,	 FN_SYSTEM_SLEEP,		// Fn + Escを半全キーとしている場合 

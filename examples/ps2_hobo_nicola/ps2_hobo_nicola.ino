@@ -18,7 +18,7 @@
 	You should have received a copy of the GNU General Public License
 	along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
  
-  hoboNicolaLibrary 1.7.6   Mar. 8. 2024
+  hoboNicolaLibrary 1.7.8   Nov. 30. 2025
 */
 
 #include "hobo_nicola.h"
@@ -31,9 +31,6 @@ ps2_kbd* ps2;
 // Function keys with Fn-key pressed.
 static const uint16_t fn_keys[] PROGMEM = {
 	HID_S | WITH_R_CTRL,	FN_SETUP_MODE,
-	HID_R | WITH_R_CTRL,	FN_MEMORY_READ_MODE,	// read stored settings
-	HID_W | WITH_R_CTRL,	FN_MEMORY_WRITE_MODE,	// store current settings
-
 	HID_M,								FN_MEDIA_MUTE,
 	HID_COMMA,						FN_MEDIA_VOL_DOWN,
 	HID_PERIOD,						FN_MEDIA_VOL_UP,

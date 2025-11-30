@@ -18,7 +18,7 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-    Included in hoboNicola 1.7.0.		Mar. 3. 2023.
+    Included in hoboNicola 1.7.8.		Nov. 30. 2025.
 */
 #include "xd64.h"
 #include "hobo_nicola.h"
@@ -32,8 +32,6 @@
 // scan_to_hidテーブルが切り替わるならば Fnオン時のコードで定義する。
 static const uint16_t fn_keys[] PROGMEM = {
 	WITH_R_CTRL | HID_S, FN_SETUP_MODE,
-	WITH_R_CTRL | HID_F16, FN_MEMORY_READ_MODE,	// Fn + R
-	WITH_R_CTRL | HID_F19, FN_MEMORY_WRITE_MODE,	// Fn + U
 
 	WITH_R_CTRL | HID_ESCAPE,	 FN_SYSTEM_SLEEP,		// Ctrl + Fn + Esc 
 	WITH_R_CTRL | HID_ZENHAN,	 FN_SYSTEM_SLEEP,		// Fn + Escを半全キーとしている場合 

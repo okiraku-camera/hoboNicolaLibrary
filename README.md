@@ -69,11 +69,13 @@ AVRやRP2040については、オリジナルPCBでの動作も確認してい�
 hoboNicolaLibrary はArduinoのライブラリとして導入することを前提としています。
 
 現在のところ以下の開発ツールでビルドできることを確認しています。
-* Windows用のArduino(1.8.19) 
-* Visual Studio Code(1.80.0) Arduino-extension 0.6以降 とarduino-cliが導入済みであること。
+* Windows用およびLinux用(Ubuntu)の classic Arduino(1.8.19) 
+* Visual Studio Code(1.106.2), 拡張機能として Arduino Community Edition 0.7.2以降 (arduino-cli) が導入済みであること。
+* arduino-cli の利用を強く推奨します。
 * Arduino IDE (2.x.x) でもビルドできると思いますが確認していません。
 
 いくつかのUSBホストコントローラー用の実装やキーボードPCB用の実装は Arduino スケッチ (.inoファイル) として examples ディレクトリに入っているので、ターゲットとするデバイスやマイコンに応じたスケッチを開き、別名で保存するところから、開発を始めることができます。
+VSCodeやArduino IDEにおいて、保存した inoファイルをメインスケッチとして選択し、適切なビルドオプションを設定してください。
 
 ### アダプター実装例 (examples)
 
@@ -103,6 +105,17 @@ hoboNicolaLibraryを組み込んだ自作キーボード用の実装例です。
 なお、hoboNicolaライブラリを自作キーボードに適用する際には、キーボードPCBの回路構成を知っておく必要があります。
 
 ### 履歴
+*1.7.8
+  * NK60/NK61キーボードにおいてキーボードを使ったスリープからの復帰の安定性を向上。
+  * 設定全体を3種類記憶しておく機能を廃止。
+  * 以下のコアパッケージおよびライブラリで動作確認しています。
+		* Adafruit Tiny USB Arduino (3.7.3).
+		* Arduino-pico (5.4.2)
+		* PICO Pio USB (0.7.2)
+		* Adafruit nRF52 (1.6.1)
+		* Adafruit ArduinoCore-samd (1.7.13)
+		* Arduino AVR core (bundled). 	
+
 * 1.7.7
 	* お恥ずかしい話ですが、"Arduino.h" を "arduino.h" と書いてあるソースファイルがいくつかあって、Linuxでビルドできなかったので修正。
 	* **オプションU の動作を若干変更**。U(USレイアウト)を有効にしたとき、同時にオプションZ(無変換,変換キーをF14,F15キーに)も有効になる。<u>ただし、Uが有効のときにZ単独で無効にできる</u>。つまり、USレイアウトを選択していてもWindowsの無変換や変換キーのコードを出力できるようにした。これは Ubuntuのmozcで使うときF14やF15キーのコードよりも、無変換や変換キーのコードを出した方が都合が良さそうだからです。
