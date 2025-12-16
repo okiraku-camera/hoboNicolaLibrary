@@ -52,6 +52,9 @@ static const uint16_t fn_keys[] PROGMEM = {
 	WITH_R_CTRL | HID_PGUP, 	FN_BG_BRIGHTER,		// R-Ctrl + ↑ NICOLAモードのときのみ。
 	HID_IME_OFF, HID_CAPS,								// Caps --> ImeOffのとき、Fn + CapsでCapsLockにする。(US)
 	WITH_L_SHIFT | HID_IME_OFF, HID_CAPS,	// Caps --> ImeOffのとき、Shift + Fn + CapsでCapsLockにする。(JP)
+	WITH_R_CTRL | WITH_L_CTRL | HID_F1, FN_SELECT_STORED_1,	// Settings1 をアクティブ化
+	WITH_R_CTRL | WITH_L_CTRL | HID_F2, FN_SELECT_STORED_2,	// Fnを押しているのでファンクションキーとなる。
+	WITH_R_CTRL | WITH_L_CTRL | HID_F3, FN_SELECT_STORED_3,
 	0, 0
 };
 
