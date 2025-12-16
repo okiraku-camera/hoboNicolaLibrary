@@ -27,7 +27,7 @@
 #if !defined(__HOBO_NICOLA_H__)
 #define __HOBO_NICOLA_H__
 
-#define HOBO_NICOLA_LIBRARY_VERSION "178"
+#define HOBO_NICOLA_LIBRARY_VERSION "179"
 
 #if !defined(ARDUINO_ARCH_AVR)
 #define PROGMEM
@@ -148,6 +148,9 @@ protected:
 
 	static void set_nid_table(bool us_layout = true);
 
+	void show_stored_settings();
+	uint8_t current_settings;
+
 private:
 	void nicola_state(nicola_event_t e, uint16_t param = 0);
 	void moji_set(uint16_t param);
@@ -181,12 +184,5 @@ private:
 	void setup_options(uint8_t nid);
 	void show_setting();
 	void show_hex();
-
-	enum {
-		Memory_Setup_None = 0,
-//		Memory_Setup_Read = 1,
-//		Memory_Setup_Write = 2
-	} memory_setup_option;
-	void setup_memory_select(uint8_t hid);	// 設定セットのスロットの選択。
 };
 #endif

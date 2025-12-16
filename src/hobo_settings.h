@@ -77,10 +77,11 @@ class _Settings  {
 	uint32_t extra_settings;
 	uint32_t flush_count;
 
+	uint8_t current_set_index;
 
 	static _Settings* pInstance;
 
-	_Settings() : settings(0), extra_settings(0), flush_count(0) { }
+	_Settings() : settings(0), extra_settings(0), flush_count(0), current_set_index(0) { }
 	void set_at(uint16_t  addr, uint32_t data);
 	uint32_t get_at(uint16_t addr);
 	uint32_t _size();
@@ -105,6 +106,8 @@ public:
 	const uint32_t get_size() { return _size(); }
 	const uint8_t get_xd_rgb_value() { return extra_settings & 0xff ; }
 	const int16_t get_rp_pwm_max_value() { return extra_settings & 0xffff ; }
+	uint8_t get_current_set_index();
+	void save_current_set_index(uint8_t index);
 
 	void save(uint32_t new_set);
 	void save_extra(uint32_t new_extra);
@@ -113,50 +116,8 @@ public:
 
 	void set_data(uint32_t data) { settings = data; }
 
-	void save_set(int8_t index);
-	uint32_t load_set(int8_t index);
-
-#if 0
-	bool is_immediate_output() const { return (bool)(settings & OUTPUT_IMMEDIATE_ON); }
-	bool is_spc_to_left() const { return (bool)(settings & SPC_TO_LEFT); }
-	bool is_spc_to_right() const { return (bool)(settings & SPC_TO_RIGHT); }
-	bool is_spc_to_none() const { return (bool) (settings & SPC_TO_OYAYUBI) == 0; }
-	bool is_self_repeat() const { return (bool)(settings & SELF_REPEAT); }
-
-	bool is_single_oyayubi_mode() const { return (bool)(settings & SINGLE_OYAYUBI_MODE); }
-
-	bool is_eisu_to_nicola_off() const { return (bool)(settings & EISU_TO_NICOLA_OFF); }
-	bool is_kana_to_nicola_on() const { return (bool)(settings & KANA_TO_NICOLA_ON); }
-
-	bool is_scrlock_as_nicola() const { return (bool)(settings & SCR_AS_NICOLA) == 0; }
-	bool is_numlock_as_nicola() const { return (bool)(settings & NUML_AS_NICOLA); }
-
-	bool is_kanji_toggle_nicola() const { return (bool)(settings & KANJI_TOGGLE_NICOLA); }
-	bool is_kanji_to_nicola_off() const { return (bool)(settings & KANJI_TO_NICOLA_OFF); }
-	bool is_ralt_to_hiragana() const { return (bool)(settings & RALT_TO_HIRAGANA); }
-	bool is_swap_caps_ctrl() const { return (bool)(settings & SWAP_CAPS_CTRL); }
-	bool is_henkan_to_spc() const { return (bool)(settings & HENKAN_TO_SPC); }	
-	bool is_us_layout() const { return (bool)(settings & US_LAYOUT); }
-	bool is_use_kbd_suspend() const { return (bool)(settings & USE_KBD_SUSPEND); }
-	bool is_spc_to_muhenkan() const { return (bool)(settings & SPC_TO_MUHENKAN); }	
-	bool is_caps_to_imeoff() const { return (bool)(settings & CAPS_TO_IMEOFF); }
-	bool is_muhenkan_to_nicola_on() const { return (bool)(settings & MUHENKAN_TO_NICOLA_ON); }
-	bool is_muhenkan_to_imeoff() const { return (bool)(settings & MUHENKAN_TO_IMEOFF); }
-	bool is_kana_to_imeon() const { return (bool)(settings & KANA_TO_IMEON); }
-	bool is_disable_nicola() const { return (bool)(settings & DISABLE_NICOLA); }
-	bool is_henkan_to_nicola_on() const { return (bool)(settings & HENKAN_TO_NICOLA_ON); }
-	bool is_hid_reduce_delay() const { return (bool)(settings & REDUCE_DELAY); }
-	bool is_setting_z() const { return (bool)(settings & HENKAN_MUHENKAN_FK);}
-	bool is_setting_y() const { return (bool)(settings & MUHENKAN_F14_TO_LEFT);}
-
-	bool is_use_msc_notify() const { 
-#if defined(USE_TINYUSB)
-		return (bool)(settings & USE_MSC_NOTIFY); 
-#else
-		return false;
-#endif
-	}
-#endif
+	void save_set(int8_t index, uint32_t data);
+	uint32_t load_set(uint8_t index);
 };
 
 #endif //#ifndef __SETTINGS_H__

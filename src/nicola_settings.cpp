@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-	hoboNicola 1.7.6.	  Mar. 11.  2024. setup related.	
+	hoboNicola 1.7.9.	  Dec. 14.  2025. setup related.	
 		
 */
 
@@ -105,6 +105,7 @@ static char hex_char(uint8_t b) {
 		return 'A' + (b - 10);
 }
 
+#if 0
 static char* hex_string32(uint32_t val, char* hex) {
 	for (uint8_t i = 0; i < 4; ++i) {
 		uint8_t b = (val >> (8 * (3 - i))) & 0xFF;
@@ -114,19 +115,25 @@ static char* hex_string32(uint32_t val, char* hex) {
 	hex[8] = '\0';
 	return hex;
 }
+#else
+static char* hex_string8(uint32_t val, char* hex) {
+	hex[0] = hex_char((val >> 4) & 0xF);
+	hex[1] = hex_char(val & 0xF);
+	hex[2] = 0;
+	return hex;
+}
 
-#if 0
-char* to_string32(uint32_t val, char* str) {
-    char temp[11];
-    int index = 0;
-    do {
-        temp[index++] = '0' + val % 10; 
-        val /= 10;
-    } while (val > 0);
-    for (int i = 0; i < index; ++i)
-        str[i] = temp[index - 1 - i];
-    str[index] = '\0';
-		return str;
+static char* hex_string32(uint32_t val, char* hex) {
+	hex[0] = hex_char((val >> 28) & 0xF);
+	hex[1] = hex_char((val >> 24) & 0xF);
+	hex[2] = hex_char((val >> 20) & 0xF);
+	hex[3] = hex_char((val >> 16) & 0xF);
+	hex[4] = hex_char((val >> 12) & 0xF);
+	hex[5] = hex_char((val >>  8) & 0xF);
+	hex[6] = hex_char((val >>  4) & 0xF);
+	hex[7] = hex_char((val >>  0) & 0xF);
+	hex[8] = '\0';
+	return hex;
 }
 #endif
 
@@ -135,8 +142,10 @@ static const char _sep[] =	" : ";
 void HoboNicola::show_hex() {
 	char tmp[64];
 	char hex[12];
-//	sprintf(tmp, "%08lx : %08lx : %ld : %ld", pSettings->get_data(), pSettings->get_extra(), pSettings->get_flush_count(), pSettings->get_size());
-	hex_string32(pSettings->get_data(), tmp);
+
+	hex_string8(pSettings->get_current_set_index() + 1, tmp);
+	strcat(tmp, _sep);
+	strcat(tmp, hex_string32(pSettings->get_data(), hex));
 	strcat(tmp, _sep);
 	strcat(tmp, hex_string32(pSettings->get_extra(), hex));
 	strcat(tmp, _sep);
@@ -268,60 +277,23 @@ void HoboNicola::show_setting() {
 		nicola_mode = false;
 }
 
-
-#if 1
-void HoboNicola::setup_memory_select(uint8_t hid) { }
-#else
-//  指定のスロットからの読出し、または指定のスロットへの書き込みを行う。
-// 読出し後にはマイコンをリセットしたい。
-void HoboNicola::setup_memory_select(uint8_t hid) {
-	int8_t index = 0;
-	switch(hid) {
-	case HID_A:
-	case HID_B:
-	case HID_C:
-		index = hid - HID_A;
-		if (memory_setup_option == Memory_Setup_Write)
-			pSettings->save_set(index);
-		else if (memory_setup_option == Memory_Setup_Read) {
-			uint32_t data = pSettings->load_set(index);
-			pSettings->save(data);
-			global_setting = pSettings->get_data();
-		}
-#if defined(ARDUINO_ARCH_RP2040)
- 	// rp-hobo-nicolaはreboot
-		if (use_pio_usb) {
-			watchdog_reboot(0, 0, 100);
-			return;
-		}
-#endif
-		break;
-	case HID_P:	// 3つのセットの値を表示する。
-		{
-			char tmp[64] = "cur:";
-			stroke(HID_ENTER, 0);
-//			sprintf(tmp, "cur: %08lx, A: %08lx, B: %08lx, C: %08lx", pSettings->get_data(), pSettings->load_set(0), pSettings->load_set(1), pSettings->load_set(2));
-			char hex[12];
-			strcat(tmp, hex_string32(pSettings->get_data(), hex));
-			strcat(tmp, ", A:");
-			strcat(tmp, hex_string32(pSettings->load_set(0), hex));
-			strcat(tmp, ", B:");
-			strcat(tmp, hex_string32(pSettings->load_set(1), hex));
-			strcat(tmp, ", C:");
-			strcat(tmp, hex_string32(pSettings->load_set(2), hex));
-			for(uint8_t i = 0; i < strlen(tmp); i++) {
-				strokeChar(tmp[i]);
-				delay(10);
-			}
-			stroke(HID_ENTER, 0);
-		}
-		break;
-	default:
-		break;
-	};
-	memory_setup_option = Memory_Setup_None;
+void HoboNicola::show_stored_settings() {
+	char tmp[64] = "cur:";
+	stroke(HID_ENTER, 0);
+	char hex[12];
+	strcat(tmp, hex_string32(pSettings->get_data(), hex));
+	strcat(tmp, ", 1:");
+	strcat(tmp, hex_string32(pSettings->load_set(0), hex));
+	strcat(tmp, ", 2:");
+	strcat(tmp, hex_string32(pSettings->load_set(1), hex));
+	strcat(tmp, ", 3:");
+	strcat(tmp, hex_string32(pSettings->load_set(2), hex));
+	for(uint8_t i = 0; i < strlen(tmp); i++) {
+		strokeChar(tmp[i]);
+		delay(10);
+	}
+	stroke(HID_ENTER, 0);
 }
-#endif
 
 void HoboNicola::setup_options(uint8_t hid) {
 	uint32_t new_settings = pSettings->get_data();
@@ -331,6 +303,10 @@ void HoboNicola::setup_options(uint8_t hid) {
 	case HID_BSLASH:	// US backslash or HID_J_RBRACK
 	case HID_BACKSP:
 		show_setting();
+		setup_mode = false;
+		return;
+	case HID_TAB:
+		show_stored_settings();
 		setup_mode = false;
 		return;
 	case HID_1:

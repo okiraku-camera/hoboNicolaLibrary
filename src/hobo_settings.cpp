@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
   
-  hoboNicola 1.7.6.	Mar. 8. 2024	
+  hoboNicola 1.7.9.	Dec. 14. 2025	
 */
 
 #include "Arduino.h"
@@ -28,6 +28,10 @@ static const uint16_t  SETTINGS_ADDR =	0;
 static const uint16_t  EXTRA_ADDR	= 8;
 static const uint16_t  COUNTER_ADDR	= 16;
 
+//
+// 設定を記憶するスロットは8バイトずつ3つある。
+// カレントおよびExtra, counterは固定。
+//
 static const int8_t SET_COUNT = 3;
 static const uint16_t  SET_ADDR[]	= { 32, 40, 48 };
 
@@ -58,16 +62,17 @@ void _Settings::set_at(uint16_t  addr, uint32_t data) {
 }
 
 void _Settings::load() {
-	settings = get_at(SETTINGS_ADDR);
+//	settings = get_at(SETTINGS_ADDR);
 	extra_settings = get_at(EXTRA_ADDR);
 	flush_count = get_at(COUNTER_ADDR);
+	load_set(get_current_set_index());
 }
 
 void _Settings::save(uint32_t new_set) {
 	if (new_set == settings)
 		return ;
-	set_at(SETTINGS_ADDR, new_set);			
-	settings = new_set;
+//	set_at(SETTINGS_ADDR, new_set);			
+	save_set(current_set_index, new_set);
 }
 
 void _Settings::save_extra(uint32_t new_extra) {
@@ -81,19 +86,44 @@ void _Settings::save_xd_rgb_value(uint8_t val) { save_extra((extra_settings & 0x
 void _Settings::save_rp_pwm_max_value(int16_t val) { save_extra((extra_settings & 0xffff0000) | val); }
 
 
-// 現在のsettingsの値を指定のスロットに保存する。
-void _Settings::save_set(int8_t index) {
+// 設定値を現在アクティブなスロットに保存する。
+// 保存した値はsettingsにも反映される。
+void _Settings::save_set(int8_t index, uint32_t data) {
 	if (index <  0 || index >= SET_COUNT)
 		return ;
-	set_at(SET_ADDR[index], settings);
+	set_at(SET_ADDR[index], data);
+	settings = data;
 }
 
 // 指定スロットの値を返す。
-uint32_t _Settings::load_set(int8_t index) {
-	if (index < 0 || index >= SET_COUNT)
-		return 0;
-	return get_at(SET_ADDR[index]);
+uint32_t _Settings::load_set(uint8_t index) {
+	uint32_t data;
+	if (index >= SET_COUNT)
+		data = get_at(SETTINGS_ADDR);
+	else
+		data = get_at(SET_ADDR[index]);
+	settings = data;
+	return settings;
 }
+
+// 現在アクティブなスロットのインデックスを返す。
+uint8_t _Settings::get_current_set_index() {
+	uint8_t data = (extra_settings >> 16) & 0x00ff; 
+	current_set_index = data;
+	return data;
+}
+
+// アクティブスロットのインデックスを返す。
+void _Settings::save_current_set_index(uint8_t index) {
+	if (index >= SET_COUNT)
+		return ;
+	current_set_index = index;
+	uint32_t data = ((uint32_t)index << 16) & 0x00ff0000;
+	extra_settings &= 0xff00ffff;
+	save_extra(extra_settings | data);
+}
+
+
 
 // AVR ATmega32u_4
 #if defined(ARDUINO_ARCH_AVR)

@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
   
-		hoboNicola 1.7.6		Mar. 8.  2024.
+		hoboNicola 1.7.9		Dec. 14.  2025.
 */
 
 #include "hobo_nicola.h"
@@ -34,7 +34,6 @@ HoboNicola::HoboNicola()  {
 	setup_mode = dedicated_oyakeys =  false;
 	nicola_mode = use_pio_usb = 0;
 	left_oyayubi_code = right_oyayubi_code = 0;
-	memory_setup_option = Memory_Setup_None;
 	nicola_state(Init);
 }
 
@@ -112,7 +111,7 @@ bool HoboNicola::doFunction(const uint8_t code, bool pressed) {
 			uint8_t fk = LOWBYTE(PGM_READ_WORD(p));
 			if (is_media_code(fk)) 
 				send_media_code(fk, pressed);
-  		else if (is_system_code(fk)) 
+  			else if (is_system_code(fk)) 
 				send_system_code(fk, pressed);
 			else if (fk >= HID_KBD_START && fk < HID_KBD_END)	// 0x04 - 0x9f
 				key_report(fk, modifiers, pressed);
@@ -120,18 +119,16 @@ bool HoboNicola::doFunction(const uint8_t code, bool pressed) {
 				if (pressed)
 					setup_mode = 1;
 				releaseAll();
-#if 0
-			} else if (fk == FN_MEMORY_READ_MODE) {
-				if (pressed)
-					memory_setup_option = Memory_Setup_Read;
-				releaseAll();
-			} else if (fk == FN_MEMORY_WRITE_MODE) {
-				if (pressed)
-					memory_setup_option = Memory_Setup_Write;
-				releaseAll();
-#endif
 			} else if (fk >= FN_EXTRA_START && fk < FN_EXTRA_END)
 				extra_function(fk, pressed);
+			else if (fk == FN_SELECT_STORED_1 || fk == FN_SELECT_STORED_2 || fk == FN_SELECT_STORED_3) {
+				if (pressed) {	// 設定データの切り替え
+					uint8_t index = fk - FN_SELECT_STORED_1;
+					pSettings->save_current_set_index(index);
+					global_setting = pSettings->load_set(index);
+				}
+				releaseAll();
+			}
 			return true;
 		}
 		p++;
@@ -256,15 +253,6 @@ void HoboNicola::key_event(uint8_t code, bool pressed) {
 			setup_options(code);
 		return;
 	}
-#if 0
-	if (memory_setup_option == Memory_Setup_Read || memory_setup_option == Memory_Setup_Write) {	// 設定セットの選択中
-		releaseAll();
-		if (pressed)
-			setup_memory_select(code);	// 書込みまたは読出しする設定セット名の選択。
-		return;
-	}
-#endif
-
 	// NICOLAモードにしない場合はここでおしまい。
 	if (_DISABLE_NICOLA(global_setting)) {
 		key_report(code, modifiers, pressed);
@@ -375,8 +363,7 @@ static const unsigned long memory_blink_interval = 200;
 void HoboNicola::idle() {
 	unsigned long now = millis();
 	timer_tick(now);	// drive state-machine.
-//	if (!setup_mode && !keyboard_lock) {
-	if (!setup_mode && (memory_setup_option == Memory_Setup_None)) {
+	if (!setup_mode) {
 		nicola_led(isNicola());
     blink_timer = 0;
 	} else {
