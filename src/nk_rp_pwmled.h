@@ -7,3 +7,6 @@ void rp_pwm_brighter();
 
 void set_rp_pwm_max_value(int16_t val);
 int16_t get_rp_pwm_max_value();
+
+bool is_rp_pwm_running();
+

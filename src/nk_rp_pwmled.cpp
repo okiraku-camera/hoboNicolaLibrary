@@ -41,13 +41,16 @@ extern "C" void isr_rp_pwm_wrap() {
 		if (pwm_level < pwm_upper_thr_level)
 			pwm_level += (_max_level / 100);
 		else
-			pwm_level += (_max_level / 50);
+			pwm_level += (_max_level / 80);
 		if (pwm_level >= _max_level) {
 			pwm_dir = 0;
-			pwm_level = _max_level;
+			pwm_level = _max_level - 30;
 		}
 	} else  {
-		pwm_level -= (_max_level / 100);
+		if (pwm_level > pwm_upper_thr_level)
+			pwm_level -= (_max_level / 80);
+		else	
+			pwm_level -= (_max_level / 125);
 		if (pwm_level <= pwm_min_level) {
 			pwm_dir = 1;		
 			pwm_level = pwm_min_level;
@@ -81,6 +84,10 @@ void rp_start_pwm() {
 
 void rp_stop_pwm() {
 	pwm_dir = 2;
+}
+
+bool is_rp_pwm_running() {
+	return (pwm_dir != 2);
 }
 
 void rp_pwm_dimmer() {
