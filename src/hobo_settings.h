@@ -77,12 +77,10 @@ class _Settings  {
 	uint32_t extra_settings;
 	uint32_t flush_count;
 
-	uint8_t current_set_index;
-
 	static _Settings* pInstance;
 
-	_Settings() : settings(0), extra_settings(0), flush_count(0), current_set_index(0) { }
-	void set_at(uint16_t  addr, uint32_t data);
+	_Settings() : settings(0), extra_settings(0), flush_count(0) { }
+	void set_at(uint16_t  addr, uint32_t data, bool flush_now = true);
 	uint32_t get_at(uint16_t addr);
 	uint32_t _size();
 	void _write(uint16_t addr, uint32_t value);

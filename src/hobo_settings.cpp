@@ -55,14 +55,14 @@ uint32_t _Settings::get_at(uint16_t  addr) {
 	return a;
 }
 
-void _Settings::set_at(uint16_t  addr, uint32_t data) {
+void _Settings::set_at(uint16_t  addr, uint32_t data, bool flush_now) {
 	_write(addr, data);
 	_write(COUNTER_ADDR, ++flush_count);
-	flush();
+	if (flush_now)
+		flush();
 }
 
 void _Settings::load() {
-//	settings = get_at(SETTINGS_ADDR);
 	extra_settings = get_at(EXTRA_ADDR);
 	flush_count = get_at(COUNTER_ADDR);
 	load_set(get_current_set_index());
@@ -71,8 +71,7 @@ void _Settings::load() {
 void _Settings::save(uint32_t new_set) {
 	if (new_set == settings)
 		return ;
-//	set_at(SETTINGS_ADDR, new_set);			
-	save_set(current_set_index, new_set);
+	save_set(get_current_set_index(), new_set);
 }
 
 void _Settings::save_extra(uint32_t new_extra) {
@@ -91,8 +90,9 @@ void _Settings::save_rp_pwm_max_value(int16_t val) { save_extra((extra_settings 
 void _Settings::save_set(int8_t index, uint32_t data) {
 	if (index <  0 || index >= SET_COUNT)
 		return ;
-	set_at(SET_ADDR[index], data);
 	settings = data;
+	set_at(SETTINGS_ADDR, data, false);
+	set_at(SET_ADDR[index], data);
 }
 
 // 指定スロットの値を返す。
@@ -109,7 +109,6 @@ uint32_t _Settings::load_set(uint8_t index) {
 // 現在アクティブなスロットのインデックスを返す。
 uint8_t _Settings::get_current_set_index() {
 	uint8_t data = (extra_settings >> 16) & 0x00ff; 
-	current_set_index = data;
 	return data;
 }
 
@@ -117,13 +116,10 @@ uint8_t _Settings::get_current_set_index() {
 void _Settings::save_current_set_index(uint8_t index) {
 	if (index >= SET_COUNT)
 		return ;
-	current_set_index = index;
-	uint32_t data = ((uint32_t)index << 16) & 0x00ff0000;
-	extra_settings &= 0xff00ffff;
-	save_extra(extra_settings | data);
+	uint32_t data = (uint32_t)index << 16;
+	data &= 0x00ff0000;
+	save_extra((extra_settings & 0xff00ffff) | data);
 }
-
-
 
 // AVR ATmega32u_4
 #if defined(ARDUINO_ARCH_AVR)

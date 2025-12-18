@@ -124,8 +124,18 @@ bool HoboNicola::doFunction(const uint8_t code, bool pressed) {
 			else if (fk == FN_SELECT_STORED_1 || fk == FN_SELECT_STORED_2 || fk == FN_SELECT_STORED_3) {
 				if (pressed) {	// 設定データの切り替え
 					uint8_t index = fk - FN_SELECT_STORED_1;
-					pSettings->save_current_set_index(index);
-					global_setting = pSettings->load_set(index);
+				//	if (index !=  pSettings->get_current_set_index()) {
+						pSettings->save_current_set_index(index);
+#if defined(ARDUINO_ARCH_RP2040)
+ 	// rp-hobo-nicolaの場合、rebootしないと入力処理が停止してしまう。eeprom libraryのcommit() がcore1に影響しているのか
+						if (use_pio_usb ) { 
+							releaseAll();
+							watchdog_reboot(0, 0, 10);	// reboot after a while.
+							return true;
+						}
+#endif
+						global_setting = pSettings->load_set(index);
+				//	}
 				}
 				releaseAll();
 			}

@@ -416,7 +416,7 @@ void HoboNicola::setup_options(uint8_t hid) {
 	setup_mode = false;
 	if (save_set != new_settings) {
 		pSettings->save(new_settings);
-		global_setting = pSettings->get_data();
+		global_setting = new_settings;
 		if (new_settings & REDUCE_DELAY)
 			set_hid_output_delay(HID_DELAY_SHORT);
 		else
