@@ -55,7 +55,7 @@ hoboNicolaアダプターは、コントローラとして使うマイコンと�
 * nRF52840 (Adafruit nRF52 Boards 1.6.0)
   * Seeed Studio XIAO nRF52840
   * SwitchScience ISP1807 Micro Board
-* RP2040 (Arduino-pico 3.7.2)
+* RP2040 (Arduino-pico 3.9.5)
   * Seeed Studio XIAO RP2040
   * Adafruit KB2040
   * Raspberry Pi Pico
@@ -105,26 +105,25 @@ hoboNicolaLibraryを組み込んだ自作キーボード用の実装例です。
 なお、hoboNicolaライブラリを自作キーボードに適用する際には、キーボードPCBの回路構成を知っておく必要があります。
 
 ### 履歴
-*1.7.9
- * たとえば、Windows用、MacOS用といった設定を記憶しておき、少ないキー操作で変更できるようにした。 
-   * キーボード動作用に参照・更新する **CurrentSettings** は、不揮発領域にある3つの **StoredSettings** のうちの1つのコピーである。
-   * ある時点で選択されている設定データのことを、**ActiveSettings** と称する。
-   * CurrentSettings の内容はキーボード操作で変更できる。このとき、コピー元の StoredSettings も変更される。
-   * 定義可能なキー操作により、ActiveSettings を変更できる。選択された StoredSettingsの内容が CurrentSettingsにコピーされキーボード動作に反映される。
-   * 初めて ActiveSettings となった設定データの内容は全0である。
-   * 現時点で、このためのキー操作を実装しているのは、examples/nk60_hobo_nicola のみ。
- * nk61 rev2 PCBから、NICOLA LED用のハイサイドスイッチが AP2281-3WG-7 から AP22811AW5-7 に変更になった。これはJLCPCBでの在庫切れのため。結果として NICOLA LEDの PWMの明滅動作に不快な動作が生じたので、ソフトウェアで若干の対応を行った。従来の nk60/nk61 とは視覚的な要素に変化が生じている。
-
-*1.7.8
+* 1.7.9
+  * たとえば、Windows用、MacOS用といった設定を記憶しておき、少ないキー操作で変更できるようにしました。 
+  * キーボード動作用に参照・更新する **CurrentSettings** は、不揮発領域にある3つの **StoredSettings** のうちの1つのコピーである。
+  * ある時点で選択されている設定データのことを、**ActiveSettings** と称する。
+  * CurrentSettings の内容はキーボード操作で変更できる。このとき、コピー元の StoredSettings も変更される。
+  * 定義可能なキー操作 (たとえば、Fn + Ctrl + 1, 2, 3 ) により、ActiveSettings を変更できる。選択された StoredSettingsの内容が CurrentSettingsにコピーされキーボード動作に反映される。
+  * 初めて ActiveSettings となった設定データの内容は全0である。
+  * 現時点で、このためのキー操作を実装しているのは、examples/nk60_hobo_nicola と examples/rp_hobo_nicola の２つ。
+  * nk61 rev2 PCBから、NICOLA LED用のハイサイドスイッチが AP2281-3WG-7 から AP22811AW5-7 に変更になった。これはJLCPCBでの在庫切れのため。結果として NICOLA LEDの PWMの明滅動作が変化してしまったので、ソフトウェアで若干の対応を行った。ただ、従来の nk60/nk61 とは視覚的な要素に変化が生じているので今後も変更の予定。
+	* 以下のコアパッケージおよびライブラリで動作確認しています。
+		* Adafruit Tiny USB Arduino (3.2.0).
+		* Arduino-pico (3.9.5)
+		* PICO Pio USB (0.6.1)
+		* ※ AVR, nRF52, SAMD21での動作確認は行っていない。
+  
+* 1.7.8
   * NK60/NK61キーボードにおいてキーボードを使ったスリープからの復帰の安定性を向上。
-  * 設定全体を3種類記憶しておく機能を廃止。
-  * 以下のコアパッケージおよびライブラリで動作確認しています。
-		* Adafruit Tiny USB Arduino (3.7.3).
-		* Arduino-pico (5.4.2)
-		* PICO Pio USB (0.7.2)
-		* Adafruit nRF52 (1.6.1)
-		* Adafruit ArduinoCore-samd (1.7.13)
-		* Arduino AVR core (bundled). 	
+  * 設定全体を3種類記憶しておく機能を暫定的に廃止し作り直すことにした。
+  * このバージョンでのリリースは無し。　
 
 * 1.7.7
 	* お恥ずかしい話ですが、"Arduino.h" を "arduino.h" と書いてあるソースファイルがいくつかあって、Linuxでビルドできなかったので修正。
