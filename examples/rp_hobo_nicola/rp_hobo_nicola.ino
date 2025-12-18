@@ -15,9 +15,10 @@
 	You should have received a copy of the GNU General Public License
 	along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-	version 1.7.8  Nov. 30, 2025.
-		(Pico-pio-usb 0.7.2, Arduino-pico 5.4.2, Adafruit Tinyusb 3.7.3) 
-	
+	version 1.7.9  Dec. 15, 2025.
+	Requires:
+		hoboNicolaLibrary 1.7.9
+		Pico-pio-usb 0.6.1, Arduino-pico 3.7.2, Adafruit Tinyusb 2.3.0 
 */
 
 #include "Adafruit_USBH_Host.h"
@@ -58,6 +59,7 @@ uint8_t prev_kbd_led_state = 0xff;
 void setup1() {
 	init_device_info();
 	delay(20);  // wait a while for core0 setup() done.
+
 	pio_usb_configuration_t pio_cfg = PIO_USB_DEFAULT_CONFIG;
 	pio_cfg.pin_dp = usbh_dp_gpio;
 	USBHost.configure_pio_usb(1, &pio_cfg);
@@ -165,6 +167,9 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 // Function keys with Fn-key pressed.
 static const uint16_t fn_keys[] PROGMEM = {
 	HID_S | WITH_R_CTRL,	FN_SETUP_MODE,
+	WITH_R_CTRL | HID_1, FN_SELECT_STORED_1,	// Settings1 をアクティブ化
+	WITH_R_CTRL | HID_2, FN_SELECT_STORED_2,
+	WITH_R_CTRL | HID_3, FN_SELECT_STORED_3,
 	HID_M,        				FN_MEDIA_MUTE,
 	HID_COMMA,						FN_MEDIA_VOL_DOWN,
 	HID_PERIOD,						FN_MEDIA_VOL_UP,
@@ -207,7 +212,7 @@ void loop() {
 				multicore_reset_core1();  // stop core1
 				suspended = true;
 		}
-		delay(1000);
+		delay(500);
 	} else {
 		if ( suspended ) {
 			suspended = false;
