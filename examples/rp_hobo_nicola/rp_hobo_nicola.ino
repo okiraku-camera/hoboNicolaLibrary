@@ -18,7 +18,7 @@
 	version 1.7.9  Dec. 15, 2025.
 	Requires:
 		hoboNicolaLibrary 1.7.9
-		Pico-pio-usb 0.6.1, Arduino-pico 3.7.2, Adafruit Tinyusb 2.3.0 
+		Pico-pio-usb 0.6.1, Arduino-pico 3.9.5, Adafruit Tinyusb 2.3.0 
 */
 
 #include "Adafruit_USBH_Host.h"

@@ -18,11 +18,8 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-    Included in hoboNicola 1.7.8.		Nov. 30. 2025.
-
-	Confirmed successful build after updating dependencies. (Oct. 30, 2025.)
-		hoboNicola Library 1.7.8
-		(Pico-pio-usb 0.7.2, Arduino-pico 5.4.2, Adafruit Tinyusb 3.7.3) 
+    Included in hoboNicola 1.7.9.		Nov. 30. 2025.
+		(Pico-pio-usb 0.6.1, Arduino-pico 3.9.5, Adafruit Tinyusb 2.3.0) 
 		Make sure to install the required libraries and select the correct board:
 		Select "Generic RP2040 (Raspberry Pi Pico/RP2040)" as target board.
 */
