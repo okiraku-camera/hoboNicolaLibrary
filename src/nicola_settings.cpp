@@ -145,7 +145,7 @@ void HoboNicola::show_hex() {
 
 	hex_string8(pSettings->get_current_set_index() + 1, tmp);
 	strcat(tmp, _sep);
-	strcat(tmp, hex_string32(pSettings->get_data(), hex));
+	strcat(tmp, hex_string32(global_setting, hex));
 	strcat(tmp, _sep);
 	strcat(tmp, hex_string32(pSettings->get_extra(), hex));
 	strcat(tmp, _sep);
@@ -278,16 +278,20 @@ void HoboNicola::show_setting() {
 }
 
 void HoboNicola::show_stored_settings() {
-	char tmp[64] = "cur:";
-	stroke(HID_ENTER, 0);
+
+	char tmp[64];
 	char hex[12];
-	strcat(tmp, hex_string32(pSettings->get_data(), hex));
+	hex_string8(pSettings->get_current_set_index() + 1, tmp);	// current index.
+	strcat(tmp, ", cur:");
+	strcat(tmp, hex_string32(global_setting, hex));
 	strcat(tmp, ", 1:");
 	strcat(tmp, hex_string32(pSettings->load_set(0), hex));
 	strcat(tmp, ", 2:");
 	strcat(tmp, hex_string32(pSettings->load_set(1), hex));
 	strcat(tmp, ", 3:");
 	strcat(tmp, hex_string32(pSettings->load_set(2), hex));
+
+	stroke(HID_ENTER, 0);
 	for(uint8_t i = 0; i < strlen(tmp); i++) {
 		strokeChar(tmp[i]);
 		delay(10);
