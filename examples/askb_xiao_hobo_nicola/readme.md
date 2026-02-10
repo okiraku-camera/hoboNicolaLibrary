@@ -4,7 +4,7 @@
 
 Copyright (c) Takeshi Higasa. Licensed under the GPL3.0.
 
-version 1.7.9 Jan. 18 2026 
+version 1.7.9 Feb. 11, 2026 
 
 * To build this software you will need :
   * ASkeyboard (Seeed xiaoduino SAMD21 version). https://okiraku-camera.tokyo/blog/?p=14991
@@ -19,15 +19,22 @@ version 1.7.9 Jan. 18 2026
 * Firmware Update : 
   * Arduino CDC method.
 
-## Current layout (HID base) : 
+# レイアウトについて 
+* 専用親指キーでの入力操作を評価できるように、2つの動作モードを用意した。
+* リセット時には通常モードとして開始する。
+* 専用親指キーモードとするためには、Fn + 左Ctrl + 右Ctrl + A によって切り替える。
 
-  [Pause] [Han/Zen] F1 F2 F3 F4 F5 F6 F7 F8 F9 F10 <br/>
-  [Esc] 1 2 3 4 5 6 7 8 9 0 - ^ \ [BackSpace] <br/>
-  [Tab]  Q W E R T Y U I O P @ [ <br/>
-  [L-Ctrl] A S D F G H J K L ; : ] [Enter]<br/>
-  [L-Shift] Z X C V B N M , . / _ [R-Shift]<br/>
-  [Caps][Gui][Alt][Hira][L-Oya][R-Oya][Space][R-Ctrl][Fn]<br/>
-  &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;[Caps][Hira] <br/>
+## 通常モード
+* 2つの親指キーは、同時打鍵とコードの出力の2つの機能を備える。
+* 親指キーの下にある2つのキーは、IME操作用に ImeOffとひらがなキーとしている。
 
-  L-Oya = Muhenkan
-  R-Oya = Henkan
+![](layout/askb_xiao_nicola_legend.png)
+
+## 専用親指キーモード
+* 2つの親指キーは同時打鍵専用となり単独打鍵ではコードを出力しない。
+* 下の2つのキーは無変換キーと変換キーのコードを出力する。
+* IMEのオフは英数キーで行えるが、押しにくい。Fn + 左親指キーでもIMEオフにできる。
+
+![](layout/askb_xiao_original_legend.png)
+
+以上）
