@@ -16,6 +16,7 @@
   along with "ASKeyboard (askb_xiao_rev01)".  If not, see <http://www.gnu.org/licenses/>.
 
   SAMD21 version 1.0.0  August. 20, 2022.
+    version 1.7.9 Feb.11, 2026.
 */
 #include "Adafruit_TinyUSB.h"
 #include "hobo_sleep.h"
@@ -34,9 +35,12 @@
 #define LED2  1
 #define LED3  2
 
+static const uint8_t FN_ASKB_MODE_CHANGE	= FN_EXTRA_START;
+
 static const uint16_t fn_keys[] PROGMEM = {
   HID_S     | WITH_R_CTRL , FN_SETUP_MODE,
   HID_ESCAPE | WITH_R_CTRL,  FN_SYSTEM_SLEEP,   // Ctrl + App + Esc 
+ 	HID_A | WITH_L_CTRL | WITH_R_CTRL, FN_ASKB_MODE_CHANGE, // キー設定を変更する。
   0, 0
 };
 
@@ -54,6 +58,8 @@ public:
 	void fn_event(uint8_t key, bool pressed)	{ table_change(key, pressed);  } 
 	const bool has_fn_keytable() { return true; }
 
+  void extra_function(uint8_t k, bool pressed) ;
+
 };
 
 askb_hobo_nicola hobo_nicola;
@@ -67,7 +73,33 @@ void askb_key_event(uint8_t key, bool keyon) {
 #endif
     return;
   }
-   hobo_nicola.key_event(key, keyon);
+// 専用親指キーを使うときにコードをすり替える。
+  if (!hobo_nicola.has_dedicated_oyakeys()) {
+    switch(key) {
+    case HID_F23:
+      key = HID_IME_OFF;
+      break;
+    case HID_F24:
+      key = HID_HIRAGANA;
+      break;
+    case DEDICATED_OYA_LEFT:
+      key = HID_MUHENKAN;
+      break;
+    case DEDICATED_OYA_RIGHT:
+      key = HID_SPACE;
+      break;
+    };
+  } else {
+    switch(key) {
+    case HID_F23:
+      key = HID_MUHENKAN;
+      break;
+    case HID_F24:
+      key = HID_HENKAN;
+      break;
+    };
+  }
+  hobo_nicola.key_event(key, keyon);
 }
 
 void led_off() {
@@ -77,6 +109,23 @@ void led_off() {
   HoboNicola::last_hid_led_state = 0;
 }
 
+
+
+void askb_hobo_nicola::extra_function(uint8_t k, bool pressed) {
+	if (!pressed)
+		return ;  
+
+  if (k == FN_ASKB_MODE_CHANGE) {
+    if (has_dedicated_oyakeys()) {  // 専用親指キーモードかどうか
+    	set_oyayubi_keys(false, 0, 0);
+    } else { 
+    	set_oyayubi_keys(true, DEDICATED_OYA_LEFT, DEDICATED_OYA_RIGHT);
+    }
+
+  }
+}
+
+
 #include "hobo_settings.h"
 void setup() {
   init_askb_xiao();
@@ -84,6 +133,7 @@ void setup() {
   pinMode(LED2, OUTPUT);
   pinMode(LED3, OUTPUT);
   led_off();
+
 // samd21では、eepromの役割としてFlashStorageライブラリを使っているでファーム更新でそれまでの設定が消えてしまう。
 // そのため好ましい設定をここでやってしまう。
   uint32_t tmp_set = global_setting;
@@ -91,7 +141,7 @@ void setup() {
   tmp_set |= SCR_AS_NICOLA; // clear SCR_AS_NICOLA
   tmp_set |= KANA_TO_NICOLA_ON;
   tmp_set |= EISU_TO_NICOLA_OFF;
-  tmp_set |= HENKAN_TO_SPC; // 親指右は変換キーに割り当てているが、空白に変更する。
+ // tmp_set |= HENKAN_TO_SPC; // 親指右は変換キーに割り当てているが、空白に変更する。
   tmp_set |= SPC_TO_RIGHT;  // 空白キーは右親指キーとして機能させる。
   tmp_set &= ~SPC_TO_LEFT;
   if (save_set != tmp_set) {

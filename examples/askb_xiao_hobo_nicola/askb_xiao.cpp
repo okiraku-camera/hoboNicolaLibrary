@@ -20,6 +20,7 @@
 
 #include "arduino.h"
 #include <SPI.h>
+#include "askb_xiao.h"
 //#define SPI_CLOCK 8000000
 #define SPI_CLOCK 10000000
 // クロックを10MHzに指定すると実際は12MHzになっちゃうが、動いてるんで。
@@ -189,7 +190,7 @@ static const uint8_t scan_to_hid_table[2][SW_COUNT] = {
 //	
 // HID Usage ID,	scancode	Keyname
 {	HID_PAUSE,		// 01		STOP --> Pause
-	HID_ZENHAN,		// 02		COPY --> Han/Zen.
+	HID_PRNTSCRN,	// 02		COPY --> PrintScreen.
 	HID_F1,			// 03		F1
 	HID_F2,			// 04
 	HID_F3,			// 05
@@ -260,16 +261,19 @@ static const uint8_t scan_to_hid_table[2][SW_COUNT] = {
 	HID_L_GUI,		// 70		GRPH --> Left GUI
 	HID_L_ALT,		// 71		KANA --> Left Alt.
 	HID_HIRAGANA,	// 72		TAB(NFER) --> Hiragana.
-	HID_MUHENKAN,	// 73		Left OYAYUBI  MuHenkan
-	HID_HENKAN,		// 74		Right OYAYUBI	Henkan.
+//	HID_MUHENKAN,	// 73		Left OYAYUBI  MuHenkan
+//	HID_HENKAN,		// 74		Right OYAYUBI	Henkan.
+	DEDICATED_OYA_LEFT,		// 73
+	DEDICATED_OYA_RIGHT,	// 74
 	HID_SPACE,		// 75		Space.
 	HID_R_CTRL,		// 76		CTRL(XFER) --> Right Ctrl.
-//	HID_APP,		// 77		ALT --> App
 	HID_X_FN1,		// 77		ALT --> Fn
 //	HID_IME_OFF,		// 78		NFER
 //	HID_IME_ON,			// 79		XFER  IME_ONにすると前回オン時の文字種に戻るのでNG
-	HID_CAPS,		// 78		NFER
-	HID_HIRAGANA,	// 79		XFER
+//	HID_CAPS,		// 78		NFER
+//	HID_HIRAGANA,	// 79		XFER
+	HID_F23,		// 78		NFER
+	HID_F24,	// 79		XFER
 	HID_PGUP,		// 80		ROLL UP
 	HID_PGDOWN,		// 81		ROLL DOWN
 	HID_INSERT,		// 82		INS --> Insert	
@@ -284,8 +288,8 @@ static const uint8_t scan_to_hid_table[2][SW_COUNT] = {
 	HID_R_ARROW,	// 91		→
 	HID_D_ARROW		// 92		↓
 },
-{	HID_PAUSE,		// 01		STOP --> Pause
-	HID_ZENHAN,		// 02		COPY --> Han/Zen.
+{	HID_SCRLOCK,		// 01		STOP --> Pause
+	HID_PRNTSCRN,	// 02		COPY --> Han/Zen.
 	HID_F11,		// 03		F1 --> F11
 	HID_F12,		// 04
 	HID_F13,		// 05
@@ -293,9 +297,9 @@ static const uint8_t scan_to_hid_table[2][SW_COUNT] = {
 	HID_F15,		// 07
 	HID_F16,		// 08
 	HID_F17,		// 09
-	HID_PRNTSCRN,	// 10	F8
-	HID_SCRLOCK,	// 11	F9
-	HID_PAUSE,		// 12	F10
+	HID_F18,		// 10	F8
+	HID_F19,		// 11	F9
+	HID_F20,		// 12	F10
 	HID_ESCAPE,		// 13	ESC --> Esc
 	HID_1,			// 14	1
 	HID_2,			// 15
@@ -355,16 +359,19 @@ static const uint8_t scan_to_hid_table[2][SW_COUNT] = {
 	HID_CAPS,		// 69		CAPS --> Caps (Eisu)
 	HID_L_GUI,		// 70		GRPH --> Left GUI
 	HID_L_ALT,		// 71		KANA --> Left Alt.
-	HID_HIRAGANA,	// 72		TAB(NFER) --> Hiragana.
-	HID_MUHENKAN,	// 73		Left OYAYUBI  MuHenkan
-	HID_HENKAN,		// 74		Right OYAYUBI	Henkan.
+	HID_APP,		// 72		TAB(NFER) --> Hiragana.
+//	HID_MUHENKAN,	// 73		Left OYAYUBI  MuHenkan
+//	HID_HENKAN,		// 74		Right OYAYUBI	Henkan.
+	HID_IME_OFF,		// 73
+	HID_IME_ON,	// 74
 	HID_SPACE,		// 75		Space.
 	HID_R_CTRL,		// 76		CTRL(XFER) --> Right Ctrl.
-//	HID_APP,		// 77		ALT --> App
 	HID_X_FN1,		// 77		ALT --> Fn
-	HID_IME_OFF,		// 78		NFER
-//	HID_IME_ON,			// 79		XFER  IME_ONにすると前回オン時の文字種に戻るのでNG
-	HID_HIRAGANA,	// 79		XFER
+//	HID_CAPS,		// 78		NFER
+//	HID_HIRAGANA,	// 79		XFER
+	HID_F23,		// 78		NFER
+	HID_F24,	// 79		XFER
+
 	HID_PGUP,		// 80		ROLL UP
 	HID_PGDOWN,		// 81		ROLL DOWN
 	HID_INSERT,		// 82		INS --> Insert	
