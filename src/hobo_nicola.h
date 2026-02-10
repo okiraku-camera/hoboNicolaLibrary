@@ -90,8 +90,14 @@ public:
 	void nicola_off() { nicola_mode = 0; }
 	
 // 親指キーのコードを変換、無変換、空白以外で指定したいようなとき
-	void set_oyayubi_keys(uint8_t left, uint8_t right) { left_oyayubi_code = left; right_oyayubi_code = right; }
-	void has_dedicated_oyakeys(bool f = true) { dedicated_oyakeys = f; }
+
+	void set_oyayubi_keys(bool on, uint8_t left, uint8_t right) { 
+		dedicated_oyakeys = on;
+		left_oyayubi_code = left; 
+		right_oyayubi_code = right; 
+	}
+
+	bool has_dedicated_oyakeys() { return dedicated_oyakeys; }
 
 	enum {
 		Initial_State = 0,		// 初期状態
