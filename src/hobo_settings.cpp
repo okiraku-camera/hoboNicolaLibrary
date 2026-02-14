@@ -55,6 +55,13 @@ uint32_t _Settings::get_at(uint16_t  addr) {
 	return a;
 }
 
+bool _Settings::check_at(uint16_t  addr) { 
+	uint32_t a = *((uint32_t*)&nvm_data._m[addr]);
+	uint32_t b = *((uint32_t*)&nvm_data._m[addr+4]);
+	return a == ~b;
+}
+
+
 void _Settings::set_at(uint16_t  addr, uint32_t data, bool flush_now) {
 	_write(addr, data);
 	_write(COUNTER_ADDR, ++flush_count);
@@ -148,8 +155,9 @@ void _Settings::flush() {
 FlashStorage(flash_store, nvm_data_t);
 
 void _Settings::begin() {
-	memset(&nvm_data, 0, sizeof(nvm_data_t));
-  flash_store.read(&nvm_data);
+	flash_store.read(&nvm_data);
+	if (!check_at(SETTINGS_ADDR) || !check_at(EXTRA_ADDR))
+		memset(&nvm_data, 0, sizeof(nvm_data_t));
 }
 void _Settings::flush() {  flash_store.write(nvm_data); }
 
