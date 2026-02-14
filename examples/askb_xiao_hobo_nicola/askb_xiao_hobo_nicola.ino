@@ -109,8 +109,6 @@ void led_off() {
   HoboNicola::last_hid_led_state = 0;
 }
 
-
-
 void askb_hobo_nicola::extra_function(uint8_t k, bool pressed) {
 	if (!pressed)
 		return ;  
@@ -118,10 +116,11 @@ void askb_hobo_nicola::extra_function(uint8_t k, bool pressed) {
   if (k == FN_ASKB_MODE_CHANGE) {
     if (has_dedicated_oyakeys()) {  // 専用親指キーモードかどうか
     	set_oyayubi_keys(false, 0, 0);
+      pSettings->save_extra(0);
     } else { 
     	set_oyayubi_keys(true, DEDICATED_OYA_LEFT, DEDICATED_OYA_RIGHT);
+      pSettings->save_extra(1);
     }
-
   }
 }
 
@@ -148,6 +147,12 @@ void setup() {
     pSettings->save(tmp_set);
     global_setting = tmp_set;
   }
+// 親指キーを専用化する設定かどうか。
+  if (pSettings->get_extra() & 1)
+    hobo_nicola.set_oyayubi_keys(true, DEDICATED_OYA_LEFT, DEDICATED_OYA_RIGHT);
+  else
+    hobo_nicola.set_oyayubi_keys(false, 0, 0);
+
   HoboNicola::init_hobo_nicola(&hobo_nicola);
   delay(10);
 }
