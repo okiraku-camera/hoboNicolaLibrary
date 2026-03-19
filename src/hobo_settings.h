@@ -87,6 +87,8 @@ class _Settings  {
 	void begin();
 	void load();
 	void flush();
+	bool check_at(uint16_t  addr); 
+
 
 public:
 	static _Settings* Create() {
