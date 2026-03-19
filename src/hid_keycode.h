@@ -3,22 +3,22 @@
 
 /**
 	hid_keycode.h some definitions(HID keycode, Modifiers masks, LED, etc..) of "Hobo-nicola keyboard and adapter library".
-  Copyright (c) 2020-2023 Takeshi Higasa
-  
-  This file is part of "Hobo-nicola keyboard and adapter library".
+  Copyright (c) Takeshi Higasa, okiraku-camera.tokyo
+  This software is released under the MIT License.
+  http://opensource.org/licenses/mit-license.php
+   
+  HID Usage ID values for hoboNicola keyboard and adapter library.
+  0x00 - 0x03 : Undefined or Error code.
+  0x04 - 0x9f : basic key codes area.
+  0xa0 - 0xaf : consumer control codes (media keys)
+  0xb0 - 0xb7 : system control codes (power, sleep, wakeup)
+  0xb8 - 0xbf : extended function keys (e.g. Fn keys) 
+  0xc0 - 0xcf : extra function keys (e.g. Fn+modifier keys) 
+  0xd0 - 0xdf : internal macro keys (not sent to host, used for internal processing)
+  0xe0 - 0xe7 : modifier keys (Ctrl, Shift, Alt, GUI) 
+  0xe8 - 0xef : reserved
+  0xf0 - 0xff : vendor defined
 
-  "Hobo-nicola keyboard and adapter" is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by the Free Software Foundation, 
-  either version 3 of the License, or (at your option) any later version.
-
-  "Hobo-nicola keyboard and adapter" is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
-  FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
-
-  Included in hoboNicola 1.5.0.		Aug. 10. 2021.
 
 */
 
@@ -193,6 +193,8 @@
 #define HID_IME_OFF	HID_LANG2
 #define HID_KBD_END	0x9f
 
+#define IS_BASIC_KEYCODE(a) ((a) >= HID_KBD_START && (a) <= HID_KBD_END)
+
 // standard modifiers
 #define HID_MODIFIERS   0xe0
 #define HID_MODIFIERS_MAX   0xe8
@@ -205,6 +207,8 @@
 #define HID_R_SHIFT	0xe5
 #define HID_R_ALT	0xe6
 #define HID_R_GUI	0xe7
+
+#define IS_MODIFIER_KEYCODE(a) ((a) >= HID_MODIFIERS && (a) <= HID_R_GUI) 
 
 #define HID_L_CTRL_MASK 1
 #define HID_L_SHIFT_MASK 2
@@ -222,52 +226,91 @@
 
 // hoboNicola extended key codes.
 // メディアおよびシステム制御コードは hid_wrap.cpp内のレポートディスクリプタと整合していること。
-static const uint8_t FN_MEDIA_CODE_START = 0xa0;
+#define FN_MEDIA_CODE_START 0xa0
 
-static const uint8_t FN_MEDIA_PLAY_PAUSE = FN_MEDIA_CODE_START;
-static const uint8_t FN_MEDIA_PLAY_SKIP = FN_MEDIA_CODE_START + 1;
-static const uint8_t FN_MEDIA_FF	= 			FN_MEDIA_CODE_START + 2;
-static const uint8_t FN_MEDIA_REW	= 			FN_MEDIA_CODE_START + 3;
-static const uint8_t FN_MEDIA_SCAN_NEXT = FN_MEDIA_CODE_START + 4;
-static const uint8_t FN_MEDIA_SCAN_PREV = FN_MEDIA_CODE_START + 5;
-static const uint8_t FN_MEDIA_STOP = 			FN_MEDIA_CODE_START + 6;
-static const uint8_t FN_MEDIA_VOL_UP = 		FN_MEDIA_CODE_START + 7;
-static const uint8_t FN_MEDIA_V_UP 	= 		FN_MEDIA_VOL_UP;
-static const uint8_t FN_M_V_UP 	= 				FN_MEDIA_VOL_UP;
-static const uint8_t FN_MEDIA_VOL_DOWN =	FN_MEDIA_CODE_START + 8;
-static const uint8_t FN_MEDIA_V_DN 	=			FN_MEDIA_VOL_DOWN;
-static const uint8_t FN_M_V_DN 	=					FN_MEDIA_VOL_DOWN;
-static const uint8_t FN_MEDIA_MUTE =			FN_MEDIA_CODE_START + 9;
-static const uint8_t FN_M_MUTE =					FN_MEDIA_MUTE;
-static const uint8_t FN_MEDIA_CODE_END = 0xb0;
+#define FN_MEDIA_PLAY_PAUSE FN_MEDIA_CODE_START
+#define FN_MEDIA_PLAY_SKIP (FN_MEDIA_CODE_START + 1)
+#define FN_MEDIA_FF (FN_MEDIA_CODE_START + 2)
+#define FN_MEDIA_REW (FN_MEDIA_CODE_START + 3)
+#define FN_MEDIA_SCAN_NEXT (FN_MEDIA_CODE_START + 4)
+#define FN_MEDIA_SCAN_PREV (FN_MEDIA_CODE_START + 5)
+#define FN_MEDIA_STOP (FN_MEDIA_CODE_START + 6)
+#define FN_MEDIA_VOL_UP (FN_MEDIA_CODE_START + 7)
+#define FN_MEDIA_V_UP FN_MEDIA_VOL_UP
+#define FN_M_V_UP FN_MEDIA_VOL_UP
+#define FN_MEDIA_VOL_DOWN (FN_MEDIA_CODE_START + 8)
+#define FN_MEDIA_V_DN FN_MEDIA_VOL_DOWN
+#define FN_M_V_DN FN_MEDIA_VOL_DOWN
+#define FN_MEDIA_MUTE (FN_MEDIA_CODE_START + 9)
+#define FN_M_MUTE FN_MEDIA_MUTE
+#define FN_MEDIA_CODE_END 0xb0
+#define IS_CONSUMER_KEYCODE(a) ((a) >= FN_MEDIA_CODE_START && (a) < FN_SYSTEM_CODE_START)
 
-static const uint8_t FN_SYSTEM_CODE_START = FN_MEDIA_CODE_END;
-static const uint8_t FN_SYSTEM_POWER_DOWN = 0xb0;
-static const uint8_t FN_SYSTEM_SLEEP = 0xb1;
-static const uint8_t FN_SYSTEM_WAKEUP = 0xb2;
-static const uint8_t FN_SYSTEM_CODE_END = 0xb8;
+#define FN_SYSTEM_CODE_START FN_MEDIA_CODE_END
+#define FN_SYSTEM_POWER_DOWN 0xb0
+#define FN_SYSTEM_SLEEP 0xb1
+#define FN_SYSTEM_WAKEUP 0xb2
+#define FN_SYSTEM_CODE_END 0xb8
 
-static const uint8_t FN_SETUP_MODE				= 0xb8;	// Fnキーを使って設定を開始する
-static const uint8_t FN_SELECT_STORED_1	= 0xb9;	// StoredSettings1 を選択する
-static const uint8_t FN_SELECT_STORED_2	= 0xba;	// StoredSettings2 を選択する
-static const uint8_t FN_SELECT_STORED_3	= 0xbb;	// StoredSettings3 を選択する
+#define IS_SYSTEM_KEYCODE(a) ((a) >= FN_SYSTEM_CODE_START && (a) < FN_SYSTEM_CODE_END)
+
+#define FN_SETUP_MODE 0xb8	// Fnキーを使って設定を開始する (hoboNicola)
+#define FN_SELECT_STORED_1 0xb9	// StoredSettings1 を選択する
+#define FN_SELECT_STORED_2 0xba	// StoredSettings2 を選択する
+#define FN_SELECT_STORED_3 0xbb	// StoredSettings3 を選択する
 
 #define HID_X_FN1 0xbc
 #define HID_X_FN2 0xbd
 #define HID_X_FN3 0xbe
 
-static const uint8_t FN_EXTRA_START	= 0xc0;
-static const uint8_t FN_EXTRA_END	= FN_EXTRA_START + 16;
+// speical function keys (not sent to host, used for keyboard implementation)
+#define FN_EXTRA_START 0xc0
+#define FN_EXTRA_END (FN_EXTRA_START + 4) // 0xc3
 
-// 修飾キー+Fnを指定する場合。
-static const uint16_t WITH_L_CTRL	 = 0x0100;
-static const uint16_t WITH_L_SHIFT = 0x0200;
-static const uint16_t WITH_L_ALT	 = 0x0400;
-static const uint16_t WITH_L_GUI	 = 0x0800;
-static const uint16_t WITH_R_CTRL	 = 0x1000;
-static const uint16_t WITH_R_SHIFT = 0x2000;
-static const uint16_t WITH_R_ALT	 = 0x4000;
-static const uint16_t WITH_R_GUI	 = 0x8000;
+#define IS_MOUSE_CODE(a) ((a) >= FN_MS_BTN1 && (a) <= FN_MS_WH_DOWN)
+#define FN_MS_BTN1 0xc4
+#define FN_MS_BTN2 0xc5
+#define FN_MS_BTN3 0xc6
+#define FN_MS_BTN_END FN_MS_BTN3
+
+#define FN_MS_LEFT 0xc7 
+#define FN_MS_RIGHT 0xc8
+#define FN_MS_UP 0xc9
+#define FN_MS_DOWN 0xca
+#define FN_MS_WH_UP 0xcb
+#define FN_MS_WH_DOWN 0xcc
+
+
+#define IS_MACRO_KEYCODE(a) ((a) >= HID_M_0 && (a) <= HID_M_9) 
+#define MACRO_KEYCODE_BASE HID_M_0
+#define MACRO_KEY_COUNT 10
+#define HID_M_0 0xd0
+#define HID_M_1 0xd1
+#define HID_M_2 0xd2
+#define HID_M_3 0xd3
+#define HID_M_4 0xd4
+#define HID_M_5 0xd5
+#define HID_M_6 0xd6
+#define HID_M_7 0xd7
+#define HID_M_8 0xd8 
+#define HID_M_9 0xd9
+
+#define IS_MACRO_DELAY_CODE(a) ((a) >= HID_M_DELAY100 && (a) <= HID_M_DELAY1000)
+#define HID_M_DELAY100 0xda	// delay 100ms
+#define HID_M_DELAY500 0xdb	// delay 500ms
+#define HID_M_DELAY1000 0xdc	// delay 1000ms
+
+
+// キー+ 修飾キーを指定する場合。
+#define WITH_L_CTRL 0x0100
+#define WITH_L_SHIFT 0x0200
+#define WITH_L_ALT 0x0400
+#define WITH_L_GUI 0x0800
+#define WITH_R_CTRL 0x1000
+#define WITH_R_SHIFT 0x2000
+#define WITH_R_ALT 0x4000
+#define WITH_R_GUI 0x8000
+
 
 // LEDs
 #define HID_LED_NUMLOCK   1
