@@ -1,7 +1,7 @@
 /**
  * 
   hobo_nicola.cpp   Main functionalities of "Hobo-nicola keyboard and adapter library".
-  Copyright (c) 2021 Takeshi Higasa, okiraku-camera.tokyo
+  Copyright (c) Takeshi Higasa, okiraku-camera.tokyo
   
   This file is part of "Hobo-nicola keyboard and adapter library".
 
@@ -16,15 +16,14 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
   
-		hoboNicola 1.7.9		Dec. 14.  2025.
+		hoboNicola 1.8.0		Mar. 22.  2026.
 */
 
 #include "hobo_nicola.h"
 #include "fake_drive.h"
 #include "char_to_hid.h"
 
-// まどろっこしいので変数でもつ。
-uint32_t global_setting;
+uint32_t global_setting;	// 設定ビットマップ。
 _Settings*	pSettings = 0;
 
 static HoboNicola* kbd;
@@ -128,8 +127,9 @@ bool HoboNicola::doFunction(const uint8_t code, bool pressed) {
 						pSettings->save_current_set_index(index);
 #if defined(ARDUINO_ARCH_RP2040)
  	// rp-hobo-nicolaの場合、rebootしないと入力処理が停止してしまう。eeprom libraryのcommit() がcore1に影響しているのか
-						if (use_pio_usb ) { 
+						if (is_pio_usb()) { 
 							releaseAll();
+							delay(100);
 							watchdog_reboot(0, 0, 10);	// reboot after a while.
 							return true;
 						}
@@ -373,9 +373,10 @@ static const unsigned long memory_blink_interval = 200;
 void HoboNicola::idle() {
 	unsigned long now = millis();
 	timer_tick(now);	// drive state-machine.
+	process_raw_input();		// Process deferred RAW HID input
 	if (!setup_mode) {
 		nicola_led(isNicola());
-    blink_timer = 0;
+		blink_timer = 0;
 	} else {
 		const unsigned long n = setup_mode ? setup_blink_interval : memory_blink_interval;
 		if (blink_timer == 0)
@@ -598,4 +599,68 @@ void HoboNicola::init_hobo_nicola(HoboNicola* kbd_impl, const char* device_name)
 
 	if (_USE_MSC_NOTIFY(global_setting))
 		fake_drive_init();	// とりあえず常時オン
+	
+	kbd->load_nicola_parameter();
 }
+
+
+	// nicola同時打鍵パラメータも読み出す。
+void HoboNicola::load_nicola_parameter() {
+#if 1
+	uint16_t data = pSettings->get_at16(NICOLA_CHAR_TIME_ADDR);
+	if (data != 0)	m_charTime = data;
+	else 			m_charTime = e_charTime;
+	data = pSettings->get_at16(NICOLA_OYA_TIME_ADDR);
+	if (data != 0)	m_oyaTime = data;
+	else			m_oyaTime = e_oyaTime;
+	data = pSettings->get_at16(NICOLA_NICOLA_TIME_ADDR);
+	if (data != 0)	m_nicolaTime = data;
+	else			m_nicolaTime = e_nicolaTime;	
+	data = pSettings->get_at16(NICOLA_LONGPRESS_ADDR);
+	if (data != 0)	m_longpressTime = data;
+	else			m_longpressTime = e_longpressTime;	
+#else
+	m_charTime = pSettings->get_at16(NICOLA_CHAR_TIME_ADDR);
+	m_oyaTime = pSettings->get_at16(NICOLA_OYA_TIME_ADDR);
+	m_nicolaTime = pSettings->get_at16(NICOLA_NICOLA_TIME_ADDR);
+	m_longpressTime = pSettings->get_at16(NICOLA_LONGPRESS_ADDR);
+#endif
+}
+
+static uint16_t paramter_range_check(uint16_t val, uint16_t default_val) {
+	if (val < 50 || val > 500)	// 50ms - 500ms
+		return default_val;
+	return val;			
+}
+
+void HoboNicola::set_nicola_parameter(uint8_t count, uint16_t data[]) {
+	if (count == 4) {
+		kbd->m_charTime = paramter_range_check(data[0], kbd->e_charTime);
+		kbd->m_oyaTime = paramter_range_check(data[1], kbd->e_oyaTime);
+		kbd->m_nicolaTime = paramter_range_check(data[2], kbd->e_nicolaTime);
+		kbd->m_longpressTime = paramter_range_check(data[3], kbd->e_longpressTime);	
+		pSettings->save_at16(NICOLA_CHAR_TIME_ADDR, kbd->m_charTime);
+		pSettings->save_at16(NICOLA_OYA_TIME_ADDR, kbd->m_oyaTime);
+		pSettings->save_at16(NICOLA_NICOLA_TIME_ADDR, kbd->m_nicolaTime);
+		pSettings->save_at16(NICOLA_LONGPRESS_ADDR, kbd->m_longpressTime, true);
+//
+#if defined(ARDUINO_ARCH_RP2040)
+		if (kbd->is_pio_usb()) { 
+			// pio-usbの場合、eepromへの書込みでUSBがダメになるため、書き込んだ後にリセットする。リセットしないと、次のキー入力から反応しなくなる。
+			// webhidの接続もリセットされてしまうため、ブラウザをリロードしてやり直す必要がある。
+			kbd->releaseAll();
+			watchdog_reboot(0, 0, 100);	// reboot after a while.
+		}
+#endif
+	}
+}
+
+int8_t HoboNicola::get_nicola_parameter(uint8_t* count, uint16_t data[]) {
+	data[0] = kbd->m_charTime;
+	data[1] = kbd->m_oyaTime;
+	data[2] = kbd->m_nicolaTime;
+	data[3] = kbd->m_longpressTime;	
+	*count = 4;
+	return 8;	
+}
+

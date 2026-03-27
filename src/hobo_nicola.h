@@ -27,7 +27,7 @@
 #if !defined(__HOBO_NICOLA_H__)
 #define __HOBO_NICOLA_H__
 
-#define HOBO_NICOLA_LIBRARY_VERSION "179"
+#define HOBO_NICOLA_LIBRARY_VERSION "180"
 
 #if !defined(ARDUINO_ARCH_AVR)
 #define PROGMEM
@@ -136,6 +136,10 @@ public:
 	void apply_kbd_led();
 	void restore_kbd_led();
 
+	static void set_nicola_parameter(uint8_t count, uint16_t data[]);
+	static int8_t get_nicola_parameter(uint8_t* count, uint16_t data[]);
+	void load_nicola_parameter();
+	uint8_t is_pio_usb() const { return use_pio_usb; }	
 protected:
 	uint8_t use_pio_usb;	// rp_hobo_nicolaですよ
 	uint8_t modifiers;
@@ -177,12 +181,19 @@ private:
 	uint16_t repeat_moji;
 	uint16_t repeat_oyayubi;
 
-	const unsigned long e_charTime = 200;
-	const unsigned long e_oyaTime = 200;
-	const unsigned long e_nicolaTime = 80;
-	const unsigned long repeat_delay = 250;
-	const unsigned long repeat_interval = 80;
-	const unsigned long e_longpressTime = 60;	// 長押し
+	//同時打鍵パラメータ
+	uint16_t m_charTime;
+	uint16_t m_oyaTime;
+	uint16_t m_nicolaTime;
+	uint16_t m_longpressTime;
+
+
+	const uint16_t e_charTime = 200;
+	const uint16_t e_oyaTime = 200;
+	const uint16_t e_nicolaTime = 80;
+	const uint16_t repeat_delay = 250;
+	const uint16_t repeat_interval = 80;
+	const uint16_t e_longpressTime = 60;	// 長押し
 
 	void immediate_output(uint16_t moji);
 
