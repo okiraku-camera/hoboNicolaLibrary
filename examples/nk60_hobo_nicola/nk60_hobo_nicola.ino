@@ -18,8 +18,11 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
 
-    Included in hoboNicola 1.7.9.		Nov. 30. 2025.
-		(Pico-pio-usb 0.6.1, Arduino-pico 3.9.5, Adafruit Tinyusb 2.3.0) 
+    Included in hoboNicola 1.7.8.		Nov. 30. 2025.
+
+	Confirmed successful build after updating dependencies. (Oct. 30, 2025.)
+		hoboNicola Library 1.7.8
+		(Pico-pio-usb 0.7.2, Arduino-pico 5.4.2, Adafruit Tinyusb 3.7.3) 
 		Make sure to install the required libraries and select the correct board:
 		Select "Generic RP2040 (Raspberry Pi Pico/RP2040)" as target board.
 */
@@ -35,15 +38,16 @@ static const uint8_t FN_BG_DIMMER		= FN_EXTRA_START + 2;
 static const uint8_t FN_BG_MAX	      = FN_EXTRA_START + 3;
 static const uint8_t FN_BG_OFF		    = FN_EXTRA_START + 4;
 
+#if FN_BG_OFF > FN_EXTRA_END
+#error "FN_EXTRA_END is too small for nk60 extra functions. Please increase FN_EXTRA_END"
+#endif
+
 // Extended function keys with Fn-key pressed.
 // Fnオンでscan_to_hidテーブルが切り替わるならば Fnオン時のコードで定義する。
 static const uint16_t fn_keys[] PROGMEM = {
 	WITH_R_CTRL | HID_S, 	FN_SETUP_MODE,
 	WITH_R_CTRL | HID_ESCAPE,	 FN_SYSTEM_SLEEP,		// Ctrl + Fn + Esc 
 	WITH_R_CTRL | HID_ZENHAN,	 FN_SYSTEM_SLEEP,		// Fn + Escを半全キーとしている場合 
-	WITH_R_CTRL | HID_ENTER,	 FN_MEDIA_PLAY_PAUSE,
-	WITH_R_CTRL | HID_END, FN_MEDIA_SCAN_NEXT,
-	WITH_R_CTRL | HID_HOME, FN_MEDIA_SCAN_PREV,
 	WITH_R_CTRL | WITH_L_CTRL | HID_B, FN_START_DFU,
 	WITH_R_CTRL | HID_PGDOWN, FN_BG_DIMMER,			// R-Ctrl + ↓ NICOLAモードのときのみ。
 	WITH_R_CTRL | HID_PGUP, 	FN_BG_BRIGHTER,		// R-Ctrl + ↑ NICOLAモードのときのみ。
@@ -126,6 +130,7 @@ void setup() {
 	nk60HoboNicola::init_hobo_nicola(&hobonicola, "nk60");
 	set_rp_pwm_max_value(pSettings->get_rp_pwm_max_value());
 	delay(10);
+	hobonicola.load_nicola_parameter();
 	watchdog_start_tick(12);
 	watchdog_enable(1000, false);
 }
