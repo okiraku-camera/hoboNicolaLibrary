@@ -39,7 +39,7 @@ void HoboNicola::timer_tick(unsigned long now) {
 void HoboNicola::moji_set(uint16_t param) {
 	moji = param;
 	moji_time = millis();
-	event_time = moji_time + e_charTime;
+	event_time = moji_time + m_charTime;
 	repeat_moji = repeat_oyayubi = 0;
 	immediate_output(moji);
 }
@@ -47,7 +47,7 @@ void HoboNicola::moji_set(uint16_t param) {
 void HoboNicola::oyayubi_set(uint16_t param) {
 	oyayubi = param;
 	oyayubi_time = millis();
-	event_time = oyayubi_time + e_oyaTime;
+	event_time = oyayubi_time + m_oyaTime;
 	repeat_moji = repeat_oyayubi = 0;
 }
 
@@ -108,7 +108,7 @@ void HoboNicola::nicola_state(nicola_event_t e, uint16_t param) {
 			repeat_moji = moji;
 			output();
 			if (_SINGLE_OYAYUBI_MODE(global_setting)) {	// 長押し待ちへ
-				event_time = now + e_longpressTime;
+				event_time = now + m_longpressTime;
 				state = Release_Wait_State;
 			} else {
 				state = Repeat_State;
@@ -212,7 +212,7 @@ void HoboNicola::nicola_state(nicola_event_t e, uint16_t param) {
 			}
 			break;
 		case Key_released:  // 文字キーが離されたタイミングに応じて単独打鍵とする。
-			if ((moji == param) && (now - oyayubi_time < e_nicolaTime) && (oyayubi_time - moji_time) > (now - oyayubi_time)) {
+			if ((moji == param) && (now - oyayubi_time < m_nicolaTime) && (oyayubi_time - moji_time) > (now - oyayubi_time)) {
 				uint16_t oya = oyayubi;
 				oyayubi = 0;
 				if (!immediate)
@@ -311,3 +311,4 @@ void HoboNicola::immediate_output(uint16_t moji) {
 		immediate = true;
 	}
 }
+

@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
   
-  hoboNicola 1.7.9.	Dec. 14. 2025	
+  hoboNicola 1.8.0.	Mar. 22. 2026	
 */
 
 #include "Arduino.h"
@@ -24,9 +24,13 @@
 
 _Settings* _Settings::pInstance = 0;
 
-static const uint16_t  SETTINGS_ADDR =	0;
-static const uint16_t  EXTRA_ADDR	= 8;
-static const uint16_t  COUNTER_ADDR	= 16;
+
+// アドレスマップ
+// 0 : 現在の設定
+// 8 : Extra設定
+// 16 : カウンタ
+// 32, 40, 48 : 設定スロット1, 2, 3
+// 64 - : nicola同時打鍵パラメータ
 
 //
 // 設定を記憶するスロットは8バイトずつ3つある。
@@ -35,32 +39,66 @@ static const uint16_t  COUNTER_ADDR	= 16;
 static const int8_t SET_COUNT = 3;
 static const uint16_t  SET_ADDR[]	= { 32, 40, 48 };
 
+
+// SAMD21のFlashStorageはコンストラクタの引数に構造体を要求するため定義している。
+// 他のやり方もあるだろうが。
 typedef struct {
-//	uint8_t _m[32];
-	uint8_t _m[64];
+	uint8_t m[128];
 } nvm_data_t;
 
-static nvm_data_t __attribute__((__aligned__(8))) nvm_data;
+#if defined(ARDUINO_ARCH_SAMD)
 
-uint32_t _Settings::_size() { return sizeof(nvm_data_t)	; }
+static nvm_data_t  __attribute__((__aligned__(8), __packed__)) _nvm_data;
+#define nvm_data _nvm_data.m	
+#else
+static uint8_t nvm_data[128] __attribute__((__aligned__(8)));
+#endif
+
+
+uint8_t read_nvm_block(uint8_t start, uint8_t count, uint8_t* buffer) {
+	if (start + count > sizeof(nvm_data))
+		return 0;
+	memcpy(buffer, &nvm_data[start], count);
+	return count;
+}
+
+uint32_t _Settings::_size() { return sizeof(nvm_data); }
 void _Settings::_write(uint16_t  addr, uint32_t value) { 
-	*((uint32_t*)&nvm_data._m[addr]) = value;
-	*((uint32_t*)&nvm_data._m[addr+4]) = ~value;
+	*((uint32_t*)&nvm_data[addr]) = value;
+	*((uint32_t*)&nvm_data[addr+4]) = ~value;
 }
 
 uint32_t _Settings::get_at(uint16_t  addr) { 
-	uint32_t a = *((uint32_t*)&nvm_data._m[addr]);
-	uint32_t b = *((uint32_t*)&nvm_data._m[addr+4]);
+	uint32_t a = *((uint32_t*)&nvm_data[addr]);
+	uint32_t b = *((uint32_t*)&nvm_data[addr+4]);
 	if (a != ~b) a = 0;
 	return a;
 }
 
-bool _Settings::check_at(uint16_t  addr) { 
-	uint32_t a = *((uint32_t*)&nvm_data._m[addr]);
-	uint32_t b = *((uint32_t*)&nvm_data._m[addr+4]);
-	return a == ~b;
+uint16_t _Settings::get_at16(uint16_t  addr) { 
+	uint16_t a = nvm_data[addr] + (nvm_data[addr+1] << 8);	
+	uint16_t b = ~(nvm_data[addr+2] + (nvm_data[addr+3] << 8));	
+	if (a != b) a = 0;
+	return a;
 }
 
+void _Settings::save_at16(uint16_t  addr, uint16_t data, bool flush_now) {
+	nvm_data[addr] = data & 0xff;
+	nvm_data[addr+1] = (data >> 8) & 0xff;
+	nvm_data[addr+2] = (~data) & 0xff;
+	nvm_data[addr+3] = ((~data) >> 8) & 0xff;
+	if (flush_now) {
+		_write(COUNTER_ADDR, ++flush_count);
+		flush();
+	}
+}
+
+
+bool _Settings::check_at(uint16_t  addr) { 
+	uint32_t a = *((uint32_t*)&nvm_data[addr]);
+	uint32_t b = *((uint32_t*)&nvm_data[addr+4]);
+	return a == ~b;
+}
 
 void _Settings::set_at(uint16_t  addr, uint32_t data, bool flush_now) {
 	_write(addr, data);
@@ -131,14 +169,13 @@ void _Settings::save_current_set_index(uint8_t index) {
 // AVR ATmega32u_4
 #if defined(ARDUINO_ARCH_AVR)
 #include "EEPROM.h"
-static const uint16_t EE_BASEADDR = 0;
 
 void _Settings::begin() { EEPROM.get(EE_BASEADDR, nvm_data); }
 void _Settings::flush() { EEPROM.put(EE_BASEADDR, nvm_data); }
 
 #elif defined(ARDUINO_ARCH_RP2040)
 #include "EEPROM.h"	// Arduino-Pico core eeprom library
-static const uint16_t EE_BASEADDR = 0;
+//static const uint16_t EE_BASEADDR = 0;
 void _Settings::begin() {
 	EEPROM.begin(256);
 	EEPROM.get(EE_BASEADDR, nvm_data); 
@@ -155,11 +192,11 @@ void _Settings::flush() {
 FlashStorage(flash_store, nvm_data_t);
 
 void _Settings::begin() {
-	flash_store.read(&nvm_data);
+	flash_store.read(&_nvm_data);
 	if (!check_at(SETTINGS_ADDR) || !check_at(EXTRA_ADDR))
-		memset(&nvm_data, 0, sizeof(nvm_data_t));
+		memset(&_nvm_data, 0, sizeof(nvm_data_t));
 }
-void _Settings::flush() {  flash_store.write(nvm_data); }
+void _Settings::flush() {  flash_store.write(_nvm_data); }
 
 #elif defined(ARDUINO_NRF52_ADAFRUIT)
 
@@ -170,18 +207,18 @@ static const char filename[] = "private.dat";
 static File ifs(InternalFS);
 
 void _Settings::begin() {
-	memset(&nvm_data, 0, sizeof(nvm_data_t));
+	memset(nvm_data, 0, sizeof(nvm_data));
 	InternalFS.begin();
 	ifs.open(filename, FILE_O_READ);
 	if (ifs) {
-		ifs.read(&nvm_data, sizeof(nvm_data_t));
+		ifs.read(nvm_data, sizeof(nvm_data));
 		ifs.close();
 	}
 }
 void _Settings::flush() { 
 	if (ifs.open(filename, FILE_O_WRITE)) {
 		ifs.seek(LFS_SEEK_SET);
-		ifs.write((uint8_t const *)&nvm_data, sizeof(nvm_data_t));
+		ifs.write(nvm_data, sizeof(nvm_data));
 		ifs.close();
 	}
 }

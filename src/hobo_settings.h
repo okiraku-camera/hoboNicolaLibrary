@@ -72,6 +72,20 @@
 #define _USE_MSC_NOTIFY(a) 0
 #endif
 
+#define EE_BASEADDR 0
+
+#define SETTINGS_ADDR 0
+#define EXTRA_ADDR	 8
+#define COUNTER_ADDR 16
+
+// nicola同時打鍵パラメータは、eeprom + 64バイト目から始まるスロットに保存する。
+// 4バイトずつ4つで16バイト確保。
+
+#define NICOLA_CHAR_TIME_ADDR	(SETTINGS_ADDR + 64)
+#define NICOLA_OYA_TIME_ADDR	(SETTINGS_ADDR + 64 + 4)
+#define NICOLA_NICOLA_TIME_ADDR	(SETTINGS_ADDR + 64 + 8)
+#define NICOLA_LONGPRESS_ADDR	(SETTINGS_ADDR + 64 + 12)	
+
 class _Settings  {
 	uint32_t settings;
 	uint32_t extra_settings;
@@ -100,6 +114,9 @@ public:
 		return pInstance;
 	}
 
+	uint16_t get_at16(uint16_t  addr);
+	void save_at16(uint16_t  addr, uint16_t data, bool flush_now = false);
+ 
 	const uint32_t get_data() { return settings; }
 	const uint32_t get_extra() { return extra_settings; }
 	const uint32_t get_flush_count() { return flush_count; }
@@ -119,5 +136,8 @@ public:
 	void save_set(int8_t index, uint32_t data);
 	uint32_t load_set(uint8_t index);
 };
+
+uint8_t read_nvm_block(uint8_t start, uint8_t count, uint8_t* buffer);
+
 
 #endif //#ifndef __SETTINGS_H__
