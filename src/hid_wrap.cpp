@@ -1,7 +1,7 @@
 /**
  * 
   hid_wrap.cpp  USB and BLE HID wrapper module of "Hobo-nicola keyboard and adapter library".
-  Copyright (c) 2022 Takeshi Higasa, okiraku-camera.tokyo
+  Copyright (c) Takeshi Higasa, okiraku-camera.tokyo
   
   This file is part of "Hobo-nicola keyboard and adapter library".
 
@@ -16,9 +16,6 @@
   You should have received a copy of the GNU General Public License
   along with "Hobo-nicola keyboard and adapter".  If not, see <http://www.gnu.org/licenses/>.
   
-    Included in...
-			hoboNicola 1.6.1.	Feb. 22. 2022	Initial version. BLE and HID support.
-			hoboNicola 1.7.0  Mar. 3.  2023 Fix System and Consumer mode support.
 */
 
 #include "hid_wrap.h"
@@ -78,13 +75,44 @@ static const uint8_t _hidReportDescriptor[] PROGMEM = {
 	0x95, REPORT_KEY_COUNT, //   
 	0x75, 0x08, //   REPORT_SIZE (8bit)
 	0x15, 0x00, //   LOGICAL_MINIMUM (0) 
-	0x26, 0xdf, 0x00, //   LOGICAL_MAXIMUM (221)
+	0x26, 0x9f, 0x00, //   LOGICAL_MAXIMUM (223)
 	0x05, 0x07, //   USAGE_PAGE (Keyboard)
 	0x19, 0x00, //     USAGE_MINIMUM  keys,
-	0x2a, 0xdf, 0x00,//     USAGE_MAXIMUM
+	0x2a, 0x9f, 0x00,//     USAGE_MAXIMUM
 	0x81, 0x00, //   INPUT (Data,Ary,Abs)
 	0xc0,    // END_COLLECTION
 
+// 3button mouse with wheel.
+	0x05, 0x01,							// USAGE_PAGE (Generic Desktop)  // 54
+	0x09, 0x02,							// USAGE (Mouse)
+	0xa1, 0x01,							// COLLECTION (Application)
+	0x09, 0x01,							//   USAGE (Pointer)
+	0xa1, 0x00,							//   COLLECTION (Physical)
+ 	0x85, REPORT_ID_MOUSE,	//     REPORT_ID
+	//	button. (3 buttons)
+	0x05, 0x09,							//     USAGE_PAGE (Button)
+	0x19, 0x01,							//     USAGE_MINIMUM (Button 1)
+	0x29, 0x03,							//     USAGE_MAXIMUM (Button 3)
+	0x15, 0x00,							//     LOGICAL_MINIMUM (0)
+	0x25, 0x01,							//     LOGICAL_MAXIMUM (1)
+	0x95, 0x03,							//     REPORT_COUNT (3)
+	0x75, 0x01,							//     REPORT_SIZE (1)
+	0x81, 0x02,							//     INPUT (Data,Var,Abs)
+	0x95, 0x01,							//     REPORT_COUNT (1)
+	0x75, 0x05,							//     REPORT_SIZE (5)
+	0x81, 0x03,							//     INPUT (Cnst,Var,Abs)
+// x, y, wheel
+	0x05, 0x01,							//     USAGE_PAGE (Generic Desktop)
+	0x09, 0x30,							//     USAGE (X)
+	0x09, 0x31,							//     USAGE (Y)
+	0x09, 0x38,							//     USAGE (Wheel)
+	0x15, 0x81,							//     LOGICAL_MINIMUM (-127)
+	0x25, 0x7f,							//     LOGICAL_MAXIMUM (127)
+	0x75, 0x08,							//     REPORT_SIZE (8)
+	0x95, 0x03,							//     REPORT_COUNT (3)
+	0x81, 0x06,							//     INPUT (Data,Var,Rel)
+	0xc0,								//     END_COLLECTION
+	0xc0,
 /**
 	Consumer section.
  Control Types.....
@@ -128,7 +156,28 @@ static const uint8_t _hidReportDescriptor[] PROGMEM = {
 	0x81, 0x02, // INPUT (Data,Var,Abs) 
 	0x95, 0x0d, // REPORT_COUNT (filler)
 	0x81, 0x01, // INPUT (Data,Const, Abs) 
-	0xc0 // END_COLLECTION    
+	0xc0, // END_COLLECTION    
+
+// vender defined device for webhid
+	0x06, 0x85, 0xff,	// Usage Page 0xff85
+	0x09, 0x51,				// Usage 0x51
+	0xa1, 0x01,
+	0x85, REPORT_ID_RAW,
+	0x09, 0x52,			// Usage 0x52 (output)
+	0x19, 0x00,			//   USAGE_MINIMUM 
+	0x2a, 0xff, 0x00,	//   USAGE_MAXIMUM (0x00ff)
+	0x15, 0x00, 		//   LOGICAL_MINIMUM (0)
+	0x26, 0xff, 0x00, 	//   LOGICAL_MAXIMUM (0x00ff)
+	0x75, 0x08, 		//   REPORT_SIZE (8)
+	0x95, RAW_DATA_SIZE, //   REPORT_COUNT (RAW_DATA_SIZE)
+	0x91, 0x02, 		//	OUTPUT (Data,Array,Var) 
+	0x09, 0x53,			// Usage 0x53 (input)
+	0x15, 0x00, 		//   LOGICAL_MINIMUM (0)
+	0x26, 0xff, 0x00, 	//   LOGICAL_MAXIMUM (0x00ff)
+	0x75, 0x08, 		//   REPORT_SIZE (8)
+	0x95, RAW_DATA_SIZE, //   REPORT_COUNT (RAW_DATA_SIZE)
+ 	0x81, 0x02, 		//	INPUT (Data,Ary,Var)
+	0xc0 // END_COLLECTION
 };
 
 #if defined(ARDUINO_NRF52_ADAFRUIT)
@@ -158,8 +207,8 @@ public:
 			Bluefruit.Advertising.start(0);
 			return ERROR_NONE;
 		}
-		uint16_t input_len [] = { sizeof(key_report_t), 2, 2 };	// key_report, consumerとsystemは２バイト
-		uint16_t output_len[] = { 1 };	// LED.
+		uint16_t input_len [] = { sizeof(key_report_t), 4, 2, 2, RAW_DATA_SIZE };	// key_report, consumerとsystemは２バイト
+		uint16_t output_len[] = { 1, 0, 0, 0, RAW_DATA_SIZE };	// 	.
 		setReportLen(input_len, output_len, NULL);
 		enableKeyboard(true);
 		setReportMap(_hidReportDescriptor, sizeof(_hidReportDescriptor));
@@ -271,19 +320,73 @@ void stop_ble() {
 const bool is_ble_connected() { return false; }
 #endif
 
+
+extern int8_t raw_input(uint8_t* data);	// defined in hobo_webhid.cpp. WebHIDからのリクエストを処理する関数。
+
 #if defined(USE_TINYUSB)
 static void hid_report_callback_ada(uint8_t report_id, hid_report_type_t report_type, uint8_t const* buffer, uint16_t bufsize) {
+	if (report_id == REPORT_ID_RAW && report_type == HID_REPORT_TYPE_OUTPUT && buffer && bufsize > 0) {
+		uint8_t outbuf[RAW_DATA_SIZE + 1];
+		memcpy(outbuf, buffer, min(bufsize, RAW_DATA_SIZE)	);
+		int8_t res = raw_input((uint8_t*)outbuf);
+		send_hid_report(REPORT_ID_RAW, outbuf, RAW_DATA_SIZE);	
+		return;	// とりあえず全バイト送信にする。
+	}
+
 	if (report_id == REPORT_ID_KBD && report_type == HID_REPORT_TYPE_OUTPUT && buffer && bufsize > 0)
 		usb_led_state = buffer[0];	// buffer[0]にLED状態が入っている。(bsp 1.0.0～) 前は違った。
 	if (!is_ble_connected() && callback_fn)
 		callback_fn(usb_led_state);
 }
 #else
-static void hid_report_callback(uint8_t request, uint8_t data) {
-	if (request == HID_SET_REPORT && callback_fn)
-		callback_fn(data);
-}
+// classic arduino HID.
+static volatile bool raw_data_ready = false;
+static uint8_t raw_data_buffer[RAW_DATA_SIZE + 1];
+static uint16_t raw_data_length = 0;
+
+static void hid_report_callback(uint8_t uid, uint8_t type, uint16_t length, uint8_t* data) {
+	if (uid == REPORT_ID_KBD && type == HID_SET_REPORT && length > 0 && data) {
+		if (callback_fn)
+			callback_fn(data[length - 1]);
+		return;
+	}
+	if (uid == REPORT_ID_RAW && type == HID_SET_REPORT && length > 0 && data) {
+		// Store received data for deferred processing
+		raw_data_length = min(length, (uint16_t)RAW_DATA_SIZE);
+		memset(raw_data_buffer, 0, sizeof(raw_data_buffer));
+		memcpy(raw_data_buffer, data, raw_data_length);
+		raw_data_ready = true;  // Signal that data is ready to process
+		digitalWrite(LED_BUILTIN_TX, 0);	// for debug. RAW report is received.
+		return;
+	}
+}	
 #endif
+
+// Process deferred RAW HID input
+// Call this from the main loop to process raw_input when data is ready
+void process_raw_input() {
+#if !defined(USE_TINYUSB)
+	if (!raw_data_ready)
+		return;
+
+	uint16_t req_len = raw_data_length;
+	if (req_len > RAW_DATA_SIZE)
+		req_len = RAW_DATA_SIZE;
+
+	// Clear the flag before processing deferred request.
+	raw_data_ready = false;
+	if (req_len == 0)
+		return;
+	
+	// Process the buffered data
+	int8_t res = raw_input((uint8_t*)raw_data_buffer);
+	if (res <= 0)
+		return;
+	send_hid_report(REPORT_ID_RAW, raw_data_buffer, RAW_DATA_SIZE);
+	digitalWrite(LED_BUILTIN_TX, 1);	// for debug. RAW report is received.
+
+	#endif
+}
 
 // send_report();
 #if defined(USE_TINYUSB)

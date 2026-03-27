@@ -6,8 +6,12 @@
 #include "Arduino.h"
 
 #define REPORT_ID_KBD  1
-#define REPORT_ID_CONSUMER  2
-#define REPORT_ID_SYSTEM  3
+#define REPORT_ID_MOUSE  2
+#define REPORT_ID_CONSUMER  3
+#define REPORT_ID_SYSTEM  4
+#define REPORT_ID_RAW  5	
+
+#define RAW_DATA_SIZE 32
 
 const bool is_ble_connected();
 void start_ble();
@@ -25,6 +29,7 @@ typedef void (*led_callback_t)(uint8_t);
 
 void send_hid_report(uint8_t id, const void* data, int len);
 void set_hid_led_callback(led_callback_t fn);
+void process_raw_input();  // Process deferred RAW HID input
 bool hid_begin(const char* name = 0);
 
 
