@@ -3,8 +3,8 @@
 To build this software you will need:
  * nk60 (revision3) or nk61 PCBs. https://okiraku-camera.tokyo/blog/?p=16074
  * Arduino-pico : Version 3.9.5 
- * Adafruit TinyUSB Library for Arduino : Version 3.2.0
- * hoboNicola Library : Version 1.7.9
+ * Adafruit TinyUSB Library for Arduino : Version 2.3.0
+ * hoboNicola Library : Version 1.8.0
  
  In Arduino Board configuration : 
   * Board: Generic RP2040
