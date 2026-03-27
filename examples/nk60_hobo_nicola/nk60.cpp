@@ -55,10 +55,11 @@ void matrix_scan() {
   uint32_t tmp_state[STATE_COUNT];
 	for(uint8_t row = 0; row < sizeof(ROWS); row++) {	// scan all rows.
 		gpio_put(ROWS[row], 0);
-		delayMicroseconds(5);
+		delayMicroseconds(25);
 		uint32_t cols = gpio_get_all();
 		tmp_state[row] = ~(((cols & 0x800000) >> 23) | ((cols & 0x7f) << 1) | (cols & 0x03f00));
 		gpio_put(ROWS[row], 1);
+		delayMicroseconds(25);
 	}
 
 	if (memcmp(tmp_state, key_state, sizeof(key_state))) {
@@ -138,7 +139,7 @@ void led_sleep() {
 static const uint8_t HID_TABLE_BASE = 0;
 static const uint8_t HID_TABLE_FN1 = 1;
 
-// SW42はJPレイアウトのときスイッチがないので、US用のコード(HID_BSLASH) を設定
+// SW42はJPレイアウトのときスイッチがないので、US用のコードバックスラッシュ(HID_BSLASH) / Fn時の HID_J_BSLASH を設定
 static const uint8_t scan_to_hid_table[2][SW_COUNT] = {
   {     
 		HID_ESCAPE, HID_1,    HID_2,    HID_3,    HID_4,  HID_5,     HID_6,   HID_7,     HID_8,    HID_9,      HID_0,     HID_MINUS,   HID_EQL,     HID_J_BSLASH,// sw1～14
@@ -150,7 +151,7 @@ static const uint8_t scan_to_hid_table[2][SW_COUNT] = {
   {
 		HID_ZENHAN, HID_F1,   HID_F2,   HID_F3,   HID_F4, HID_F5,    HID_F6, HID_F7,       HID_F8,       HID_F9,       HID_F10,     HID_F11,    HID_F12,     HID_INSERT,// sw1～14
 		HID_TAB,    HID_F13,  HID_F14,  HID_F15,  HID_F16,HID_F17,   HID_F18,HID_F19,      HID_F20,      HID_F21,      HID_PRNTSCRN,HID_SCRLOCK,HID_PAUSE,   HID_BACKSP,// sw15～28
-		HID_CAPS,   HID_A,    HID_S,    HID_D,    HID_F,  HID_G,     HID_H,  HID_J,        HID_K,        HID_L,        HID_SEMICOL, HID_QUOTE,  HID_J_RBR_32,HID_INSERT,// sw29～42
+		HID_CAPS,   HID_A,    HID_S,    HID_D,    HID_F,  HID_G,     HID_H,  HID_J,        HID_K,        HID_L,        HID_SEMICOL, HID_QUOTE,  HID_J_RBR_32,HID_J_BSLASH,// sw29～42 
 		HID_L_SHIFT,HID_Z,    HID_X,    HID_C,    HID_V,  HID_B,     HID_N,  FN_MEDIA_MUTE,FN_MEDIA_V_DN,FN_MEDIA_V_UP,HID_SLASH,   HID_J_UL,   HID_PGUP,    HID_ENTER,// sw43～56
 		HID_L_CTRL, HID_L_GUI,HID_L_ALT,HID_MUHEN,HID_SPC,HID_HENKAN,HID_APP,HID_R_CTRL,   HID_X_FN1,    HID_HOME,     HID_PGDOWN,  HID_END,    HID_DELETE,  HID_UNDEF  // sw57～70
   }
