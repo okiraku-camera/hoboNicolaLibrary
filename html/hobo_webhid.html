@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>hoboNicola WebHIDパラメータ設定</title>
+  <style>
+    :root {
+      --bg: #f7f8f3;
+      --card: #ffffff;
+      --text: #1f2a22;
+      --accent: #0f766e;
+      --accent-2: #115e59;
+      --warn: #b91c1c;
+      --border: #d7ddd6;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", "Yu Gothic UI", "Hiragino Kaku Gothic ProN", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% 10%, #e9f5ef 0%, var(--bg) 50%, #eef5f9 100%);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .panel {
+      width: min(680px, 100%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: 1.4rem;
+    }
+
+    p {
+      margin: 0 0 18px;
+      line-height: 1.6;
+    }
+
+    .row {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-divider {
+      border: 0;
+      border-top: 1px solid var(--border);
+      margin: 6px 0 14px;
+    }
+
+    .row.device-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .param-line {
+      display: grid;
+      grid-template-columns: 1fr auto 14ch;
+      align-items: center;
+      gap: 8px;
+    }
+
+    label span {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .param-line span {
+      display: inline;
+      margin-bottom: 0;
+    }
+
+    .param-line .sep {
+      font-weight: 700;
+    }
+
+    input[type="number"] {
+      width: 14ch;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      background: var(--accent);
+      cursor: pointer;
+      width: fit-content;
+    }
+
+    button:hover {
+      background: var(--accent-2);
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 10px;
+      background: #f2f5f4;
+      border: 1px solid var(--border);
+      font-family: Consolas, "Courier New", monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 5.5em;
+    }
+
+    .warn {
+      color: var(--warn);
+    }
+
+    .status-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .debug-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      user-select: none;
+    }
+
+    .debug-toggle input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <main class="panel">
+    <h1>hoboNicola WebHIDパラメータ設定</h1>
+    <p>
+      「接続」で hoboNicola に接続します。<br>
+    </p>
+
+    <div class="row">
+      <button id="connectButton">接続</button>
+    </div>
+
+    <div class="row device-buttons">
+      <button id="versionButton" disabled>バージョン取得</button>
+      <button id="loadButton" disabled>パラメータ取得</button>
+      <button id="sendButton" disabled>パラメータ送信</button>
+      <button id="readNvmButton" disabled>NVM読出し(80B)</button>
+    </div>
+
+    <hr class="section-divider">
+
+    <div class="row inputs">
+      <label class="param-line">
+        <span>文字→親指同時打鍵検出許容時間 (200 : 50-500)</span>
+        <span class="sep">:</span>
+        <input id="param1" type="number" min="50" max="500" step="1" value="100">
+      </label>
+      <label class="param-line">
+        <span>親指→文字同時打鍵検出許容時間 (200 : 50-500)</span>
+        <span class="sep">:</span>
+        <input id="param2" type="number" min="50" max="500" step="1" value="100">
+      </label>
+      <label class="param-line">
+        <span>親指キー単独打鍵みなし時間 (80 : 50-500)</span>
+        <span class="sep">:</span>
+        <input id="param3" type="number" min="50" max="500" step="1" value="100">
+      </label>
+      <label class="param-line">
+        <span>シングル親指キー長押し時間 (60 : 40-100)</span>
+        <span class="sep">:</span>
+        <input id="param4" type="number" min="40" max="100" step="1" value="60">
+      </label>
+    </div>
+
+    <div class="row status-controls">
+      <button id="clearButton">ステータスをクリア</button>
+      <label class="debug-toggle" for="debugToggle">
+        <input id="debugToggle" type="checkbox">
+        <span>デバッグ情報</span>
+      </label>
+    </div>
+    <div id="status" class="status">待機中...</div>
+  </main>
+
+  <script src="./hobo_webhid.js"></script>
+</body>
+</html>
