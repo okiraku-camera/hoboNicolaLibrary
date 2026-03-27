@@ -99,7 +99,7 @@ public:
 };
 
 // Function prototype of hid_set_report notify callback.
-typedef void (*request_callback_t)(uint8_t, uint8_t);
+typedef void (*request_callback_t)(uint8_t uid, uint8_t type, uint16_t length, uint8_t* data);
 
 
 class HID_ : public PluggableUSBModule

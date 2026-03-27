@@ -3,6 +3,11 @@
   Modification made by okiraku-camera.
   1. setup() : support LED Output Report. Call led_notify with LED data.
      In HID_(), Clear function pointer led_notify.
+  2. modify HID_SET_REPORT handling in setup() to support webhid.
+	 If the report ID is REPORT_ID_KBD, call request_notify with report ID, request type, data length and data payload.
+	 If the report ID is REPORT_ID_RAW, extract payload from data (considering some hosts may include Report ID in payload) and	 
+  	call request_notify with report ID, request type, data length and data payload.
+
 
    Copyright (c) 2015, Arduino LLC
    Original code (pre-library): Copyright (c) 2011, Peter Barrett
@@ -114,8 +119,8 @@ bool HID_::setup(USBSetup& setup)
 	if (requestType == REQUEST_DEVICETOHOST_CLASS_INTERFACE)
 	{
 		if (request == HID_GET_REPORT) {
-			// TODO: HID_GetReport();
-			return true;
+			// GET_REPORT is not implemented. Return STALL to indicate unsupported.
+			return false;
 		}
 		if (request == HID_GET_PROTOCOL) {
 			// TODO: Send8(protocol);
@@ -129,8 +134,7 @@ bool HID_::setup(USBSetup& setup)
 		}
 	}
 
-	if (requestType == REQUEST_HOSTTODEVICE_CLASS_INTERFACE)
-	{
+	if (requestType == REQUEST_HOSTTODEVICE_CLASS_INTERFACE) {
 		if (request == HID_SET_PROTOCOL) {
 			// The USB Host tells us if we are in boot or report mode.
 			// This only works with a real boot compatible device.
@@ -140,32 +144,51 @@ bool HID_::setup(USBSetup& setup)
 		if (request == HID_SET_IDLE) {
 //			idle = setup.wValueH;
 			idle = setup.wValueL;
-			if (request_notify)
-				request_notify(HID_SET_IDLE, idle);
 			return true;
 		}
 		if (request == HID_SET_REPORT) {
-			//uint8_t reportID = setup.wValueL;
-			//uint16_t length = setup.wLength;
-			//uint8_t data[length];
-			// Make sure to not read more data than USB_EP_SIZE.
-			// You can read multiple times through a loop.
-			// The first byte (may!) contain the reportID on a multreport.
-			//USB_RecvControl(data, length);
-//			if (setup.wLength == 2 && setup.wValueL == 2) {
-			if (setup.wLength == 2 && setup.wValueL == REPORT_ID_KBD) {
-				uint8_t data[2];
-				if (2 == USB_RecvControl(data, 2)) {
-					if (request_notify) {
-						request_notify(HID_SET_REPORT, data[1]);
-						return true;
+			uint16_t length = setup.wLength;
+			uint8_t uid = setup.wValueL;
+
+			if (length == 0)
+				return true;
+
+			// Always consume full control payload to keep EP0 state consistent.
+			uint8_t data[RAW_DATA_SIZE + 1];
+			uint16_t recv_len = length;
+			if (recv_len > sizeof(data))
+				recv_len = sizeof(data);
+			if (USB_RecvControl(data, recv_len) != (int)recv_len)
+				return false;
+
+			uint16_t remain = length - recv_len;
+			while (remain > 0) {
+				uint8_t dummy[8];
+				uint16_t n = min((uint16_t)sizeof(dummy), remain);
+				if (USB_RecvControl(dummy, n) != (int)n)
+					return false;
+				remain -= n;
+			}
+
+			if (request_notify) {
+				if (uid == REPORT_ID_KBD) {
+					request_notify(REPORT_ID_KBD, HID_SET_REPORT, recv_len, data);
+				} else if (uid == REPORT_ID_RAW) {
+					uint8_t* payload = data;
+					uint16_t payload_len = recv_len;
+					// Some hosts may include Report ID in payload.
+					if (payload_len == (RAW_DATA_SIZE + 1) && data[0] == REPORT_ID_RAW) {
+						payload = &data[1];
+						payload_len = RAW_DATA_SIZE;
 					}
+					if (payload_len > RAW_DATA_SIZE)
+						payload_len = RAW_DATA_SIZE;
+					request_notify(REPORT_ID_RAW, HID_SET_REPORT, payload_len, payload);
 				}
 			}
 		}
 	}
-
-	return false;
+	return true;
 }
 
 HID_::HID_(void) : PluggableUSBModule(1, 1, epType),
