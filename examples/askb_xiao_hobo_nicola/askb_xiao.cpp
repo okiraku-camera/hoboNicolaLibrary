@@ -1,19 +1,19 @@
 /**
-  askb_xiao.cpp Hardware support program for "ASKeyboard (askb_xiao_rev01)" using hoboNicola Library.
-  Copyright (c) 2022 Takeshi Higasa
+  askb_xiao.cpp Hardware support program for "ASKeyboard (askb_xiao_hobo_nicola)" using hoboNicola Library.
+  Copyright (c) 2022 Takeshi Higasa, okiraku-camera.tokyo	
 
-  This file is part of "ASKeyboard (askb_xiao_rev01)".
+  This file is part of "ASKeyboard (askb_xiao_hobo_nicola)".
 
-  "ASKeyboard (askb_xiao_rev01)" is free software: you can redistribute it and/or modify
+  "ASKeyboard (askb_xiao_hobo_nicola)" is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by the Free Software Foundation, 
   either version 3 of the License, or (at your option) any later version.
 
-  "ASKeyboard (askb_xiao_rev01)" is distributed in the hope that it will be useful,
+  "ASKeyboard (askb_xiao_hobo_nicola)" is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
   FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with "ASKeyboard (askb_xiao_rev01)".  If not, see <http://www.gnu.org/licenses/>.
+  along with "ASKeyboard (askb_xiao_hobo_nicola)".  If not, see <http://www.gnu.org/licenses/>.
 
   SAMD21 version 1.0.0  August. 20, 2022.
 */
@@ -273,7 +273,7 @@ static const uint8_t scan_to_hid_table[2][SW_COUNT] = {
 //	HID_CAPS,		// 78		NFER
 //	HID_HIRAGANA,	// 79		XFER
 	HID_F23,		// 78		NFER
-	HID_F24,	// 79		XFER
+	HID_F24,		// 79		XFER
 	HID_PGUP,		// 80		ROLL UP
 	HID_PGDOWN,		// 81		ROLL DOWN
 	HID_INSERT,		// 82		INS --> Insert	
@@ -369,9 +369,8 @@ static const uint8_t scan_to_hid_table[2][SW_COUNT] = {
 	HID_X_FN1,		// 77		ALT --> Fn
 //	HID_CAPS,		// 78		NFER
 //	HID_HIRAGANA,	// 79		XFER
-	HID_F23,		// 78		NFER
-	HID_F24,	// 79		XFER
-
+	HID_F23,		// 78		NFER  左親指の下
+	HID_F24,		// 79		XFER  右親指の下
 	HID_PGUP,		// 80		ROLL UP
 	HID_PGDOWN,		// 81		ROLL DOWN
 	HID_INSERT,		// 82		INS --> Insert	

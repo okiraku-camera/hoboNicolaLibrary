@@ -1,22 +1,22 @@
 /**
-  askb_xiao_hid2.ino Main sketch of "ASKeyboard (askb_xiao_rev01)" using hoboNicola Library 1.6.3.
-  Copyright (c) 2022 Takeshi Higasa
+  askb_xiao_hobo_nicola.ino Main sketch of "ASKeyboard (askb_xiao_rev01)" using hoboNicola Library.
+  Copyright (c) 2022 Takeshi Higasa, okiraku-camera.tokyo
 
-  This file is part of "ASKeyboard (askb_xiao_rev01)".
+  This file is part of "ASKeyboard (askb_xiao_hobo_nicola)".
 
-  "ASKeyboard (askb_xiao_rev01)" is free software: you can redistribute it and/or modify
+  "ASKeyboard (askb_xiao_hobo_nicola)" is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by the Free Software Foundation, 
   either version 3 of the License, or (at your option) any later version.
 
-  "ASKeyboard (askb_xiao_rev01)" is distributed in the hope that it will be useful,
+  "ASKeyboard (askb_xiao_hobo_nicola)" is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
   FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with "ASKeyboard (askb_xiao_rev01)".  If not, see <http://www.gnu.org/licenses/>.
+  along with "ASKeyboard (askb_xiao_hobo_nicola)".  If not, see <http://www.gnu.org/licenses/>.
 
   SAMD21 version 1.0.0  August. 20, 2022.
-    version 1.7.9 Feb.11, 2026.
+    version 1.8.0 Mar. 22, 2026.
 */
 #include "Adafruit_TinyUSB.h"
 #include "hobo_sleep.h"
@@ -133,9 +133,11 @@ void setup() {
   pinMode(LED3, OUTPUT);
   led_off();
 
+ 	pSettings = _Settings::Create();
+
 // samd21では、eepromの役割としてFlashStorageライブラリを使っているでファーム更新でそれまでの設定が消えてしまう。
 // そのため好ましい設定をここでやってしまう。
-  uint32_t tmp_set = global_setting;
+  uint32_t tmp_set =  pSettings->get_data();;
   uint32_t save_set = tmp_set;
   tmp_set |= SCR_AS_NICOLA; // clear SCR_AS_NICOLA
   tmp_set |= KANA_TO_NICOLA_ON;
@@ -183,7 +185,6 @@ void loop() {
     }
     hobo_nicola.idle();
     matrix_scan();
-    enter_sleep(0); 
     enter_sleep(0); // スキャン間隔を2msec程度にしてみる。1mAほど減る。
   }
 }
