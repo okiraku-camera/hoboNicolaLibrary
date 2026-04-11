@@ -107,8 +107,9 @@ hoboNicolaLibraryを組み込んだ自作キーボード用の実装例です。
 ### 履歴
 * 1.8.0
   * *webhid* を使ってhoboNicolaの親指キー同時打鍵タイミングを変更できるようにしました。
-  * *html* ディレクトリを追加し、その中に上記のパラメータを変更するためのファイルを追加しました。
+  * *html* ディレクトリを追加し、その中に上記のパラメータを変更するためのファイル (hobo_webhid.html) を追加しました。
   * これらのファイルは、*Chromeブラウザでのみ* 動作を確認しており、Windows Explorerから直接開いて実行できます。
+  * github.io においた [hobo_webhid](https://okiraku-camera.github.io/hoboNicolaLibrary/html/hobo_webhid.html) へのリンク。
   * この機能は hoboNicola アダプターにも対応していますが、rp_hobo_nicola では設定の書込みを行うたびにUSB接続が失われるため、操作が煩わしいでしょう。
 
 * 1.7.9
