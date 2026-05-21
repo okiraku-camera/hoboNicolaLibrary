@@ -1,14 +1,13 @@
 /**
- * hobo_webhid.cpp HID raw request handling part of hoboNicola library for webhid.
+ * hobo_webhid.cpp HID raw request handling part of hoboNicola library for webhid and usbhid clients.
  * Copyright (c)  Takeshi Higasa, okiraku-camera.tokyo
  * 
  * This software is released under the MIT License.
  * http://opensource.org/licenses/mit-license.php
  * 
- * this file is added for hoboNicola 1.8.0 to handle raw HID requests from webhid client.
+ * this file is added for hoboNicola 1.8.0 to handle raw HID requests from webhid and usbhid clients.
  * nvm keymap related functions are stubbed out in this file, as they are not used in this version.
  */
-
 
 #include "Arduino.h"
 #include "hobo_nicola.h"
@@ -35,7 +34,10 @@
 #define SET_NICOLA_PARAMETER		0x20
 #define GET_NICOLA_PARAMETER		0x21
 
-
+// set/get current nicola mode of library. data[1] : mode value (0: not nicola, 1: nicola)
+#define SET_NICOLA_MODE	0x30
+#define GET_NICOLA_MODE	0x31
+	
 //
 int8_t raw_input(uint8_t* data) {
 	uint16_t bytes = 0;
@@ -57,12 +59,25 @@ int8_t raw_input(uint8_t* data) {
 		case SET_NICOLA_PARAMETER:
 			// data[1] : parameter count, data[2] onwards : buffer containing parameter value (4 bytes).
 			HoboNicola::set_nicola_parameter(data[1], (uint16_t*)&data[2]);
-			bytes = 1; // number of bytes written.
+			bytes = 1; 
 			break;
 		case READ_NVM_BLOCK:
 			// read nvm to buffer. data[1] : start address, data[2] : number of bytes, data[3] onwards : buffer to store read bytes.
 			bytes = read_nvm_block(data[1], data[2], (uint8_t*)&data[2]);
-			data[1] = bytes; // number of bytes read.
+			data[1] = bytes; 
+			break;
+		case SET_NICOLA_MODE:
+			// set current nicola mode of library. data[1] : mode value (0: not nicola, 1: nicola)
+			HoboNicola::set_nicola_mode(data[1]);
+			data[1] = 1; 
+			data[2] = 0;
+			bytes = 2;
+			break;
+		case GET_NICOLA_MODE:
+			// get current nicola mode of library. data[1] : buffer to store mode value (0: not nicola, 1: nicola)
+			data[1] = HoboNicola::get_nicola_mode();
+			data[2] = 0;
+			bytes = 2; 
 			break;
 #if 0	
 		case READ_KEY:		
@@ -117,8 +132,8 @@ int8_t raw_input(uint8_t* data) {
 			break;
 #endif
 		default:
-			data[1] = 0xde;  // 8-bit integer
-			data[2] = 0xad;  // 8-bit integer
+			data[1] = 0xde; 
+			data[2] = 0xad; 
 			bytes = 2;
 			break;
 		}
