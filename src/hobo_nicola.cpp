@@ -31,7 +31,8 @@ HoboNicola::HoboNicola()  {
 	memset(&report, 0, sizeof(key_report_t));
 	modifiers = 0;
 	setup_mode = dedicated_oyakeys =  false;
-	nicola_mode = use_pio_usb = 0;
+	nicola_mode = 0;
+	use_pio_usb = 0;
 	left_oyayubi_code = right_oyayubi_code = 0;
 	nicola_state(Init);
 }
@@ -50,6 +51,10 @@ const uint8_t HoboNicola::isNicola() {
 	else if (_NUML_AS_NICOLA(global_setting)) nicola_mode = isNumLock();	
 	return nicola_mode;
 }
+
+uint8_t HoboNicola::get_nicola_mode() { return kbd->nicola_mode; }
+void HoboNicola::set_nicola_mode(uint8_t mode) { kbd->nicola_mode = mode; }
+
 
 static const bool is_system_code(uint8_t code) {
 	return (code >= FN_SYSTEM_CODE_START && code < FN_SYSTEM_CODE_END);

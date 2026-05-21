@@ -88,7 +88,10 @@ public:
 	void idle();
 	void error_blink(int period = 100);
 	void nicola_off() { nicola_mode = 0; }
-	
+
+	static uint8_t get_nicola_mode();
+	static void set_nicola_mode(uint8_t mode);
+		
 // 親指キーのコードを変換、無変換、空白以外で指定したいようなとき
 
 	void set_oyayubi_keys(bool on, uint8_t left, uint8_t right) { 
@@ -178,8 +181,8 @@ private:
 	
 	uint16_t oyayubi;
 	uint16_t moji;
-	uint16_t repeat_moji;
-	uint16_t repeat_oyayubi;
+	uint16_t pending_moji;
+	uint16_t pending_oyayubi;
 
 	//同時打鍵パラメータ
 	uint16_t m_charTime;
