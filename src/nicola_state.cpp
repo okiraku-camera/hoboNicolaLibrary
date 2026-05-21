@@ -40,7 +40,7 @@ void HoboNicola::moji_set(uint16_t param) {
 	moji = param;
 	moji_time = millis();
 	event_time = moji_time + m_charTime;
-	repeat_moji = repeat_oyayubi = 0;
+	pending_moji = pending_oyayubi = 0;
 	immediate_output(moji);
 }
 
@@ -48,7 +48,7 @@ void HoboNicola::oyayubi_set(uint16_t param) {
 	oyayubi = param;
 	oyayubi_time = millis();
 	event_time = oyayubi_time + m_oyaTime;
-	repeat_moji = repeat_oyayubi = 0;
+	pending_moji = pending_oyayubi = 0;
 }
 
 // 即時出力用の前文字キャンセル。
@@ -65,7 +65,7 @@ void HoboNicola::nicola_state(nicola_event_t e, uint16_t param) {
 	case Initial_State:
 		event_time = moji_time = oyayubi_time = 0;
 		oyayubi = moji = 0;
-		repeat_moji = repeat_oyayubi = 0;
+		pending_moji = pending_oyayubi = 0;
 		repeat_time = 0;
 		immediate = false;
 		switch(e) {
@@ -105,7 +105,7 @@ void HoboNicola::nicola_state(nicola_event_t e, uint16_t param) {
 			state = Char_Oya_State;
 			break;
 		case Time_out:
-			repeat_moji = moji;
+			pending_moji = moji;
 			output();
 			if (_SINGLE_OYAYUBI_MODE(global_setting)) {	// 長押し待ちへ
 				event_time = now + m_longpressTime;
@@ -131,7 +131,7 @@ void HoboNicola::nicola_state(nicola_event_t e, uint16_t param) {
 			state = Oyayubi_State;
 			break;
 		case Time_out:	// 長押し時間経過
-			repeat_oyayubi = NID_LONG_PRESSED;
+			pending_oyayubi = NID_LONG_PRESSED;
 			output();	
 			state = Repeat_State;
 			repeat_time = millis() + repeat_delay;
@@ -147,8 +147,8 @@ void HoboNicola::nicola_state(nicola_event_t e, uint16_t param) {
 			state = Initial_State;
 			break;
 		case Moji_pressed:
-			repeat_oyayubi = oyayubi;
-			repeat_moji = param;
+			pending_oyayubi = oyayubi;
+			pending_moji = param;
 			output();
 			state = Repeat_State;
 			repeat_time = millis() + repeat_delay;
@@ -169,7 +169,7 @@ void HoboNicola::nicola_state(nicola_event_t e, uint16_t param) {
 			break;
 		case Time_out:
 			if (!dedicated_oyakeys) {
-				repeat_oyayubi = oyayubi;
+				pending_oyayubi = oyayubi;
 				output();
 				state = Repeat_State;
 				repeat_time = millis() + repeat_delay;
@@ -204,8 +204,8 @@ void HoboNicola::nicola_state(nicola_event_t e, uint16_t param) {
 				if (!immediate)
 					output();   // 先行の文字だけ出す
 				immediate = false;
-				repeat_oyayubi = oya;
-				repeat_moji = param;
+				pending_oyayubi = oya;
+				pending_moji = param;
 				output();   // 後追いの文字と親指
 				state = Repeat_State;
 				repeat_time = millis() + repeat_delay;
@@ -227,8 +227,8 @@ void HoboNicola::nicola_state(nicola_event_t e, uint16_t param) {
 			state = Initial_State;
 			break;
 		case Time_out:
-			repeat_oyayubi = oyayubi;
-			repeat_moji = moji;
+			pending_oyayubi = oyayubi;
+			pending_moji = moji;
 			output();
 			state = Repeat_State;
 			repeat_time = millis() + repeat_delay;
@@ -264,9 +264,9 @@ void HoboNicola::nicola_state(nicola_event_t e, uint16_t param) {
 #define isShiftPressed() (bool) ((modifiers & HID_SHIFT_MASK) != 0)
 
 void HoboNicola::output() {
-	if (repeat_moji || repeat_oyayubi) {	// 長押しのときもrepeat_mojiに入っている。
-		moji = repeat_moji;
-		oyayubi = repeat_oyayubi;
+	if (pending_moji || pending_oyayubi) {	// 長押しのときもpending_mojiに入っている。
+		moji = pending_moji;
+		oyayubi = pending_oyayubi;
 	}
 	if (moji == 0 && oyayubi) {
 		stroke(HIGHBYTE(oyayubi), modifiers);
